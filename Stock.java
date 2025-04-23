@@ -17,12 +17,27 @@ public class Stock {
     public boolean isActiveFlag() { return activeFlag; }
 
     public void setStockQuantity(int stockQuantity) {
-        this.stockQuantity = stockQuantity;
+        if (quantity > 0) {
+          this.stockQuantity = stockQuantity;
+        }
+        else{
+            system.out.println("Stock quantity cannot be negative.");
+        }
+        
     }
 
     public void setActiveFlag(boolean activeFlag) {
         this.activeFlag = activeFlag;
     }
+
+    public void reduceStock(int quantity) {
+        if (quantity <= stockQuantity) {
+            stockQuantity -= quantity;
+        } 
+        else {
+            System.out.println("Error: Attempt to reduce stock below zero.");
+        }
+    }    
 
     @Override
     public String toString() {
