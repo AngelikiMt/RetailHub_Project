@@ -1,5 +1,4 @@
 package retailhub;
-
 	
 public class store 
 
@@ -10,20 +9,22 @@ public class store
 	private String address;
 	private String country;
 	private int storeSum;
-	private String storename;
+	private String storeName;
+	private boolean active;
 	
 	
-	
-	public store (int phone, String address, String country, String storename)
+	public store (int phone, String address, String country, String storeName)
 	{
 		storeid=nextid++;
 		this.phone=phone;
 		this.address=address;
 		this.country=country;
-		this.storename=storename;
+		this.storeName=storeName;
 		storeSum = 0;
+		active= true;
 	}
-
+	
+//getters
 	public int getId() {
 		return storeid;
 	}
@@ -32,24 +33,29 @@ public class store
 		return phone;
 	}
 	
-	public void setphone (int phone) {
-		this.phone=phone;
-	}
-	
 	public String getaddress() {
 		return address;
-	}
-	
-	public void setaddress (String address) {
-		this.address=address;
 	}
 	
 	public String getcountry() {
 		return country;
 	}
 
-	public String getstorename() {
-		return storename;
+	public String getstoreName() {
+		return storeName;
+	}
+
+	public boolean isactive () {
+		return active;
+	}
+	
+ //setters
+	public void setphone (int phone) {
+		this.phone=phone;
+	}
+	
+	public void setaddress (String address) {
+		this.address=address;
 	}
 }
 
