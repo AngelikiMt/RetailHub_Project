@@ -1,11 +1,10 @@
-//client.java
 import java.time.LocalDate;
 
 public class Client {
-    // Πεδία
+    //orizw ta pedia gia tin klasi client
     private int idClient;
-    private String onoma;
-    private String epitheto;
+    private String firstname;
+    private String lastname;
     private LocalDate birthDate;
     private String phoneNumber;
     private String email;
@@ -15,13 +14,13 @@ public class Client {
     private float clientSumTotal;
     private LocalDate lastPurchaseDate;
 
-    // Κατασκευαστής
-    public Client(int idClient, String onoma, String epitheto, LocalDate birthDate,
+
+    public Client(int idClient, String firstname, String lastname, LocalDate birthDate,
                   String phoneNumber, String email, String gender, boolean activeStatus,
                   LocalDate dateJoined, float clientSumTotal, LocalDate lastPurchaseDate) {
         this.idClient = idClient;
-        this.onoma = onoma;
-        this.epitheto = epitheto;
+        this.firstname = firstname;
+        this.lastname = lastname;
         this.birthDate = birthDate;
         this.phoneNumber = phoneNumber;
         this.email = email;
@@ -32,11 +31,11 @@ public class Client {
         this.lastPurchaseDate = lastPurchaseDate;
     }
 
-    // Μέθοδος εμφάνισης στοιχείων πελάτη
-    public void displayInfo() {
+    
+    public void displayInfo(Client client) {
         System.out.println("ID: " + idClient);
-        System.out.println("Όνομα: " + onoma);
-        System.out.println("Επώνυμο: " + epitheto);
+        System.out.println("Όνομα: " + firstname);
+        System.out.println("Επώνυμο: " + lastname);
         System.out.println("Ημ. Γέννησης: " + birthDate);
         System.out.println("Τηλέφωνο: " + phoneNumber);
         System.out.println("Email: " + email);
@@ -56,20 +55,20 @@ public class Client {
         this.idClient = idClient;
     }
 
-    public String getOnoma() {
-        return onoma;
+    public String getFirstname() {
+        return firstname;
     }
 
-    public void setOnoma(String onoma) {
-        this.onoma = onoma;
+    public void setFirstname(String firstname) {
+        this.firstname = firstname;
     }
 
-    public String getEpitheto() {
-        return epitheto;
+    public String getLastname() {
+        return lastname;
     }
 
-    public void setEpitheto(String epitheto) {
-        this.epitheto = epitheto;
+    public void setLastname(String lastname) {
+        this.lastname = lastname;
     }
 
     public LocalDate getBirthDate() {
