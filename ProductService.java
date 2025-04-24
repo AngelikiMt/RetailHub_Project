@@ -77,7 +77,7 @@ public void displayAllProducts() {
             "ID", "Description", "Category", "Price", "Cost");
     System.out.println("------------------------------------------------------------------");
 
-    for (Product p : products) {
+    for (Product product : products) {
         System.out.printf("%-6d | %-20s | %-15s | %-10.2f | %-10.2f%n",
                 product.getProductId(),
                 product.getDescription(),
