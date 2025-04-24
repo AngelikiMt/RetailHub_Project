@@ -44,7 +44,7 @@ public class store
 	public String getstoreName() {
 		return storeName;
 	}
-
+//is
 	public boolean isactive () {
 		return active;
 	}
@@ -57,6 +57,15 @@ public class store
 	public void setaddress (String address) {
 		this.address=address;
 	}
+
+	public void setcountry (String country) {
+		this.country=country;
+	}
+
+	public void storeName (String storeName) {
+		this.storeName=storeName;
+	}
+	
 }
 
 
