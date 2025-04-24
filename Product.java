@@ -1,5 +1,7 @@
 public class Product 
-{
+{ 
+    private static int nextId = 1; //για να αυξανεται το id αυτόματα
+    
     private int productId;
     private String description;
     private String category;
@@ -11,7 +13,7 @@ public class Product
     public Product (String description, String category, float price, float cost) 
 {
         int nextId;
-		this. productId = nextId++;
+	this. productId = nextId++;
         this.description = description;
         this.category = category;
         this.price = price;
