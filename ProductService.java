@@ -22,8 +22,8 @@ public class ProductService {
         boolean found = false;
 
         while (iterator.hasNext()) {
-            Product p = iterator.next();
-            if (p.getProductId() == productId) {
+            Product product = iterator.next();
+            if (product.getProductId() == productId) {
                 iterator.remove();
                 found = true;
                 System.out.println("Product deleted successfully.");
@@ -56,8 +56,8 @@ public void updateProduct(int productId, String description, String category, fl
     // Υπολογισμός κερδοφορίας ενός προϊόντος
     public float calculateProfit(int productId) {
         for (Product p : products) {
-            if (p.getProductId() == productId) {
-                float profit = p.getPrice() - p.getCost();
+            if (product.getProductId() == productId) {
+                float profit = product.getPrice() - p.getCost();
                 System.out.println("Profit of Product" + productId + ": " + profit);
                 return profit;
             }
@@ -79,9 +79,9 @@ public void displayAllProducts() {
 
     for (Product p : products) {
         System.out.printf("%-6d | %-20s | %-15s | %-10.2f | %-10.2f%n",
-                p.getProductId(),
-                p.getDescription(),
-                p.getCategory(),
-                p.getPrice(),
-                p.getCost());
+                product.getProductId(),
+                product.getDescription(),
+                product.getCategory(),
+                product.getPrice(),
+                product.getCost());
     }
