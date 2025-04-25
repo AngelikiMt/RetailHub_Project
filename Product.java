@@ -9,7 +9,7 @@ public class Product
     private float cost;
 
 
-// Constructor, με το productId να δημιουργείται αυτοματα
+// Constructor, με το productId να δημιουργείται αυτόματα
     public Product (String description, String category, float price, float cost) 
 {
 	this. productId = nextId++;
