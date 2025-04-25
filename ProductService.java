@@ -8,6 +8,7 @@ public class ProductService {
         products = new ArrayList<>();
     }
 
+    
     // Δημιουργία νέου προϊόντος με το Id να δημιουργείται αυτόματα
   public void createProduct(String description, String category, float price, float cost) 
 {
@@ -16,6 +17,7 @@ public class ProductService {
     System.out.println("Product added successfully with ID: " + newProduct.getProductId());
 }
 
+    
     // Διαγραφή προϊόντος βάσει productId
     public void deleteProduct(int productId) {
         Iterator<Product> iterator = products.iterator();
@@ -55,7 +57,7 @@ public void updateProduct(int productId, String description, String category, fl
 
     // Υπολογισμός κερδοφορίας ενός προϊόντος
     public float calculateProfit(int productId) {
-        for (Product p : products) {
+        for (Product product : products) {
             if (product.getProductId() == productId) {
                 float profit = product.getPrice() - p.getCost();
                 System.out.println("Profit of Product" + productId + ": " + profit);
