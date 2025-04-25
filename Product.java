@@ -12,7 +12,6 @@ public class Product
 // Constructor, με το productId να δημιουργείται αυτοματα
     public Product (String description, String category, float price, float cost) 
 {
-        int nextId;
 	this. productId = nextId++;
         this.description = description;
         this.category = category;
