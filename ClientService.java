@@ -5,7 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 
 public class ClientService {
-// 1. Εγγραφή πελάτη
+    // 1. Εγγραφή πελάτη
     public static Client createClient(int id, String firstname, String lastname, LocalDate birthDate,
                                       String phoneNumber, String email, String gender, boolean activeStatus,
                                       LocalDate dateJoined, float clientSumTotal, LocalDate lastPurchaseDate) {
