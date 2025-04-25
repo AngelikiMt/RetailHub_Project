@@ -36,5 +36,28 @@ public class Main {
         // 5. Διαγραφή πελάτη
         ClientService.deleteClient(clientList, 1);
         System.out.println("Πλήθος πελατών μετά τη διαγραφή: " + clientList.size());
+        
+        // Δημιουργία αντικειμένου κλάσης StockService
+        StockService stockService = new StockService();
+        
+        // Δημιουργία νέου αποθέματος
+        stockService.addStock(0001, 0001, 4);
+        
+        // Εμφάνιση αποθέματος για συγκεκριμένο προιόν και κατάστημα 
+        System.out.println("Το απόθεμα είναι: " + stockService.getStock( 0001,0001).get(0).getStockQuantity());
+        
+        // Ενημέρωση ποσότητας αποθεμάτος 
+        stockService.updateStock(0001,0001,10);
+        System.out.println("Το νέο απόθεμα είναι: " + stockService.getStock( 0001,0001).get(0).getStockQuantity());
+        
+        // Ενημέρωση αποθέματος έπειτα από αγορά 
+        stockService.reduceStockOnPurchase(0001, 0001, 7);
+        System.out.println("Το απόθεμα είναι: " + stockService.getStock( 0001,0001).get(0).getStockQuantity());
+        
+        // Εμφάνιση προιόντων που έχουν χαμηλή ποσότητα αποθέματος ( <=3 )
+        stockService.getLowStockProducts();
+        
+        // Εμφάνιση  διαθέσιμων προιόντων σε άλλα καταστήματα
+        stockService.searchProductInOtherStores(0001, 0002);
     }
 }

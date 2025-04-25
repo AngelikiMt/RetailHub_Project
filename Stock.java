@@ -11,17 +11,17 @@ public class Stock {
         this.activeFlag = activeFlag;
     }
 
-    public int getstoreId() { return storeId; }
-    public int getproductId() { return productId; }
+    public int getStoreId() { return storeId; }
+    public int getProductId() { return productId; }
     public int getStockQuantity() { return stockQuantity; }
     public boolean isActiveFlag() { return activeFlag; }
 
     public void setStockQuantity(int stockQuantity) {
-        if (quantity > 0) {
+        if (stockQuantity > 0) {
           this.stockQuantity = stockQuantity;
         }
         else{
-            system.out.println("Stock quantity cannot be negative.");
+            System.out.println("Stock quantity cannot be negative.");
         }
         
     }

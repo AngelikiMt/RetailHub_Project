@@ -2,11 +2,12 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class StockService {
-    private List<Stock> stocks = new ArrayList<>();
+    private List<Stock> stocks = new ArrayList<Stock>();
+
     private static final int threshold=3;
 
-    public void addStock(Stock stock) {   // προσθήκη αντικειμένου τύπου stock στην λίστα με όλα τα αποθέματα 
-        stocks.add(stock);
+    public void addStock(int storeId, int productId, int stockQuantity) {   // προσθήκη αντικειμένου τύπου stock στην λίστα με όλα τα αποθέματα 
+        stocks.add(new Stock(productId, storeId, stockQuantity, true));
     }
 
    
@@ -20,12 +21,12 @@ public class StockService {
                 }
             }
         }
-
-    return result;
-    }
+        
+        return result;  
+    }                   
 
     public void updateStock(int productId, int storeId, int newQuantity) {  // ενημερωση αποθέματος 
-        ArrayList<Stock>currentStocks=getStock(productId, storeId);
+        List<Stock>currentStocks=getStock(productId, storeId);
         if (currentStocks!=null){
             for(Stock s : currentStocks){
                 s.setStockQuantity(newQuantity);
@@ -43,25 +44,22 @@ public class StockService {
                 stock.reduceStock(quantity);
             } 
             else {
-                System.out.println("Insufficient stock for product ID: " + productId);
+                System.out.println("Ανεπαρκές απόθεμα για το product ID: " + productId);
             }
         } 
         else {
-            System.out.println("Stock not found for product ID: " + productId + " in store ID: " + storeId);
+            System.out.println("Δεν βρέθηκε απόθεμα για το product ID: " + productId + " στο store ID: " + storeId);
         }
     }
     
 
-    public ArrayList<Stock> getLowStockProducts() {      //GET αποθέματα με stock κάτω από 3
-        ArrayList<Stock> lowStockList = new ArrayList<>();
-    
+    public void getLowStockProducts() {      //GET αποθέματα με stock κάτω από 3
+       
         for (Stock s : stocks) {
-            if (s.getStockQuantity() < threshold) {
-                lowStockList.add(s);
+            if (s.getStockQuantity() <= threshold) {
+                System.out.println("Το προιόν με κωδικό: " + s.getProductId() + " στο κατάστημα: " + s.getStoreId() + "  εχει χαμηλό απόθεμα: " + s.getStockQuantity());
             }
         }
-    
-        return lowStockList;
     }
     
 
@@ -71,7 +69,7 @@ public class StockService {
         for (Stock s : stocks) {  
             if (s.getProductId() == productId &&  // Αν το προϊόν ταιριάζει
                 s.getStoreId() != excludedStoreId &&  // Αν δεν είναι το εξαιρούμενο κατάστημα
-                s.isActiveProduct() &&  // Αν είναι ενεργό το προϊόν
+                s.isActiveFlag() &&  // Αν είναι ενεργό το προϊόν
                 s.getStockQuantity() > 0) {  // Αν υπάρχει απόθεμα
     
                 result.add(s);  // Προσθέτει το απόθεμα στην λίστα αποτελεσμάτων
