@@ -9,13 +9,19 @@ public class StockService {
         stocks.add(stock);
     }
 
-    public List<Stock> getStock(int productId, int storeId) {     //ελεγχος αποθεματος για συγκεκριμενο προιόν και κατάστημα 
-        if (stocks.size()>0){
-           return stocks.filter(s -> s.getProductId() == productId && s.getStoreId() == storeId);
+   
+    public List<Stock> getStock(int productId, int storeId) {   //ελεγχος αποθεματος για συγκεκριμενο προιόν και κατάστημα 
+        List<Stock> result = new ArrayList<>();
+
+        if (stocks != null && !stocks.isEmpty()) {
+            for (Stock s : stocks) {
+                if (s.getProductId() == productId && s.getStoreId() == storeId) {
+                    result.add(s);
+                }
+            }
         }
-        else{
-            return null ;
-        }
+
+    return result;
     }
 
     public void updateStock(int productId, int storeId, int newQuantity) {  // ενημερωση αποθέματος 
