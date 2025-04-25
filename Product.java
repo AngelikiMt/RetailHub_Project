@@ -1,6 +1,6 @@
 public class Product 
 { 
-    private static int nextId = 1; //για να αυξανεται το id αυτόματα
+    private static int nextId = 1; //για να αυξάνεται το id αυτόματα
     
     private int productId;
     private String description;
