@@ -59,5 +59,7 @@ public class Main {
         
         // Εμφάνιση  διαθέσιμων προιόντων σε άλλα καταστήματα
         stockService.searchProductInOtherStores(0001, 0002);
+        
+     
     }
 }

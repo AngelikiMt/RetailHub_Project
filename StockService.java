@@ -6,12 +6,13 @@ public class StockService {
 
     private static final int threshold=3;
 
-    public void addStock(int storeId, int productId, int stockQuantity) {   // προσθήκη αντικειμένου τύπου stock στην λίστα με όλα τα αποθέματα 
+    // Προσθήκη αντικειμένου τύπου stock στην λίστα με όλα τα αποθέματα
+    public void addStock(int storeId, int productId, int stockQuantity) {    
         stocks.add(new Stock(productId, storeId, stockQuantity, true));
     }
 
-   
-    public List<Stock> getStock(int productId, int storeId) {   //ελεγχος αποθεματος για συγκεκριμενο προιόν και κατάστημα 
+    //Έλεγχος αποθέματος για συγκεκριμένο προιόν και κατάστημα 
+    public List<Stock> getStock(int productId, int storeId) {   
         List<Stock> result = new ArrayList<>();
 
         if (stocks != null && !stocks.isEmpty()) {
@@ -23,9 +24,10 @@ public class StockService {
         }
         
         return result;  
-    }                   
+    } 
 
-    public void updateStock(int productId, int storeId, int newQuantity) {  // ενημερωση αποθέματος 
+    // Ενημέρωση αποθέματος 
+    public void updateStock(int productId, int storeId, int newQuantity) {  
         List<Stock>currentStocks=getStock(productId, storeId);
         if (currentStocks!=null){
             for(Stock s : currentStocks){
@@ -34,8 +36,8 @@ public class StockService {
         }
     }
 
-    
-    public void reduceStockOnPurchase(int productId, int storeId, int quantity) { //μειώνει το απόθεμα
+    //Μειώνει το απόθεμα
+    public void reduceStockOnPurchase(int productId, int storeId, int quantity) { 
         List<Stock> stockList = getStock(productId, storeId);
         if (!stockList.isEmpty()) {
             // Παίρνουμε το πρώτο διαθέσιμο απόθεμα για το προϊόν και το κατάστημα
@@ -53,7 +55,8 @@ public class StockService {
     }
     
 
-    public void getLowStockProducts() {      //GET αποθέματα με stock κάτω από 3
+    //GET αποθέματα με stock κάτω από 3
+    public void getLowStockProducts() {      
        
         for (Stock s : stocks) {
             if (s.getStockQuantity() <= threshold) {
@@ -62,7 +65,7 @@ public class StockService {
         }
     }
     
-
+    // Αναζητά εάν υπάρχει το προιόν σε άλλο κατάστημα διαθέσιμο
     public ArrayList<Stock> searchProductInOtherStores(int productId, int excludedStoreId) {
         ArrayList<Stock> result = new ArrayList<>();  // Νέα λίστα για τα αποτελέσματα
     
@@ -84,8 +87,8 @@ public class StockService {
         return result;  // Επιστρέφει τη λίστα με τα αποτελέσματα
     }
     
-
-    public String getStockAsJson(int productId) {  //θα επιστρέψει το απόθεμα ενός προϊόντος σε JSON μορφή, για όλα τα καταστήματα που το έχουν διαθέσιμο
+    //Θα επιστρέψει το απόθεμα ενός προϊόντος σε JSON μορφή, για όλα τα καταστήματα που το έχουν διαθέσιμο
+    public String getStockAsJson(int productId) {  
         StringBuilder json = new StringBuilder();
         json.append("{\n  \"productId\": ").append(productId).append(",\n  \"stockPerStore\": [\n");
     
