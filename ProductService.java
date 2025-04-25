@@ -59,7 +59,7 @@ public void updateProduct(int productId, String description, String category, fl
     public float calculateProfit(int productId) {
         for (Product product : products) {
             if (product.getProductId() == productId) {
-                float profit = product.getPrice() - profit.getCost();
+                float profit = product.getPrice() - product.getCost();
                 System.out.println("Profit of Product" + productId + ": " + profit);
                 return profit;
             }
@@ -68,6 +68,7 @@ public void updateProduct(int productId, String description, String category, fl
         return 0;
     }
 
+    
     // Για εμφάνιση όλων των προϊόντων σε μορφή που μοιάζει με πίνακα
 public void displayAllProducts() {
     if (products.isEmpty()) {
