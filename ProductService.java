@@ -88,3 +88,5 @@ public void displayAllProducts() {
                 product.getPrice(),
                 product.getCost());
     }
+}
+}
