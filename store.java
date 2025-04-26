@@ -3,8 +3,8 @@ package retailhub;
 public class store 
 
 {
-	private static int nextid = 1;
-	private int storeid;  
+	private static long nextid = 1;
+	private long storeid;  
 	private String phone;
 	private String address;
 	private String country;
