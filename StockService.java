@@ -7,15 +7,26 @@ public class StockService {
     private static final int threshold=3;
 
     // Προσθήκη αντικειμένου τύπου stock στην λίστα με όλα τα αποθέματα
-    public void addStock(int storeId, int productId, int stockQuantity) {    
-        stocks.add(new Stock(productId, storeId, stockQuantity, true));
+    public void addStock(int storeId, int productId, int stockQuantity) { 
+    	if (storeId <= 0 || productId <= 0) {
+            System.out.println("Μη έγκυρο κατάστημα ή προϊόν.");
+            return;
+        }
+
+        if (stockQuantity < 0) {
+            System.out.println("Η ποσότητα αποθέματος δεν μπορεί να είναι αρνητική.");
+            return;
+        }
+    	
+    	 stocks.add(new Stock(productId, storeId, stockQuantity, true));
     }
+    
 
     //Έλεγχος αποθέματος για συγκεκριμένο προιόν και κατάστημα 
     public List<Stock> getStock(int productId, int storeId) {   
         List<Stock> result = new ArrayList<>();
 
-        if (stocks != null && !stocks.isEmpty()) {
+        if (stocks != null && !stocks.isEmpty()) { 
             for (Stock s : stocks) {
                 if (s.getProductId() == productId && s.getStoreId() == storeId) {
                     result.add(s);
@@ -26,6 +37,7 @@ public class StockService {
         return result;  
     } 
 
+    
     // Ενημέρωση αποθέματος 
     public void updateStock(int productId, int storeId, int newQuantity) {  
         List<Stock>currentStocks=getStock(productId, storeId);
@@ -36,6 +48,7 @@ public class StockService {
         }
     }
 
+    
     //Μειώνει το απόθεμα
     public void reduceStockOnPurchase(int productId, int storeId, int quantity) { 
         List<Stock> stockList = getStock(productId, storeId);
