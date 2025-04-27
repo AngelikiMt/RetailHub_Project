@@ -22,6 +22,34 @@ public class Transaction {
         this.discount = discount;
     }
 
+    public long getTransactionId() {
+        return transactionId;
+    }
+
+    public long getClientId() {
+        return clientId;
+    }
+
+    public long getStoreId() {
+        return storeId;
+    }
+
+    public LocalDateTime getDateTime() {
+        return dateTime;
+    }
+
+    public String getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public double getSumTotal() {
+        return sumTotal;
+    }
+
+    public double getDiscount() {
+        return discount;
+    }
+
     @Override
     public String toString() {
         return "Transaction #" + transactionId +

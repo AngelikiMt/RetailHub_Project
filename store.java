@@ -3,17 +3,17 @@ package retailhub;
 public class store 
 
 {
-	private static int nextid = 1;
-	private int storeid;  
-	private int phone;
+	private static long nextid = 1;
+	private long storeid;  
+	private String phone;
 	private String address;
 	private String country;
-	private int storeSum;
 	private String storeName;
+	private int storeSum;
 	private boolean active;
 	
 	
-	public store (int phone, String address, String country, String storeName)
+	public store (String phone, String address, String country, String storeName)
 	{
 		storeid=nextid++;
 		this.phone=phone;
@@ -29,7 +29,7 @@ public class store
 		return storeid;
 	}
 	
-	public int getphone() {
+	public String getphone() {
 		return phone;
 	}
 	
@@ -50,7 +50,7 @@ public class store
 	}
 	
  //setters
-	public void setphone (int phone) {
+	public void setphone (String phone) {
 		this.phone=phone;
 	}
 	

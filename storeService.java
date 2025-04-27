@@ -26,7 +26,7 @@ public class storeService; {
         }
     }
 
- //creta store
+ //create store
  public Store createStore(String name, String address, String phoneNumber) {
         List<String> errors = new ArrayList<>();
 
