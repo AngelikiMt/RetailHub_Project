@@ -79,7 +79,7 @@ public class StockService {
     }
     
     // Αναζητά εάν υπάρχει το προιόν σε άλλο κατάστημα διαθέσιμο
-    public ArrayList<Stock> searchProductInOtherStores(long productId, long excludedStoreId) {
+    public List<Stock> searchProductInOtherStores(long productId, long excludedStoreId) {
         ArrayList<Stock> result = new ArrayList<>();  // Νέα λίστα για τα αποτελέσματα
     
         for (Stock s : stocks) {  

@@ -19,7 +19,7 @@ public class Stock {
     public boolean isActiveFlag() { return activeFlag; }
 
     public void setStockQuantity(int stockQuantity) {
-        if (stockQuantity > 0) {
+        if (stockQuantity >= 0) {
           this.stockQuantity = stockQuantity;
         }
         else{
