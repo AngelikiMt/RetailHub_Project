@@ -43,6 +43,7 @@ public class Main {
         
         // Δημιουργία νέου αποθέματος
         stockService.addStock(0001, 0001, 4);
+        stockService.addStock(0002, 0001, -2); 
         
         // Εμφάνιση αποθέματος για συγκεκριμένο προιόν και κατάστημα 
         System.out.println("Το απόθεμα είναι: " + stockService.getStock( 0001,0001).get(0).getStockQuantity());

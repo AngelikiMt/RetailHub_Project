@@ -1,11 +1,11 @@
 public class Stock {
-    private int storeId;
-    private int productId;
+    private long storeId;
+    private long productId;
     private int stockQuantity;
     private boolean activeFlag;
 
     //Κατασκευαστής 
-    public Stock(int storeId, int productId, int stockQuantity, boolean activeFlag) {
+    public Stock(long storeId, long productId, int stockQuantity, boolean activeFlag) {
         this.storeId = storeId;
         this.productId = productId;
         this.stockQuantity = stockQuantity;
@@ -13,13 +13,13 @@ public class Stock {
     }
 
     // Getters & Setters
-    public int getStoreId() { return storeId; }
-    public int getProductId() { return productId; }
+    public long getStoreId() { return storeId; }
+    public long getProductId() { return productId; }
     public int getStockQuantity() { return stockQuantity; }
     public boolean isActiveFlag() { return activeFlag; }
 
     public void setStockQuantity(int stockQuantity) {
-        if (stockQuantity > 0) {
+        if (stockQuantity >= 0) {
           this.stockQuantity = stockQuantity;
         }
         else{
