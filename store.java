@@ -1,10 +1,8 @@
-package retailhub;
-	
-public class store 
+public class Store 
 
 {
-	private static long nextid = 1;
-	private long storeid;  
+	private static int nextId = 1;
+	private int storeId;  
 	private String phone;
 	private String address;
 	private String country;
@@ -13,9 +11,9 @@ public class store
 	private boolean active;
 	
 	
-	public store (String phone, String address, String country, String storeName)
+	public Store (String storeName, String address, String country, String phone)
 	{
-		storeid=nextid++;
+		storeId=nextId++;
 		this.phone=phone;
 		this.address=address;
 		this.country=country;
@@ -25,8 +23,8 @@ public class store
 	}
 	
 //getters
-	public int getId() {
-		return storeid;
+	public int getstoreId() {
+		return storeId;
 	}
 	
 	public String getphone() {
@@ -50,22 +48,34 @@ public class store
 	}
 	
  //setters
-	public void setphone (String phone) {
+	public void setPhone (String phone) {
 		this.phone=phone;
 	}
 	
-	public void setaddress (String address) {
+	public void setAddress (String address) {
 		this.address=address;
 	}
 
-	public void setcountry (String country) {
+	public void setCountry (String country) {
 		this.country=country;
 	}
 
-	public void storeName (String storeName) {
+	public void setStoreName (String storeName) {
 		this.storeName=storeName;
 	}
-	
+
+	@Override
+public String toString() 
+{
+    return "Store ID: " + storeId + "\n"
+		 + "Store Name: " + storeName + "\n"
+         + "Address: " + address + "\n"
+         + "Country: " + country + "\n"
+         + "Phone: " + phone ;
+         
 }
+}
+	
+
 
 

@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 public class ProductService {
     private ArrayList<Product> products;
@@ -10,11 +11,12 @@ public class ProductService {
 
     
     // Δημιουργία νέου προϊόντος με το Id να δημιουργείται αυτόματα
-  public void createProduct(String description, String category, float price, float cost) 
+  public Product createProduct(String description, String category, float price, float cost) 
 {
     Product newProduct = new Product(description, category, price, cost);
     products.add(newProduct);
     System.out.println("Product added successfully with ID: " + newProduct.getProductId());
+    return newProduct;
 }
 
     
@@ -46,11 +48,14 @@ public void updateProduct(int productId, String description, String category, fl
             product.setCategory(category);
             product.setPrice(price);
             product.setCost(cost);
-            System.out.println("Product updated successfully.");
-            return;
+            System.out.println("Product updated successfully."+ productId+description+category+price+cost);
+            //return updateProduct(0, 0, null, 0, 0);
+        }
+        else{
+            System.out.println("No product found with the specified ID.");
         }
     }
-    System.out.println("No product found with the specified ID.");
+    
 }
 
 

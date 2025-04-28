@@ -1,6 +1,7 @@
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
@@ -59,7 +60,52 @@ public class Main {
         
         // Εμφάνιση  διαθέσιμων προιόντων σε άλλα καταστήματα
         stockService.searchProductInOtherStores(0001, 0002);
+       
+        //Product product = new Product("nik","dress", 10, 5);
+        //System.out.println(product.getProductId());
+       // System.out.println(product);
+
+        ProductService ps = new ProductService();
+        Product newProduct = ps.createProduct("nik","dress", 10, 5);
+        System.out.println(newProduct);
         
+        ps.updateProduct(1,"uyhg","dres",100,89);
+        //System.out.println(ps);
      
-    }
+        //STORE create
+        Scanner in = new Scanner (System.in);
+        System.out.println("give store name");
+        String storeName=in.nextLine();
+        System.out.println("give store address");
+        String address=in.nextLine();
+        System.out.println("give store country");
+        String country=in.nextLine();
+        System.out.println("give store number");
+        String phone=in.nextLine();
+        storeService ss = new storeService();
+        try{
+            Store newStore= ss.createStore(storeName, address, country, phone);
+            System.out.println (newStore);
+        } catch (IllegalArgumentException e){
+            System.out.println (e.getMessage()); 
+        }
+  
+        //STORE update
+        System.out.println("give the id of the store you want to change");
+        int storeId=in.nextInt();
+        in.nextLine();
+        System.out.println("give new store name");
+        String newName=in.nextLine();
+        System.out.println("give new store address");
+        String newAddress=in.nextLine();
+        System.out.println("give new store country");
+        String newCountry=in.nextLine();
+        System.out.println("give new store number");
+        String newPhone=in.nextLine();
+        try{
+            ss.updateStore(storeId,newName, newAddress, newCountry, newPhone);
+            
+        } catch (IllegalArgumentException e){
+            System.out.println (e.getMessage()); }
+}
 }

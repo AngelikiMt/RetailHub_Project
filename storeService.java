@@ -1,24 +1,21 @@
-package retailhub;
+import java.util.ArrayList;
+import java.util.List;
 
-public class storeService; {
+public class storeService
+{
+    private ArrayList<Store> stores;
+
+    
+    public storeService() {
+        stores = new ArrayList<>();
+    } 
+
 //validate inputs
-  public void validateName(String storeName, List<String> errors) {
-        if (storeName == null || storeName.trim().isEmpty()) {
-            errors.add("Name cannot be empty.");
+    public void validate(String varname, String x, List<String> errors) {
+        if (x == null || x.trim().isEmpty()) {
+            errors.add( varname+ " cannot be empty.");
         }
-    }
-
-  public void validateAddress(String address, List<String> errors) {
-        if (address == null || address.trim().isEmpty()) {
-            errors.add("Address cannot be empty.");
-        }
-    }
-
-  public void validateCountry(String country, List<String> errors) {
-        if (country == null || country.trim().isEmpty()) {
-            errors.add("Country cannot be empty.");
-        }
-    }
+    } 
 
   public void validatePhone(String phone, List<String> errors) {
         if (phone == null || phone.length() != 10 || !phone.matches("\\d{10}")) {
@@ -27,26 +24,77 @@ public class storeService; {
     }
 
  //create store
- public Store createStore(String name, String address, String phoneNumber) {
-        List<String> errors = new ArrayList<>();
-
-        validateName(name, errors);
-        validateAddress(address, errors);
-        validatePhoneNumber(phoneNumber, errors);
+ public Store createStore(String storeName, String address, String country, String phone) {
+       List<String> errors = new ArrayList<>();
+      
+        validate("storeName",storeName, errors);
+        validate("address",address, errors);
+        validate("country",country, errors);
+        validatePhone(phone, errors);
 
         if (!errors.isEmpty()) {
             throw new IllegalArgumentException(String.join("\n", errors));
         }
-
+         else {
       storeName = storeName.trim();
       address = address.trim();
       country = country.trim();
 
-      return new store(storeName, address, phone, country); 
+      
+      Store newStore= new Store(storeName, address, country, phone); 
+      stores.add(newStore);     
+      System.out.println("Store added successfully with ID:" + newStore.getstoreId());
+      return newStore;
   }
+ }
+
+ //show store
+
+ public void showStore(int storeId){
+    for (Store store : stores) {
+        if (store.getstoreId() == storeId) {
+            System.out.println(store); 
+        }
+    }
+ }
 
   //update store
-  public Store updateStore(
 
-  
+  public void updateStore(int storeId, String newName, String newAddress, String newCountry, String newPhone) {  
+    List<String> errors = new ArrayList<>();   
+    for (Store store : stores) {
+        if (store.getstoreId() == storeId) {
+
+            if (newName != null) {
+                validate("newName",newName, errors);
+                if (errors.isEmpty()) store.setStoreName(newName);
+            }
+        
+            if (newAddress != null) {
+                validate("newAddress",newAddress, errors);
+                if (errors.isEmpty()) store.setAddress(newAddress);
+            }
+        
+            if (newPhone != null) {
+                validatePhone(newPhone, errors);
+                if (errors.isEmpty()) store.setPhone(newPhone);
+            }
+            
+            if (!errors.isEmpty()) {
+                throw new IllegalArgumentException(String.join("\n", errors));
+            }
+            System.out.println("Store with ID " + storeId+" updated successfully. The new info are");
+            showStore(storeId);
+                  
+        }
+        else{
+            System.out.println("No store found with the specified ID.");
+        }       
+    }
+
+
 }
+}
+    
+
+
