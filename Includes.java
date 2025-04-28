@@ -12,7 +12,7 @@ public class Includes {
 		this.soldQuantity = soldQuantity;
 	}
 	
-	// Get/Read values
+	// Get values
 	public long getTransactionId() {
 		return transactionId;
 	}
@@ -23,19 +23,6 @@ public class Includes {
 	
 	public int getSoldQuantity() {
 		return soldQuantity;
-	}
-	
-	// Set/Update values
-	public void setTransactionId(long transactionId) {
-		this.transactionId = transactionId;
-	}
-	
-	public void setProductId(long productId) {
-		this.productId = productId;
-	}
-	
-	public void setSoldQuantity(int soldQuantity) {
-		this.soldQuantity = soldQuantity;
 	}
 
 	@Override
