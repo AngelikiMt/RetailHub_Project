@@ -23,7 +23,7 @@ public class Stock {
           this.stockQuantity = stockQuantity;
         }
         else{
-            System.out.println("Η ποσότητα δεν μπορεί να έχει αρνητική τιμή.");
+            System.out.println("The quantity cannot have a negative value.");
         }
         
     }
@@ -37,7 +37,7 @@ public class Stock {
             stockQuantity -= quantity;
         } 
         else {
-            System.out.println("Error:Προσπαθείς να μειώσεις το απόθεμα σε αρνητικό αριθμό.");
+            System.out.println("Error: You are trying to reduce the inventory to a negative number.");
         }
     }    
 

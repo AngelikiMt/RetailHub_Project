@@ -9,16 +9,16 @@ public class StockService {
     // Προσθήκη αντικειμένου τύπου stock στην λίστα με όλα τα αποθέματα
     public void addStock(long storeId, long productId, int stockQuantity) { 
     	if (storeId <= 0 || productId <= 0) {
-            System.out.println("Μη έγκυρο κατάστημα ή προϊόν.");
+            System.out.println("Invalid store or product.");
             return;
         }
 
         if (stockQuantity < 0) {
-            System.out.println("Η ποσότητα αποθέματος δεν μπορεί να είναι αρνητική.");
+            System.out.println("The inventory quantity cannot be negative.");
             return;
         }
     	
-    	 stocks.add(new Stock(productId, storeId, stockQuantity, true));
+    	stocks.add(new Stock(productId, storeId, stockQuantity, true));
     }
     
 
@@ -59,11 +59,11 @@ public class StockService {
                 stock.reduceStock(quantity);
             } 
             else {
-                System.out.println("Ανεπαρκές απόθεμα για το product ID: " + productId);
+                System.out.println("Insufficient inventory for product ID: " + productId);
             }
         } 
         else {
-            System.out.println("Δεν βρέθηκε απόθεμα για το product ID: " + productId + " στο store ID: " + storeId);
+            System.out.println("No inventory found for product ID: " + productId + " στο store ID: " + storeId);
         }
     }
     
@@ -73,11 +73,11 @@ public class StockService {
        
         for (Stock s : stocks) {
             if (s.getStockQuantity() <= threshold) {
-                System.out.println("Το προιόν με κωδικό: " + s.getProductId() + " στο κατάστημα: " + s.getStoreId() + "  εχει χαμηλό απόθεμα: " + s.getStockQuantity());
+                System.out.println("The product with code: " + s.getProductId() + " in store: " + s.getStoreId() + " has low inventory: " + s.getStockQuantity());
             }
         }
     }
-    
+
     // Αναζητά εάν υπάρχει το προιόν σε άλλο κατάστημα διαθέσιμο
     public List<Stock> searchProductInOtherStores(long productId, long excludedStoreId) {
         ArrayList<Stock> result = new ArrayList<>();  // Νέα λίστα για τα αποτελέσματα
