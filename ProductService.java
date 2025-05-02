@@ -94,4 +94,14 @@ public void displayAllProducts() {
                 product.getCost());
     }
 }
+    // Αναζήτηση προϊόντος βάσει ID
+    public Product findProductById(int productId) {
+        for (Product product : products) {
+            if (product.getProductId() == productId) {
+                return product;
+            }
+        }
+        return null;
+    }
+
 }
