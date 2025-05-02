@@ -1,12 +1,12 @@
 import java.util.ArrayList;
 import java.util.List;
 
-public class storeService
+public class StoreService
 {
     private ArrayList<Store> stores;
 
     
-    public storeService() {
+    public StoreService() {
         stores = new ArrayList<>();
     } 
 
