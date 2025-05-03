@@ -143,23 +143,5 @@ public class ProductService {
 		}
 		return null;
 	}
-
-	
-	
-	/*    // Υπολογισμός κερδοφορίας ενός προϊόντος
-	public double calculateProfit(long productId) {
-		for (Product product : products) {
-			if (product.getProductId() == productId) {
-				double profit = product.getPrice() - product.getCost();
-				System.out.println("Profit of Product" + productId + ": " + profit);
-				return profit;
-			}
-		}
-		System.out.println("No product found with the specified ID.");
-		return 0;
-	}
-*/
-	
-	
 	
 }
