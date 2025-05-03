@@ -1,7 +1,6 @@
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
- 
 public class Main {
     public static void main(String[] args) {
         Scanner in = new Scanner (System.in);
@@ -11,7 +10,6 @@ public class Main {
  
         // 1. Δημιουργία νέου πελάτη μέσω ClientService
         Client client = new Client(
-             
                 "Despoina",
                 "Makridou",
                 LocalDate.of(2001, 5, 7),

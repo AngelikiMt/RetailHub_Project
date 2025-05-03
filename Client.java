@@ -1,26 +1,31 @@
 import java.time.LocalDate;
 
 public class Client {
+
+    private static long nextId = 1;
+
     //orizw ta pedia gia tin klasi client
-    private int idClient;
-    private String firstname;
-    private String lastname;
+    private long clientId;
+    private String firstName;
+    private String lastName;
     private LocalDate birthDate;
     private String phoneNumber;
     private String email;
     private String gender;
     private boolean activeStatus;
     private LocalDate dateJoined;
-    private float clientSumTotal;
+    private double clientSumTotal;
     private LocalDate lastPurchaseDate;
 
 
-    public Client(int idClient, String firstname, String lastname, LocalDate birthDate,
+    public Client(String firstName, String lastName, LocalDate birthDate,
                   String phoneNumber, String email, String gender, boolean activeStatus,
-                  LocalDate dateJoined, float clientSumTotal, LocalDate lastPurchaseDate) {
-        this.idClient = idClient;
-        this.firstname = firstname;
-        this.lastname = lastname;
+                  LocalDate dateJoined, double clientSumTotal, LocalDate lastPurchaseDate) 
+                  {
+
+        this.clientId = nextId++; // Auto set id. The clientId got removed from the constructor parameters as it will be automatically set
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.birthDate = birthDate;
         this.phoneNumber = phoneNumber;
         this.email = email;
@@ -32,43 +37,44 @@ public class Client {
     }
 
     
-    public void displayInfo(Client client) {
-        System.out.println("ID: " + idClient);
-        System.out.println("Όνομα: " + firstname);
-        System.out.println("Επώνυμο: " + lastname);
-        System.out.println("Ημ. Γέννησης: " + birthDate);
-        System.out.println("Τηλέφωνο: " + phoneNumber);
+    public void displayInfo() {
+        System.out.println("ID: " + clientId);
+        System.out.println("Name: " + firstName);
+        System.out.println("Surname: " + lastName);
+        System.out.println("Birthdate: " + birthDate);
+        System.out.println("Phonenumber: " + phoneNumber);
         System.out.println("Email: " + email);
-        System.out.println("Φύλο: " + gender);
-        System.out.println("Ενεργός: " + (activeStatus ? "Ναι" : "Όχι"));
-        System.out.println("Ημ. Εγγραφής: " + dateJoined);
-        System.out.println("Σύνολο Αγορών: " + clientSumTotal + "€");
-        System.out.println("Τελευταία Αγορά: " + lastPurchaseDate);
+        System.out.println("Gender: " + gender);
+        System.out.println("Avtive: " + (activeStatus ? "Yes" : "No"));
+        System.out.println("Registration dates: " + dateJoined);
+        System.out.println("Total purchases: " + clientSumTotal + "€");
+        System.out.println("Last purchases: " + lastPurchaseDate);
     }
 
     // Getters & Setters
-    public int getIdClient() {
-        return idClient;
+    public long getClientId() {
+        return clientId;
     }
 
-    public void setIdClient(int idClient) {
-        this.idClient = idClient;
+    public void setClientId(long clientId) {
+        this.clientId = clientId;
     }
 
-    public String getFirstname() {
-        return firstname;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setFirstname(String firstname) {
-        this.firstname = firstname;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
     }
+    
 
     public String getLastname() {
-        return lastname;
+        return lastName;
     }
 
-    public void setLastname(String lastname) {
-        this.lastname = lastname;
+    public void setLastname(String lastName) {
+        this.lastName = lastName;
     }
 
     public LocalDate getBirthDate() {
@@ -119,11 +125,11 @@ public class Client {
         this.dateJoined = dateJoined;
     }
 
-    public float getClientSumTotal() {
+    public double getClientSumTotal() {
         return clientSumTotal;
     }
 
-    public void setClientSumTotal(float clientSumTotal) {
+    public void setClientSumTotal(double clientSumTotal) {
         this.clientSumTotal = clientSumTotal;
     }
 
