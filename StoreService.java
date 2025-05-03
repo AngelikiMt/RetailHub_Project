@@ -3,12 +3,23 @@ import java.util.List;
 
 public class StoreService
 {
-    private ArrayList<Store> stores;
+    private static ArrayList<Store> stores= new ArrayList<>();
 
+//SHOWS ALL STORES
+    public static ArrayList<Store> getStores() {
+        return stores ;
+    }
+//SHOW STORE INFO BY ID
+    public static Store getStoreById(int storeId) {
+        for (Store store : stores) {
+            if (store.getStoreId() == storeId) {
+                return store;
+            }
+        }
+        return null; // Return null if not found
+    }
     
-    public StoreService() {
-        stores = new ArrayList<>();
-    } 
+    
 
 //validate inputs
     public void validate(String varname, String x, List<String> errors) {
@@ -21,6 +32,15 @@ public class StoreService
         if (phone == null || phone.length() != 10 || !phone.matches("\\d{10}")) {
             errors.add("Phone number must be exactly 10 digits and contain only numbers.");
         }
+    }
+
+    public static boolean validateId(int storeId) {
+        for (Store store : stores) {
+            if (store.getStoreId() == storeId) {
+                return true;
+            }    
+        }
+        return false;
     }
 
  //create store
@@ -42,58 +62,40 @@ public class StoreService
 
       
       Store newStore= new Store(storeName, address, country, phone); 
-      stores.add(newStore);     
-      System.out.println("Store added successfully with ID:" + newStore.getstoreId());
-      return newStore;
+            stores.add(newStore);     
+            System.out.println("Store added successfully with ID:" + newStore.getStoreId());
+            return newStore;
   }
  }
 
- //show store
-
- public void showStore(int storeId){
-    for (Store store : stores) {
-        if (store.getstoreId() == storeId) {
-            System.out.println(store); 
-        }
-    }
- }
-
   //update store
+  public static void updateStore(int storeId, String newName, String newAddress, String newCountry, String newPhone) {  
+        List<String> errors = new ArrayList<>();   
+        for (Store store : stores) {
+            if (store.getStoreId() == storeId) {
 
-  public void updateStore(int storeId, String newName, String newAddress, String newCountry, String newPhone) {  
-    List<String> errors = new ArrayList<>();   
-    for (Store store : stores) {
-        if (store.getstoreId() == storeId) {
-
-            if (newName != null) {
-                validate("newName",newName, errors);
-                if (errors.isEmpty()) store.setStoreName(newName);
-            }
-        
-            if (newAddress != null) {
-                validate("newAddress",newAddress, errors);
-                if (errors.isEmpty()) store.setAddress(newAddress);
-            }
-        
-            if (newPhone != null) {
-                validatePhone(newPhone, errors);
-                if (errors.isEmpty()) store.setPhone(newPhone);
-            }
+                if (newName != null) {
+                    validate("newName",newName, errors);
+                    if (errors.isEmpty()) store.setStoreName(newName);
+                }
             
-            if (!errors.isEmpty()) {
-                throw new IllegalArgumentException(String.join("\n", errors));
+                if (newAddress != null) {
+                    validate("newAddress",newAddress, errors);
+                    if (errors.isEmpty()) store.setAddress(newAddress);
+                }
+            
+                if (newPhone != null) {
+                    validatePhone(newPhone, errors);
+                    if (errors.isEmpty()) store.setPhone(newPhone);
+                }
+                
+                if (!errors.isEmpty()) {
+                    throw new IllegalArgumentException(String.join("\n", errors));
+                }
+                break;    
             }
-            System.out.println("Store with ID " + storeId+" updated successfully. The new info are");
-            showStore(storeId);
-                  
-        }
-        else{
-            System.out.println("No store found with the specified ID.");
-        }       
-    }
-
-
-}
+         }
+     }
 }
     
 
