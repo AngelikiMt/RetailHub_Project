@@ -7,7 +7,7 @@ public class Store
 	private String address;
 	private String country;
 	private String storeName;
-	private int storeSum;
+	//private int storeSum;
 	private boolean active;
 
 
@@ -18,7 +18,7 @@ public class Store
 		this.address=address;
 		this.country=country;
 		this.storeName=storeName;
-		storeSum = 0;
+		//storeSum = 0;
 		active= true;
 	}
 
@@ -63,6 +63,10 @@ public class Store
 	public void setStoreName (String storeName) {
 		this.storeName=storeName;
 	}
+	
+	public void setActive(boolean active) {
+        this.active = active;
+    	}
 
 	@Override
 public String toString()
