@@ -140,5 +140,12 @@ public class Client {
     public void setLastPurchaseDate(LocalDate lastPurchaseDate) {
         this.lastPurchaseDate = lastPurchaseDate;
     }
+
+    @Override
+    public String toString() {
+     return "Client ID: "+ clientId + "/nFirst Name: " + firstName + "/nLast Name: " + lastName + "/nBirthdate: " + birthDate + "/nPhone Number: " + phoneNumber + "/nEmai: " + email + "/nGender: " + gender + "/nActive Status: " +
+     activeStatus + "/nDate Joined: " + dateJoined + "/nClient Sum Total: " + clientSumTotal + "/nLast Purchase Date: " +  lastPurchaseDate;
+    
+    }
 }
 
