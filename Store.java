@@ -22,8 +22,8 @@ public class Store
 		active= true;
 	}
 
-//getters
-	public int getstoreId() {
+	//getters
+	public int getStoreId() {
 		return storeId;
 	}
 
@@ -42,12 +42,13 @@ public class Store
 	public String getstoreName() {
 		return storeName;
 	}
-//is
+
+	//is
 	public boolean isactive () {
 		return active;
 	}
 
- //setters
+ 	//setters
 	public void setPhone (String phone) {
 		this.phone=phone;
 	}
@@ -69,15 +70,13 @@ public class Store
     	}
 
 	@Override
-public String toString()
-{
-    return "Store ID: " + storeId + "\n"
-		 + "Store Name: " + storeName + "\n"
-         + "Address: " + address + "\n"
-         + "Country: " + country + "\n"
-         + "Phone: " + phone ;
-
-}
+	public String toString(){
+		return "Store ID: " + storeId + "\n"
+			+ "Store Name: " + storeName + "\n"
+			+ "Address: " + address + "\n"
+			+ "Country: " + country + "\n"
+			+ "Phone: " + phone ;
+	}
 }
 
 
