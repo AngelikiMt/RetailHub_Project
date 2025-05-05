@@ -75,7 +75,7 @@ public class Store
 			+ "Store Name: " + storeName + "\n"
 			+ "Address: " + address + "\n"
 			+ "Country: " + country + "\n"
-			+ "Phone: " + phone ;
+			+ "Phone: " + phone + "\n" ;
 	}
 }
 

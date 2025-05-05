@@ -66,7 +66,7 @@ public class StoreService
         }
     }
 
-    //update store
+    //UPDATE STORE
     public static void updateStore(int storeId, String newName, String newAddress, String newCountry, String newPhone) {  
         List<String> errors = new ArrayList<>();   
         for (Store store : stores) {
@@ -77,13 +77,11 @@ public class StoreService
                 }
             
                 if (!newAddress.isEmpty()) {
-                    validate("newAddress",newAddress, errors);
-                    if (errors.isEmpty()) store.setAddress(newAddress);
+                    store.setAddress(newAddress);
                 }
 
                 if (!newCountry.isEmpty()) {
-                    validate("newCountry",newCountry, errors);
-                    if (errors.isEmpty()) store.setCountry(newCountry);
+                    store.setCountry(newCountry);
                 }
             
                 if (!newPhone.isEmpty()) {
