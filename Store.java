@@ -27,24 +27,24 @@ public class Store
 		return storeId;
 	}
 
-	public String getphone() {
+	public String getPhone() {
 		return phone;
 	}
 
-	public String getaddress() {
+	public String getAddress() {
 		return address;
 	}
 
-	public String getcountry() {
+	public String getCountry() {
 		return country;
 	}
 
-	public String getstoreName() {
+	public String getStoreName() {
 		return storeName;
 	}
 
 	//is
-	public boolean isactive () {
+	public boolean isActive () {
 		return active;
 	}
 
@@ -67,7 +67,7 @@ public class Store
 	
 	public void setActive(boolean active) {
         this.active = active;
-    	}
+    }
 
 	@Override
 	public String toString(){

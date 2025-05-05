@@ -70,7 +70,7 @@ public class StoreService
     public static void updateStore(int storeId, String newName, String newAddress, String newCountry, String newPhone) {  
         List<String> errors = new ArrayList<>();   
         for (Store store : stores) {
-            if (store.getStoreId() == storeId & store.isactive()) {
+            if (store.getStoreId() == storeId & store.isActive()) {
 
                 if (!newName.isEmpty()) {
                     store.setStoreName(newName);
