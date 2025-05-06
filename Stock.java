@@ -1,7 +1,7 @@
 public class Stock {
     private long storeId;
     private long productId;
-    private int stockQuantity;
+    private int stockQuantity=0;
     private boolean activeFlag;
 
     //Κατασκευαστής 
@@ -20,7 +20,7 @@ public class Stock {
 
     public void setStockQuantity(int stockQuantity) {
         if (stockQuantity >= 0) {
-          this.stockQuantity = stockQuantity;
+          this.stockQuantity += stockQuantity;
         }
         else{
             System.out.println("The quantity cannot have a negative value.");

@@ -94,17 +94,17 @@ public class Main {
          * ------------------------------------------------------------------------- */
         // Initial stock for the first two products (IDs 1 & 2 no longer exist after delete, so use 2)
         stockService.addStock(2, 1, 4); // productId, storeId, qty
-        stockService.addStock(2, 1, -2); // test negative‑guard
+        stockService.addStock(2, 2, -2); // test negative‑guard
 
-        System.out.println("The stock is: " + stockService.getStock(2, 1).get(0).getStockQuantity());
-        stockService.updateStock(2, 1, 10);
-        System.out.println("The new stock is: " + stockService.getStock(2, 1).get(0).getStockQuantity());
+        System.out.println("The stock is: " + stockService.getStock(1, 2).get(0).getStockQuantity());
+        stockService.updateStock(1, 2, 10);
+        System.out.println("The new stock is: " + stockService.getStock(1, 2).get(0).getStockQuantity());
 
-        stockService.reduceStockOnPurchase(2, 1, 7);
-        System.out.println("The stock is: " + stockService.getStock(2, 1).get(0).getStockQuantity());
+        stockService.reduceStockOnPurchase(1, 2, 11);
+        System.out.println("The stock is: " + stockService.getStock(1, 2).get(0).getStockQuantity());
 
         stockService.getLowStockProducts();
-        stockService.searchProductInOtherStores(2, 1);
+        stockService.searchProductInOtherStores(1, 1);
 
         /* -------------------------------------------------------------------------
          * 5.  Transaction smoke‑tests  –– the part that failed earlier
@@ -117,9 +117,9 @@ public class Main {
         Product p3 = productService.createProduct("leather jacket", "jackets", 180, 90);  // ID 5
 
         // Add stock for those products in store #1 so every sale has inventory
-        stockService.addStock(3, 1, 10);
-        stockService.addStock(4, 1, 10); // **NEW – fixes previous crash**
-        stockService.addStock(5, 1, 10); // **NEW – fixes previous crash**
+        stockService.addStock(1, 3, 10);
+        stockService.addStock(1, 4, 10); // **NEW – fixes previous crash**
+        stockService.addStock(1, 5, 10); // **NEW – fixes previous crash**
 
         // Test Client
         Client testClient1 = new Client("Lena", "Kiriakou", LocalDate.of(1993, 4, 5),

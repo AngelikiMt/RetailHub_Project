@@ -17,7 +17,7 @@ public class StockService {
             return;
         }
     	
-    	stocks.add(new Stock(productId, storeId, stockQuantity, true));
+    	stocks.add(new Stock(storeId, productId, stockQuantity, true));
     }
     
 
