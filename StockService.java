@@ -1,5 +1,4 @@
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class StockService {
     private List<Stock> stocks = new ArrayList<Stock>();
