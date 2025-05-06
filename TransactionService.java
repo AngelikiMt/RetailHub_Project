@@ -50,7 +50,7 @@ public class TransactionService {
 
         double discount = calculateDiscount(client) ? sumTotal * 0.2 : 0;
 
-        return new ShowTotalResult(client.getIdClient(), sumTotal, discount);
+        return new ShowTotalResult(client.getClientId(), sumTotal, discount);
     }
 
     // 🔵 From your original assignment: Create Transaction
@@ -83,7 +83,7 @@ public class TransactionService {
 
         // 4. Create new Transaction
         Transaction newTransaction = new Transaction(
-                client.getIdClient(),
+                client.getClientId(),
                 storeId,
                 finalTotal,
                 totalResult.getDiscount(),
