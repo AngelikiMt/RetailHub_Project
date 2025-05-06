@@ -1,6 +1,4 @@
-package product;
-
-public class Product 
+public class Product
 { 
     private static long nextId = 1; //για να αυξάνεται το id αυτόματα
     
@@ -14,7 +12,7 @@ public class Product
     // Constructor, με το productId να δημιουργείται αυτόματα
     public Product (String description, String category, double price, double cost) 
     {
-	    this.productId = nextId++;
+	    productId = nextId++;
         this.description = description;
         this.category = category;
         this.price = price;
@@ -79,14 +77,7 @@ public class Product
             System.out.println("The cost cannot be negative ");
         }
     }
-    
-    
- // Μέθοδος για να κάνουμε reset το nextId σε 1
-	public static void resetId() 
-	{
-		 nextId = 0; // Επαναφορά του nextId σε 1
-    }
-		
+
     
 	
     @Override
