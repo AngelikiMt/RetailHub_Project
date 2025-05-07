@@ -18,7 +18,9 @@ public class StockService {
         }
     	
     	stocks.add(new Stock(storeId, productId, stockQuantity, true));
+        System.out.println("Stock added successfully in the Product ID: " + productId + " for the Store ID: " + storeId + " wiht Quantity " + stockQuantity );
     }
+
     
 
     //Έλεγχος αποθέματος για συγκεκριμένο προιόν και κατάστημα 
