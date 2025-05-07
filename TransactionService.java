@@ -4,9 +4,13 @@ import java.util.List;
 
 public class TransactionService {
 
+    // ✅ "Database" is now internal
+    private static final List<Transaction> transactions = new ArrayList<>();
+    private static final List<Includes> includesList = new ArrayList<>();
+
     // 🔵 From your original assignment: Calculate Discount
     public static boolean calculateDiscount(Client client) {
-        return client.getClientSumTotal() > 400; 
+        return client.getClientSumTotal() > 400;
     }
 
     // 🔵 From your original assignment + 🟠 From colleague's idea: Show total
@@ -15,7 +19,7 @@ public class TransactionService {
             List<Integer> quantities,
             int storeId,
             Client client,
-            ProductService productService, 
+            ProductService productService,
             StockService stockService
     ) {
         if (productIds.size() != quantities.size()) {
@@ -27,8 +31,7 @@ public class TransactionService {
         for (int i = 0; i < productIds.size(); i++) {
             long productId = productIds.get(i);
             int quantity = quantities.get(i);
-  
-            // 🟣 Correction: stockService object call, not static call
+
             List<Stock> stockList = stockService.getStock((int) productId, storeId);
             if (stockList == null || stockList.isEmpty()) {
                 throw new RuntimeException("No stock found for product ID: " + productId);
@@ -39,7 +42,6 @@ public class TransactionService {
                 throw new RuntimeException("Not enough stock for product ID: " + productId);
             }
 
-            // 🟣 Correction: Get price via productService
             Product product = productService.findProductById((int) productId);
             if (product == null) {
                 throw new RuntimeException("Product not found with ID: " + productId);
@@ -54,34 +56,30 @@ public class TransactionService {
     }
 
     // 🔵 From your original assignment: Create Transaction
-    public static String createTransaction(
+    public static Transaction createTransaction(
             List<Long> productIds,
             List<Integer> quantities,
             int storeId,
             Client client,
             ProductService productService,
             StockService stockService,
-            List<Includes> includesList,
-            List<Transaction> transactions,
             String paymentMethod
     ) {
-        // 1. Calculate total price and validate stock
         ShowTotalResult totalResult = showTotal(productIds, quantities, storeId, client, productService, stockService);
-
         double finalTotal = totalResult.getSumTotal() - totalResult.getDiscount();
 
-        // 2. Update Stock
+        // Update Stock
         for (int i = 0; i < productIds.size(); i++) {
             long productId = productIds.get(i);
             int quantity = quantities.get(i);
             stockService.reduceStockOnPurchase((int) productId, storeId, quantity);
         }
 
-        // 3. Update Client info
+        // Update Client info
         client.setClientSumTotal(client.getClientSumTotal() + (float) finalTotal);
         client.setLastPurchaseDate(LocalDate.now());
 
-        // 4. Create new Transaction
+        // Create new Transaction
         Transaction newTransaction = new Transaction(
                 client.getClientId(),
                 storeId,
@@ -91,7 +89,7 @@ public class TransactionService {
         );
         transactions.add(newTransaction);
 
-        // 5. Create Includes records
+        // Create Includes records
         for (int i = 0; i < productIds.size(); i++) {
             long productId = productIds.get(i);
             int quantity = quantities.get(i);
@@ -99,7 +97,16 @@ public class TransactionService {
             includesList.add(include);
         }
 
-        return "Transaction created successfully: " + newTransaction.getTransactionId();
+        return newTransaction;
+    }
+
+    // ✅ Expose data if needed
+    public static List<Transaction> getAllTransactions() {
+        return transactions;
+    }
+
+    public static List<Includes> getAllIncludes() {
+        return includesList;
     }
 
     // 🟠 From colleague's idea: Result wrapper class

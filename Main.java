@@ -21,8 +21,6 @@ public class Main {
 
     // === In‑memory collections used by the service layer ============================
     private static final List<Client>       clients       = new ArrayList<>();
-    private static final List<Includes>     includesList  = new ArrayList<>();
-    private static final List<Transaction>  transactions  = new ArrayList<>();
 
     // === Shared service objects =====================================================
     private static final ProductService productService = new ProductService();
@@ -130,33 +128,42 @@ public class Main {
         // Transaction #1 – sells product 3, qty 1
         List<Long> productIds1 = List.of(3L);
         List<Integer> quantities1 = List.of(1);
-        TransactionService.createTransaction(productIds1, quantities1, 1, testClient1,
-                productService, stockService, includesList,
-                transactions, "Cash");
-        System.out.println(transactions.get(transactions.size() - 1));
+        Transaction t1 = TransactionService.createTransaction(productIds1, quantities1, 1, testClient1,
+                productService, stockService, "Cash");
+        System.out.println(t1);
+
 
         System.out.println("\n--- SIMPLE TRANSACTION TEST 2 ---");
 
-        // Display all products to see what we have
-        productService.displayAllProducts();
 
         // Transaction #2 – sells product 4, qty 2 (works now)
         List<Long> productIds2 = List.of(4L);
-        List<Integer> quantities2 = List.of(2);
-        TransactionService.createTransaction(productIds2, quantities2, 1, testClient1,
-                productService, stockService, includesList,
-                transactions, "Card");
-        System.out.println(transactions.get(transactions.size() - 1));
+        List<Integer> quantities2 = List.of(8);
+        Transaction t2 = TransactionService.createTransaction(
+                List.of(4L), List.of(8), 1, testClient1,
+                productService, stockService, "Card");
+        System.out.println(t2);
 
         System.out.println("\n--- SIMPLE TRANSACTION TEST 3 (DISCOUNT) ---");
 
         // Transaction #3 – sells product 5, qty 3 (exceeds 400€ ➜ discount path)
         List<Long> productIds3 = List.of(5L);
         List<Integer> quantities3 = List.of(3);
-        TransactionService.createTransaction(productIds3, quantities3, 1, testClient1,
-                productService, stockService, includesList,
-                transactions, "Credit");
-        System.out.println(transactions.get(transactions.size() - 1));
+        Transaction t3 = TransactionService.createTransaction(
+                List.of(5L), List.of(3), 1, testClient1,
+                productService, stockService, "Credit");
+        System.out.println(t3);
+
+
+        System.out.println("\nAll Transactions:");
+        for (Transaction tr : TransactionService.getAllTransactions()) {
+            System.out.println(tr);
+        }
+
+        System.out.println("\nAll Includes:");
+        for (Includes inc : TransactionService.getAllIncludes()) {
+            System.out.println(inc);
+        }
 
         //        //STORE update
 //        while (!validUpdateId) {
