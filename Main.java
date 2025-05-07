@@ -49,6 +49,8 @@ public class Main {
                 LocalDate.of(2018, 12, 20)   // (>5 years ago ➜ inactive‑test)
         );
         clientList.add(client);
+        System.out.println("New client added successfully.");
+        System.out.println(client);
 
         // Authentication
         boolean isAuthenticated = ClientService.authenticateClient(client, "6941234567");

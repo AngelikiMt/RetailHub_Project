@@ -143,8 +143,8 @@ public class Client {
 
     @Override
     public String toString() {
-     return "Client ID: "+ clientId + "/nFirst Name: " + firstName + "/nLast Name: " + lastName + "/nBirthdate: " + birthDate + "/nPhone Number: " + phoneNumber + "/nEmai: " + email + "/nGender: " + gender + "/nActive Status: " +
-     activeStatus + "/nDate Joined: " + dateJoined + "/nClient Sum Total: " + clientSumTotal + "/nLast Purchase Date: " +  lastPurchaseDate;
+     return "Client ID: "+ clientId + "\n" + "First Name: " + firstName + "\n" + "Last Name: " + lastName + "\n" + "Birthdate: " + birthDate + "\n" + "Phone Number: " + phoneNumber + "\n" + "Emai: " + email + "\n" + "Gender: " + gender + "\n" + "Active Status: " +
+     activeStatus + "\n" + "Date Joined: " + dateJoined + "\n" + "Client Sum Total: " + clientSumTotal + "\n" + "Last Purchase Date: " +  lastPurchaseDate + "\n";
     
     }
 }
