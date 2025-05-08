@@ -4,7 +4,6 @@ public class Client {
 
     private static long nextId = 1;
 
-    //orizw ta pedia gia tin klasi client
     private long clientId;
     private String firstName;
     private String lastName;
@@ -23,7 +22,7 @@ public class Client {
                   LocalDate dateJoined, double clientSumTotal, LocalDate lastPurchaseDate) 
                   {
 
-        this.clientId = nextId++; // Auto set id. The clientId got removed from the constructor parameters as it will be automatically set
+        this.clientId = nextId++; // Auto set id
         this.firstName = firstName;
         this.lastName = lastName;
         this.birthDate = birthDate;
@@ -69,11 +68,11 @@ public class Client {
     }
     
 
-    public String getLastname() {
+    public String getLastName() {
         return lastName;
     }
 
-    public void setLastname(String lastName) {
+    public void setLastName(String lastName) {
         this.lastName = lastName;
     }
 

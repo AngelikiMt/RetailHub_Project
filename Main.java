@@ -1,40 +1,29 @@
+// Main entry‑point of the Retail Hub project.
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-/**
- * Main entry‑point for a quick smoke‑test of the Retail Hub mini‑domain.
- * <p>
- * Key changes compared with the earlier ad‑hoc draft:
- * <ul>
- *     <li>ONE shared <code>ProductService</code> & <code>StockService</code> instance is used everywhere so that
- *     product IDs and their in‑memory collections stay in sync.</li>
- *     <li>Stock records are inserted for <strong>all</strong> products that are later sold (IDs&nbsp;4&nbsp;&amp;&nbsp;5),
- *     preventing the <em>No stock found</em> RuntimeException that appeared previously.</li>
- *     <li>The throwaway local variable <code>ps</code> has been removed; everything uses the shared service.</li>
- *     <li>Minor tidy‑ups (e.g. removed commented‑out interactive sections) so the class compiles cleanly without
- *     losing any behavioural coverage that the original script had.</li>
- * </ul>
- */
 public class Main {
 
-    // === In‑memory collections used by the service layer ============================
-    private static final List<Client>       clients       = new ArrayList<>();
+    // In‑memory collections used by the service layer
+    private static final List<Client> clients = new ArrayList<>();
 
-    // === Shared service objects =====================================================
+    // Shared service objects 
     private static final ProductService productService = new ProductService();
-    private static final StockService   stockService   = new StockService();
+    private static final StockService stockService = new StockService();
 
     // =================================================================================
     public static void main(String[] args) {
         Scanner in = new Scanner(System.in);
-        int  storeId;
+        int storeId;
         boolean validUpdateId = false;
 
         /* -------------------------------------------------------------------------
          * 1.  Basic Client CRUD tests
          * ------------------------------------------------------------------------- */
+        System.out.println("\n--- CLIENT TEST 1 ---");
         List<Client> clientList = new ArrayList<>();
         Client client = new Client(
                 "Despoina",
@@ -64,13 +53,18 @@ public class Main {
         ClientService.deleteClient(clientList, 1);
         System.out.println("Number of customers after deletion: " + clientList.size());
 
-        ClientService.updateClient(client, null,  null,                 "new.email@gmail.com", "6900000000");
+        ClientService.updateClient(client, null,  null,             "new.email@gmail.com", "6900000000");
         ClientService.updateClient(client, "Maria", "Papadopoulou", "maria.pap@gmail.com",  "6999999999");
         ClientService.updateClient(client, "Maria", null,            null,                  null);
+
+        // Display client in JSON format
+        String json = ClientService.getClientAsJson(client);
+        System.out.println("\n" + json);
 
         /* -------------------------------------------------------------------------
          * 2.  Product CRUD tests – all through <productService>
          * ------------------------------------------------------------------------- */
+        System.out.println("\n\n--- PRODUCT TEST 1 ---");
         Product prod1 = productService.createProduct("red", "dress", 50, 20); // ID = 1
         System.out.println(prod1.getProductId());
         System.out.println(prod1);
@@ -81,18 +75,31 @@ public class Main {
         productService.updateProduct(1, "green", "dress", 50, 20);
         productService.deleteProduct(1);
 
+        // Display product in JSON format
+        String jsonProduct1 = ProductService.getProductAsJson(prod1);
+        System.out.println("\n" + jsonProduct1);
+
+        String jsonProduct2 = ProductService.getProductAsJson(prod2);
+        System.out.println("\n" + jsonProduct2);
+
         /* -------------------------------------------------------------------------
          * 3.  Store tests
          * ------------------------------------------------------------------------- */
+        System.out.println("\n\n--- STORE TEST 1 ---");
         Store store = StoreService.createStore("nik", "plat 20", "greece", "2310999888"); // ID = 1
         System.out.println("New store's info are:\n" + store);
 
         System.out.println("The list of the stores until today is \n" + StoreService.getStores());
 
+        // Display store in JSON format
+        String jsonStore = StoreService.getStoreAsJson(store);
+        System.out.println("\n" + jsonStore);
+
         /* -------------------------------------------------------------------------
-         * 4.  Stock manipulation
+         * 4.  Stock Tests
          * ------------------------------------------------------------------------- */
         // Initial stock for the first two products (IDs 1 & 2 no longer exist after delete, so use 2)
+        System.out.println("\n\n--- STOCK TEST 1 ---");
         stockService.addStock(2, 1, 4); // productId, storeId, qty
         stockService.addStock(2, 2, -2); // test negative‑guard
 
@@ -106,8 +113,13 @@ public class Main {
         stockService.getLowStockProducts();
         stockService.searchProductInOtherStores(1, 1);
 
+        // Display store in JSON format
+        StockService stockService = new StockService(); 
+        String jsonStock = stockService.getStockAsJson(2);
+        System.out.println("\n" + jsonStock);
+
         /* -------------------------------------------------------------------------
-         * 5.  Transaction smoke‑tests  –– the part that failed earlier
+         * 5.  Transaction tests
          * ------------------------------------------------------------------------- */
         System.out.println("\n--- SIMPLE TRANSACTION TEST 1 ---");
 
@@ -118,8 +130,8 @@ public class Main {
 
         // Add stock for those products in store #1 so every sale has inventory
         stockService.addStock(1, 3, 10);
-        stockService.addStock(1, 4, 10); // **NEW – fixes previous crash**
-        stockService.addStock(1, 5, 10); // **NEW – fixes previous crash**
+        stockService.addStock(1, 4, 10); 
+        stockService.addStock(1, 5, 10);
 
         // Test Client
         Client testClient1 = new Client("Lena", "Kiriakou", LocalDate.of(1993, 4, 5),
@@ -133,7 +145,7 @@ public class Main {
         Transaction t1 = TransactionService.createTransaction(productIds1, quantities1, 1, testClient1,
                 productService, stockService, "Cash");
         System.out.println(t1);
-
+        System.out.println("\n" + TransactionService.getTransactionAsJson(t1, TransactionService.getAllIncludes()));
 
         System.out.println("\n--- SIMPLE TRANSACTION TEST 2 ---");
 
@@ -145,16 +157,18 @@ public class Main {
                 List.of(4L), List.of(8), 1, testClient1,
                 productService, stockService, "Card");
         System.out.println(t2);
+        System.out.println("\n" + TransactionService.getTransactionAsJson(t2, TransactionService.getAllIncludes()));
 
         System.out.println("\n--- SIMPLE TRANSACTION TEST 3 (DISCOUNT) ---");
 
-        // Transaction #3 – sells product 5, qty 3 (exceeds 400€ ➜ discount path)
+        // Transaction #3 – sells product 5, qty 3 (exceeds 400€-> discount path)
         List<Long> productIds3 = List.of(5L);
         List<Integer> quantities3 = List.of(3);
         Transaction t3 = TransactionService.createTransaction(
                 List.of(5L), List.of(3), 1, testClient1,
                 productService, stockService, "Credit");
         System.out.println(t3);
+        System.out.println("\n" + TransactionService.getTransactionAsJson(t3, TransactionService.getAllIncludes()));
 
 
         System.out.println("\nAll Transactions:");

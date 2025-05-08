@@ -1,6 +1,4 @@
-public class Store
-
-{
+public class Store {
 	private static int nextId = 1;
 	private int storeId;
 	private String phone;
@@ -11,18 +9,17 @@ public class Store
 	private boolean active;
 
 
-	public Store (String storeName, String address, String country, String phone)
-	{
-		storeId=nextId++;
-		this.phone=phone;
-		this.address=address;
-		this.country=country;
-		this.storeName=storeName;
+	public Store (String storeName, String address, String country, String phone) {
+		this.storeId = nextId++;
+		this.phone = phone;
+		this.address = address;
+		this.country = country;
+		this.storeName = storeName;
 		//storeSum = 0;
-		active= true;
+		this.active = true;
 	}
 
-	//getters
+	// Getters
 	public int getStoreId() {
 		return storeId;
 	}
@@ -43,12 +40,12 @@ public class Store
 		return storeName;
 	}
 
-	//is
+	// Is
 	public boolean isActive () {
 		return active;
 	}
 
- 	//setters
+ 	// Setters
 	public void setPhone (String phone) {
 		this.phone=phone;
 	}
@@ -71,11 +68,8 @@ public class Store
 
 	@Override
 	public String toString(){
-		return "Store ID: " + storeId + "\n"
-			+ "Store Name: " + storeName + "\n"
-			+ "Address: " + address + "\n"
-			+ "Country: " + country + "\n"
-			+ "Phone: " + phone + "\n" ;
+		return "Store ID: " + storeId + "\n" + "Store Name: " + storeName + "\n" + "Address: " + address + "\n"
+			+ "Country: " + country + "\n" + "Phone: " + phone + "\n" ;
 	}
 }
 

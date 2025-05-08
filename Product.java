@@ -1,6 +1,6 @@
 public class Product
 { 
-    private static long nextId = 1; //για να αυξάνεται το id αυτόματα
+    private static long nextId = 1; // Auto set id
     
     private long productId;
     private String description;
@@ -9,17 +9,15 @@ public class Product
     private double cost;
 
 
-    // Constructor, με το productId να δημιουργείται αυτόματα
+    // Constructor: productId to be automatically generated
     public Product (String description, String category, double price, double cost) 
     {
-	    productId = nextId++;
+	    this.productId = nextId++;
         this.description = description;
         this.category = category;
         this.price = price;
         this.cost = cost;
     }
-
-    
     
     // Getters
     public long getProductId() {
@@ -42,8 +40,7 @@ public class Product
         return cost;
     }
 
-    
-    //Setters (χωρίς productId)
+    // Setters (without productId)
     public void setDescription(String description) {
         if (description != null) {
             this.description = description;
@@ -78,15 +75,10 @@ public class Product
         }
     }
 
-    
-	
     @Override
     public String toString() 
     {
-        return "Product ID: " + productId + "\n" + 
-               "Description: " + description + "\n" + 
-        		"Category: " + category + "\n" + 
-                "Price: " + price + "\n" + 
-        		"Cost: " + cost;
+        return "Product ID: " + productId + "\n" + "Description: " + description + "\n" + 
+        		"Category: " + category + "\n" + "Price: " + price + "\n" + "Cost: " + cost;
     }
 }

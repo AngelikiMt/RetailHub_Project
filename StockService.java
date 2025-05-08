@@ -5,7 +5,7 @@ public class StockService {
 
     private static final int threshold=3;
 
-    // Προσθήκη αντικειμένου τύπου stock στην λίστα με όλα τα αποθέματα
+    // Add a stock type object to the list of all stocks
     public void addStock(long storeId, long productId, int stockQuantity) { 
     	if (storeId <= 0 || productId <= 0) {
             System.out.println("Invalid store or product.");
@@ -23,7 +23,7 @@ public class StockService {
 
     
 
-    //Έλεγχος αποθέματος για συγκεκριμένο προιόν και κατάστημα 
+    // Inventory control for a specific product and store 
     public List<Stock> getStock(long productId, long storeId) {   
         List<Stock> result = new ArrayList<>();
 
@@ -34,12 +34,11 @@ public class StockService {
                 }
             }
         }
-        
         return result;  
     } 
 
     
-    // Ενημέρωση αποθέματος 
+    // Update stock
     public void updateStock(long productId, long storeId, int newQuantity) {  
         List<Stock>currentStocks=getStock(productId, storeId);
         if (currentStocks!=null){
@@ -50,11 +49,11 @@ public class StockService {
     }
 
     
-    //Μειώνει το απόθεμα
+    // Reduce stock
     public void reduceStockOnPurchase(long productId, long storeId, int quantity) { 
         List<Stock> stockList = getStock(productId, storeId);
         if (!stockList.isEmpty()) {
-            // Παίρνουμε το πρώτο διαθέσιμο απόθεμα για το προϊόν και το κατάστημα
+            // Take the first available stock for the product and store
             Stock stock = stockList.get(0);
             if (stock.getStockQuantity() >= quantity) {
                 stock.reduceStock(quantity);
@@ -69,7 +68,7 @@ public class StockService {
     }
     
 
-    //GET αποθέματα με stock κάτω από 3
+    // GET stocks with stock below 3
     public void getLowStockProducts() {      
        
         for (Stock s : stocks) {
@@ -79,34 +78,34 @@ public class StockService {
         }
     }
 
-    // Αναζητά εάν υπάρχει το προιόν σε άλλο κατάστημα διαθέσιμο
+    // Searches if the product is available in another store
     public List<Stock> searchProductInOtherStores(long productId, long excludedStoreId) {
-        ArrayList<Stock> result = new ArrayList<>();  // Νέα λίστα για τα αποτελέσματα
+        ArrayList<Stock> result = new ArrayList<>();  // New list for results
     
         for (Stock s : stocks) {  
-            if (s.getProductId() == productId &&  // Αν το προϊόν ταιριάζει
-                s.getStoreId() != excludedStoreId &&  // Αν δεν είναι το εξαιρούμενο κατάστημα
-                s.isActiveFlag() &&  // Αν είναι ενεργό το προϊόν
-                s.getStockQuantity() > 0) {  // Αν υπάρχει απόθεμα
+            if (s.getProductId() == productId &&  // If the product id matches
+                s.getStoreId() != excludedStoreId &&  // If it is not the exempt store
+                s.isActiveFlag() &&  // If the product is active
+                s.getStockQuantity() > 0) {  // If there is stock
     
-                result.add(s);  // Προσθέτει το απόθεμα στην λίστα αποτελεσμάτων
+                result.add(s);  // Adds the stock to the results list
     
-                // Εκτύπωση πληροφοριών του αποθέματος
+                // Print inventory information
                 System.out.println("Product ID: " + s.getProductId() +
                                    ", Store ID: " + s.getStoreId() +
                                    ", Quantity: " + s.getStockQuantity());
             }
         }
     
-        return result;  // Επιστρέφει τη λίστα με τα αποτελέσματα
+        return result;  // Returns the list of results
     }
     
-    //Θα επιστρέψει το απόθεμα ενός προϊόντος σε JSON μορφή, για όλα τα καταστήματα που το έχουν διαθέσιμο
+    // Returns the inventory of a product in JSON format, for all stores that have it available
     public String getStockAsJson(long productId) {  
         StringBuilder json = new StringBuilder();
         json.append("{\n  \"productId\": ").append(productId).append(",\n  \"stockPerStore\": [\n");
     
-        // Δημιουργία της λίστας των αποθεμάτων για το συγκεκριμένο προϊόν
+        // Creates the inventory list for the specific product
         ArrayList<Stock> productStocks = new ArrayList<>();
         for (Stock s : stocks) {
             if (s.getProductId() == productId) {
@@ -114,7 +113,7 @@ public class StockService {
             }
         }
     
-        // Δημιουργία του JSON string με βάση τα αποθέματα
+        // Generates the JSON string based on the stocks
         for (int i = 0; i < productStocks.size(); i++) {
             Stock s = productStocks.get(i);
             json.append("    { \"storeId\": ").append(s.getStoreId())

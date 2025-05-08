@@ -4,7 +4,7 @@ public class Stock {
     private int stockQuantity=0;
     private boolean activeFlag;
 
-    //Κατασκευαστής 
+    // Constructor 
     public Stock(long storeId, long productId, int stockQuantity, boolean activeFlag) {
         this.storeId = storeId;
         this.productId = productId;
@@ -25,7 +25,6 @@ public class Stock {
         else{
             System.out.println("The quantity cannot have a negative value.");
         }
-        
     }
 
     public void setActiveFlag(boolean activeFlag) {
@@ -43,11 +42,7 @@ public class Stock {
 
     @Override
     public String toString() {
-        return "Stock{" +
-                "storeId=" + storeId +
-                ", productId=" + productId +
-                ", stockQuantity=" + stockQuantity +
-                ", activeFlag=" + activeFlag +
-                '}';
+        return "Stock{" + "storeId=" + storeId + ", productId=" + productId +
+                ", stockQuantity=" + stockQuantity + ", activeFlag=" + activeFlag + '}';
     }
 }

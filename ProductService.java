@@ -1,8 +1,6 @@
 import java.util.ArrayList;
 import java.util.Iterator;
 
-
-
 public class ProductService {
 	private ArrayList<Product> products;
 	public Object deleteProduct;
@@ -11,11 +9,10 @@ public class ProductService {
 		products = new ArrayList<>();
 	}
 
-
-	// Δημιουργία νέου προϊόντος με το Id να δημιουργείται αυτόματα
+	// Create a new product with the Id automatically generated
 	public Product createProduct(String description, String category, double price, double cost) 
 	{  
-		//Validation στοιχείων
+		// Data validation
 		if (description == null || description.trim().isEmpty()) {
 			System.out.println("Description cannot be empty.");
 			return null;
@@ -32,16 +29,15 @@ public class ProductService {
 			System.out.println("Cost cannot be negative.");
 			return null;
 		}
-		//Αν η καταχώρηση είναι σωστή:
+
+		// If entry is correct:
 		Product newProduct = new Product(description, category, price, cost);
 		products.add(newProduct);
 		System.out.println("Product added successfully with ID: " + newProduct.getProductId());
 		return newProduct;
 	}
 
-
-
-	// Διαγραφή προϊόντος βάσει productId
+	// Delete product based on productId
 	public void deleteProduct(long productId) {
 		Iterator<Product> iterator = products.iterator();
 		boolean found = false;
@@ -61,15 +57,14 @@ public class ProductService {
 		}
 	}
 
+	// Update product details
+	public void updateProduct(long productId, String description, String category, double price, double cost) {
+		boolean found = false;
 
-	// Ενημέρωση στοιχείων προϊόντος
-	public void updateProduct(long productId, String description, String category, double price, double cost)
-	{ boolean found = false;
-
-	      for (Product product : products) {
+	    for (Product product : products) {
 			if (product.getProductId() == productId) {
 
-				// Validation στοιχείων
+				// Data validation
 				if (description == null || description.trim().isEmpty()) {
 					System.out.println("Description cannot be empty.");
 					return;
@@ -88,25 +83,22 @@ public class ProductService {
 				}
 
 
-				//Αν η καταχώρηση είναι σωστή:
-
+				// If entry correct:
 				product.setDescription(description);
 				product.setCategory(category);
 				product.setPrice(price);
 				product.setCost(cost);
 
-				System.out.println("Product updated successfully:"+ productId + " " + description + " " + category + " " + price + " " + cost);
+				System.out.println("Product updated successfully:" + productId + " " + description + " " + category + " " + price + " " + cost);
 				return;
 			}
-	      }
-	      if (!found) {
-				System.out.println("No product found with the specified ID.");
-			
+	    }
+	    if (!found) {
+			System.out.println("No product found with the specified ID.");
 		}
 	}
 
-
-	// Για εμφάνιση όλων των προϊόντων σε μορφή που μοιάζει με πίνακα
+	// To display all products in a table-like format
 	public void displayAllProducts() {
 		if (products.isEmpty()) {
 			System.out.println("No product found.");
@@ -127,9 +119,7 @@ public class ProductService {
 		}
 	}
 
-	
-
-	// Αναζήτηση προϊόντος βάσει ID
+	// Search product by ID
 	public Product findProductById(int productId) {
 		for (Product product : products) {
 			if (product.getProductId() == productId) {
@@ -139,4 +129,17 @@ public class ProductService {
 		return null;
 	}
 	
+	// Returns product details in JSON format
+	public static String getProductAsJson(Product product) {
+		if (product == null) return "{}";
+
+		StringBuilder json = new StringBuilder();
+		json.append("{\n  \"productId\": ").append(product.getProductId()).append(",\n");
+		json.append("  \"description\": ").append(product.getDescription()).append(",\n");
+		json.append("  \"category\": ").append(product.getCategory()).append(",\n");
+		json.append("  \"price\": ").append(product.getPrice()).append(",\n");
+		json.append("  \"cost\": ").append(product.getCost()).append(",\n}");
+
+		return json.toString();
+	}
 }

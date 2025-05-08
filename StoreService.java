@@ -1,16 +1,15 @@
 import java.util.ArrayList;
 import java.util.List;
 
-public class StoreService
-{
+public class StoreService {
     private static ArrayList<Store> stores= new ArrayList<>();
 
-    //SHOWS ALL STORES
+    // Shows all stores
     public static ArrayList<Store> getStores() {
         return stores ;
     }
 
-    //SHOW STORE INFO BY ID
+    // Shows store info by Id
     public static Store getStoreById(int storeId) {
         for (Store store : stores) {
             if (store.getStoreId() == storeId) {
@@ -20,10 +19,10 @@ public class StoreService
         return null; // Return null if not found
     }
 
-    //VALIDATE INPUTS
+    // Validates inputs
     public static void validate(String varname, String x, List<String> errors) {
         if (x == null || x.trim().isEmpty()) {
-            errors.add( varname+ " cannot be empty.");
+            errors.add( varname + " cannot be empty.");
         }
     } 
 
@@ -42,7 +41,7 @@ public class StoreService
         return false;
     }
 
-    //CREATE STORE
+    // Create store
     public static Store createStore(String storeName, String address, String country, String phone) {
        List<String> errors = new ArrayList<>();
       
@@ -66,7 +65,7 @@ public class StoreService
         }
     }
 
-    //UPDATE STORE
+    // Update store
     public static void updateStore(int storeId, String newName, String newAddress, String newCountry, String newPhone) {  
         List<String> errors = new ArrayList<>();   
         for (Store store : stores) {
@@ -94,8 +93,23 @@ public class StoreService
                 }
                     
             }
-         }
-     }
+        }
+    }
+
+    // Returns store details in JSON format
+    public static String getStoreAsJson(Store store) {
+        if (store == null) return "{}";
+
+        StringBuilder json = new StringBuilder();
+        json.append("{\n  \"storeId\": ").append(store.getStoreId()).append(",\n");
+        json.append("  \"phoneNumber\": ").append(store.getPhone()).append(",\n");
+        json.append("  \"address\": ").append(store.getAddress()).append(",\n");
+        json.append("  \"country\": ").append(store.getCountry()).append(",\n");
+        json.append("  \"storename\": ").append(store.getStoreName()).append(",\n");
+        json.append("  \"active\": ").append(store.isActive()).append(",\n}");
+
+        return json.toString();
+    }
 }
     
 

@@ -52,12 +52,7 @@ public class Transaction {
 
     @Override
     public String toString() {
-        return "Transaction #" + transactionId +
-                " | Client: " + clientId +
-                " | Store: " + storeId +
-                " | Total: " + sumTotal +
-                " | Discount: " + discount +
-                " | Payment: " + paymentMethod +
-                " | DateTime: " + dateTime;
+        return "Transaction #" + transactionId + " | Client: " + clientId + " | Store: " + storeId +
+                " | Total: " + sumTotal + " | Discount: " + discount + " | Payment: " + paymentMethod + " | DateTime: " + dateTime;
     }
 }

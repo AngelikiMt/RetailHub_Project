@@ -1,27 +1,24 @@
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
 public class TransactionService {
 
-    // ✅ "Database" is now internal
+    // Internal database
     private static final List<Transaction> transactions = new ArrayList<>();
     private static final List<Includes> includesList = new ArrayList<>();
 
-    // 🔵 From your original assignment: Calculate Discount
+    // Calculate Discount
     public static boolean calculateDiscount(Client client) {
         return client.getClientSumTotal() > 400;
     }
 
-    // 🔵 From your original assignment + 🟠 From colleague's idea: Show total
+    // Show total
     public static ShowTotalResult showTotal(
-            List<Long> productIds,
-            List<Integer> quantities,
-            int storeId,
-            Client client,
-            ProductService productService,
-            StockService stockService
-    ) {
+            List<Long> productIds, List<Integer> quantities, int storeId,
+            Client client, ProductService productService, StockService stockService) {
+
         if (productIds.size() != quantities.size()) {
             throw new IllegalArgumentException("Product and quantity lists size mismatch");
         }
@@ -55,16 +52,11 @@ public class TransactionService {
         return new ShowTotalResult(client.getClientId(), sumTotal, discount);
     }
 
-    // 🔵 From your original assignment: Create Transaction
+    // Create Transaction
     public static Transaction createTransaction(
-            List<Long> productIds,
-            List<Integer> quantities,
-            int storeId,
-            Client client,
-            ProductService productService,
-            StockService stockService,
-            String paymentMethod
-    ) {
+            List<Long> productIds, List<Integer> quantities, int storeId,
+            Client client, ProductService productService, StockService stockService, String paymentMethod) {
+
         ShowTotalResult totalResult = showTotal(productIds, quantities, storeId, client, productService, stockService);
         double finalTotal = totalResult.getSumTotal() - totalResult.getDiscount();
 
@@ -100,7 +92,7 @@ public class TransactionService {
         return newTransaction;
     }
 
-    // ✅ Expose data if needed
+    // Gets all transactions
     public static List<Transaction> getAllTransactions() {
         return transactions;
     }
@@ -109,7 +101,7 @@ public class TransactionService {
         return includesList;
     }
 
-    // 🟠 From colleague's idea: Result wrapper class
+    // Result wrapper class
     public static class ShowTotalResult {
         private long clientId;
         private double sumTotal;
@@ -137,5 +129,39 @@ public class TransactionService {
         public String toString() {
             return "Client ID: " + clientId + " | Sum Total: " + sumTotal + " | Discount: " + discount;
         }
+    }
+
+    public static String getTransactionAsJson(Transaction transaction, List<Includes> includesList) {
+        if (transaction == null) return "{}";
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+        StringBuilder json = new StringBuilder();
+
+        json.append("{\n  \"transactionId\": ").append(transaction.getTransactionId()).append(",\n");
+        json.append("  \"clientId\": ").append(transaction.getClientId()).append(",\n");
+        json.append("  \"storeId\": ").append(transaction.getStoreId()).append(",\n");
+        json.append("  \"dateTime\": \"").append(transaction.getDateTime().format(formatter)).append("\",\n");
+        json.append("  \"paymentMethod\": \"").append(transaction.getPaymentMethod()).append("\",\n");
+        json.append("  \"sumTotal\": ").append(transaction.getSumTotal()).append(",\n");
+        json.append("  \"discount\": ").append(transaction.getDiscount()).append(",\n");
+
+        // Includes 
+        json.append("  \"includes\": [\n");
+        List<Includes> transactionIncludes = includesList.stream().filter(i -> i.getTransactionId() == transaction.getTransactionId()).toList();
+
+        for (int i = 0; i < transactionIncludes.size(); i++) {
+            Includes inc = transactionIncludes.get(i);
+            json.append("{\n  \"productId\": ").append(inc.getProductId()).append(",\n");
+            json.append("  \"soldQuantity\": ").append(inc.getSoldQuantity()).append("\n}");
+
+            if (i < transactionIncludes.size() - 1) {
+                json.append(",");
+            }
+            json.append("\n");
+        }
+        json.append("  ]\n}");
+
+        return json.toString();
     }
 }

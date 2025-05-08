@@ -6,8 +6,8 @@ import java.util.List;
 
 public class ClientService {
 
-    // 1. Εγγραφή πελάτη
-    public static Client createClient( String firstName, String lastName, LocalDate birthDate,
+    // 1. Customer registration
+    public static Client createClient(String firstName, String lastName, LocalDate birthDate,
                                       String phoneNumber, String email, String gender, boolean activeStatus,
                                       LocalDate dateJoined, double clientSumTotal, LocalDate lastPurchaseDate) {
 
@@ -18,38 +18,38 @@ public class ClientService {
     validateEmail(email, errors);
     validatePhoneNumber(phoneNumber, errors);
                                 
-     if (birthDate == null || birthDate.isAfter(LocalDate.now())) {
-     errors.add("The date of birth cannot be in the future.");
-     }
+    if (birthDate == null || birthDate.isAfter(LocalDate.now())) {
+        errors.add("Enter a valid date of birth.");
+    }
                                 
-     if (dateJoined == null || dateJoined.isAfter(LocalDate.now())) {
-     errors.add("The registration date cannot be in the future.");
-     }
+    if (dateJoined == null || dateJoined.isAfter(LocalDate.now())) {
+        errors.add("Enter a valid date of joined.");
+    }
                                 
     if (lastPurchaseDate != null && lastPurchaseDate.isAfter(LocalDate.now())) {
-    errors.add("The last purchase date cannot be in the future.");
-     }
+        errors.add("Enter a valid date of last purchase.");
+    }
                                 
     if (clientSumTotal < 0) {
-    errors.add("The total customer amount cannot be negative.");
-     }
+        errors.add("The total customer amount cannot be negative.");
+    }
                                 
     if (!errors.isEmpty()) {
-    throw new IllegalArgumentException(String.join("\n", errors));
-     }
+        throw new IllegalArgumentException(String.join("\n", errors));
+    }
                                 
     return new Client(firstName, lastName, birthDate, phoneNumber, email, gender,
-    activeStatus, dateJoined, clientSumTotal, lastPurchaseDate);
-     }
+        activeStatus, dateJoined, clientSumTotal, lastPurchaseDate);
+    }
         
     
 
-    // 2. Ταυτοποίηση πελάτη με email ή τηλέφωνο
+    // 2. Customer identification by email or phone
     public static boolean authenticateClient(Client client, String input) {
         return client.getEmail().equals(input) || client.getPhoneNumber().equals(input);
     }
 
-    // 3. Ενημέρωση στοιχείων πελάτη (με προαιρετικά νέα τιμές)
+    // 3. Update customer details (with optional new prices)
     public static Client updateClient(Client client, String newFirstName, String newLastName, String newEmail, String newPhoneNumber) {
         List<String> errors = new ArrayList<>();
 
@@ -63,7 +63,7 @@ public class ClientService {
         if (newLastName != null) {
             validateName(newLastName, errors, "Surname");
             if (errors.isEmpty()) {
-                client.setLastname(newLastName);
+                client.setLastName(newLastName);
             }
         }
 
@@ -84,7 +84,6 @@ public class ClientService {
         if (!errors.isEmpty()) {
             throw new IllegalArgumentException(String.join("\n", errors));
         }
-
         return client;
     }
 
@@ -108,7 +107,7 @@ public class ClientService {
         }
     }
 
-    // 4. Διαγραφή πελάτη από λίστα πελατών
+    // 4. Delete customer from customer list
     public static void deleteClient(List<Client> clients, int clientId) {
         Iterator<Client> iterator = clients.iterator();
         while (iterator.hasNext()) {
@@ -120,9 +119,28 @@ public class ClientService {
         }
     }
 
-    // 5. Έλεγχος αν ο πελάτης είναι ανενεργός πάνω από 5 χρόνια
+    // 5. Check if the customer has been inactive for more than 5 years
     public static boolean isInactiveMoreThan5Years(Client client) {
         if (client.getLastPurchaseDate() == null) return true;
         return ChronoUnit.YEARS.between(client.getLastPurchaseDate(), LocalDate.now()) > 5;
+    }
+
+    // Returns client details in JSON format
+    public static String getClientAsJson(Client client) {
+        if (client == null) return "{}";
+
+        StringBuilder json = new StringBuilder();
+        json.append("{\n  \"clientId\": ").append(client.getClientId()).append(",\n");
+        json.append("  \"firstName\": ").append(client.getFirstName()).append(",\n");
+        json.append("  \"lastName\": ").append(client.getLastName()).append(",\n");
+        json.append("  \"birthDate\": ").append(client.getBirthDate()).append(",\n");
+        json.append("  \"phoneNumber\": ").append(client.getPhoneNumber()).append(",\n");
+        json.append("  \"gender\": ").append(client.getGender()).append(",\n");
+        json.append("  \"activeStatus\": ").append(client.isActiveStatus()).append(",\n");
+        json.append("  \"dateJoined\": ").append(client.getDateJoined()).append(",\n");
+        json.append("  \"clientSumTotal\": ").append(client.getClientSumTotal()).append(",\n");
+        json.append("  \"lastPurchaseDate\": ").append(client.getLastPurchaseDate()).append(",\n}");
+
+        return json.toString();
     }
 }
