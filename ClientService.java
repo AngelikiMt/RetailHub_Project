@@ -8,8 +8,7 @@ public class ClientService {
 
     // 1. Customer registration
     public static Client createClient(String firstName, String lastName, LocalDate birthDate,
-                                      String phoneNumber, String email, String gender, boolean activeStatus,
-                                      LocalDate dateJoined, double clientSumTotal, LocalDate lastPurchaseDate) {
+                                      String phoneNumber, String email, String gender, boolean activeStatus) {
 
     List<String> errors = new ArrayList<>();
 
@@ -18,28 +17,27 @@ public class ClientService {
     validateEmail(email, errors);
     validatePhoneNumber(phoneNumber, errors);
                                 
-    if (birthDate == null || birthDate.isAfter(LocalDate.now())) {
+    /*if (birthDate == null || birthDate.isAfter(LocalDate.now())) {
         errors.add("Enter a valid date of birth.");
-    }
+    }*/
                                 
-    if (dateJoined == null || dateJoined.isAfter(LocalDate.now())) {
+    /*if (dateJoined == null || dateJoined.isAfter(LocalDate.now())) {
         errors.add("Enter a valid date of joined.");
-    }
+    }*/
                                 
-    if (lastPurchaseDate != null && lastPurchaseDate.isAfter(LocalDate.now())) {
+    /*if (lastPurchaseDate != null && lastPurchaseDate.isAfter(LocalDate.now())) {
         errors.add("Enter a valid date of last purchase.");
     }
                                 
     if (clientSumTotal < 0) {
         errors.add("The total customer amount cannot be negative.");
-    }
+    }*/
                                 
     if (!errors.isEmpty()) {
         throw new IllegalArgumentException(String.join("\n", errors));
     }
                                 
-    return new Client(firstName, lastName, birthDate, phoneNumber, email, gender,
-        activeStatus, dateJoined, clientSumTotal, lastPurchaseDate);
+    return new Client(firstName, lastName, birthDate, phoneNumber, email, gender,activeStatus);
     }
         
     
@@ -51,6 +49,9 @@ public class ClientService {
 
     // 3. Update customer details (with optional new prices)
     public static Client updateClient(Client client, String newFirstName, String newLastName, String newEmail, String newPhoneNumber) {
+        /*String firstName, String lastName, LocalDate birthDate,
+                                      String phoneNumber, String email, String gender, boolean activeStatus,
+                                      LocalDate dateJoined, double clientSumTotal, LocalDate lastPurchaseDate*/
         List<String> errors = new ArrayList<>();
 
         if (newFirstName != null) {

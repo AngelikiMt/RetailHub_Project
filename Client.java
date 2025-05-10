@@ -18,11 +18,10 @@ public class Client {
 
 
     public Client(String firstName, String lastName, LocalDate birthDate,
-                  String phoneNumber, String email, String gender, boolean activeStatus,
-                  LocalDate dateJoined, double clientSumTotal, LocalDate lastPurchaseDate) 
+                  String phoneNumber, String email, String gender, boolean activeStatus) 
                   {
 
-        this.clientId = nextId++; // Auto set id
+        clientId = nextId++; // Auto set id
         this.firstName = firstName;
         this.lastName = lastName;
         this.birthDate = birthDate;
@@ -30,9 +29,8 @@ public class Client {
         this.email = email;
         this.gender = gender;
         this.activeStatus = activeStatus;
-        this.dateJoined = dateJoined;
-        this.clientSumTotal = clientSumTotal;
-        this.lastPurchaseDate = lastPurchaseDate;
+        dateJoined = LocalDate.now();
+
     }
 
     
