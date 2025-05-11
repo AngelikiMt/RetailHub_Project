@@ -4,6 +4,7 @@ import java.util.List;
 public class StoreService {
     private static ArrayList<Store> stores= new ArrayList<>();
 
+    
     // Shows all stores
     public static ArrayList<Store> getStores() {
         return stores ;
@@ -38,6 +39,7 @@ public class StoreService {
                 return true;
             }    
         }
+        System.out.println("No store found with the specified ID.");
         return false;
     }
 
@@ -67,8 +69,7 @@ public class StoreService {
 
     // Update store
     public static void updateStore(int storeId, String newName, String newAddress, String newCountry, String newPhone) {  
-        List<String> errors = new ArrayList<>();   
-        for (Store store : stores) {
+            for (Store store : stores) {
             if (store.getStoreId() == storeId & store.isActive()) {
 
                 if (!newName.isEmpty()) {
@@ -84,14 +85,8 @@ public class StoreService {
                 }
             
                 if (!newPhone.isEmpty()) {
-                    validatePhone(newPhone, errors);
-                    if (errors.isEmpty()) store.setPhone(newPhone);
-                }
-                
-                if (!errors.isEmpty()) {
-                    throw new IllegalArgumentException(String.join("\n", errors));
-                }
-                    
+                    store.setPhone(newPhone);
+                }      
             }
         }
     }
