@@ -23,7 +23,7 @@ import java.util.Scanner;
         public static void runClientTests() {
             boolean running = true;
             while (running) {
-                System.out.println("\n========= Retail Hub Menu =========");
+                System.out.println("\n========= Retail Hub CLIENT Menu =========");
                 System.out.println("1.CREATE CLIENT");
                 System.out.println("2.AUTHENTICATE CLIENT");
                 System.out.println("3.UPDATE CLIENT");
@@ -356,7 +356,7 @@ import java.util.Scanner;
 
             boolean running = true;
             while (running) {
-                System.out.println("\n========= Retail Hub Menu =========");
+                System.out.println("\n========= Retail Hub STOCK Menu =========");
                 System.out.println("1.ADD STOCK");
                 System.out.println("2.GET STOCK FOR SPECIFIC PRODUCT AND STORE");
                 System.out.println("3.UPDATE STOCK");
@@ -439,17 +439,17 @@ import java.util.Scanner;
     // ==============================================TRANSACTION TEST ============================================================================
 
         public static void runSimpleTransactionMenu() {
-                Scanner in = new Scanner(System.in);
-                boolean running = true;
+            Scanner in = new Scanner(System.in);
+            boolean running = true;
             
             while (running) {
                     try {
-                        System.out.println("\n=== Transaction Menu ===");
-                        System.out.println("1. Create Transaction");
+                        System.out.println("\n===== Retail Hub TRANSACTION Menu ====");
+                        System.out.println("1.Create Transaction");
                         System.out.println("2.View all Transactions");
-                        System.out.println("3. Transaction in JSON");
+                        System.out.println("3.Transaction in JSON");
                         System.out.println("0. Exit");
-                        System.out.print("Επιλογή: ");
+                        System.out.print("CHOOSE: ");
                         String choice = in.nextLine().trim();
             
                         switch (choice) {
@@ -518,8 +518,6 @@ import java.util.Scanner;
                                     System.out.println(json);
                                 }
                                 break;
-            
-            
                         
                             //Τερματίζει το μενού συναλλαγών και επιστρέφει στον χρήστη
                             case "0":
@@ -536,14 +534,14 @@ import java.util.Scanner;
                             } catch (Exception e) {
                             System.out.println(" Error: " + e.getMessage());
                     }
-                }
             }
+        }
             
-            private static Client findClientById(long id) {
-                for (Client c : clients) {
-                    if (c.getClientId() == id) return c;
-                }
-                return null;
+        private static Client findClientById(long id) {
+            for (Client c : clients) {
+                if (c.getClientId() == id) return c;
             }
+            return null;
+        }
     }
 
