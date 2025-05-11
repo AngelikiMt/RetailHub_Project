@@ -6,6 +6,36 @@ import java.util.List;
 
 public class ClientService {
 
+    private static void validateName(String name, List<String> errors, String fieldName) {
+        if (name == null || name.trim().isEmpty()) {
+            errors.add(fieldName + " cannot be empty.");
+        } else if (!name.matches("^[A-Za-zΑ-Ωα-ωΆ-Ώά-ώ\\s'-]+$")) {
+            errors.add(fieldName + " contains invalid characters.");
+        }
+    }
+
+    private static void validateEmail(String email, List<String> errors) {
+        if (email == null || !email.matches("^[\\w.-]+@[\\w.-]+\\.\\w{2,}$")) {
+            errors.add("Invalid email address.");
+        }
+    }
+
+    private static void validatePhoneNumber(String phoneNumber, List<String> errors) {
+        if (phoneNumber == null || !phoneNumber.matches("^\\d{10}$")) {
+            errors.add("The phone number must have exactly 10 digits.");
+        }
+    }
+
+    private static void validateGender(String gender, List<String> errors) {
+    if (gender == null || 
+        !(gender.equalsIgnoreCase("MALE") || 
+          gender.equalsIgnoreCase("FEMALE") || 
+          gender.equalsIgnoreCase("OTHER"))) {
+
+        errors.add("Gender must be either MALE, FEMALE, or OTHER.");
+    }
+}
+
     // 1. Customer registration
     public static Client createClient(String firstName, String lastName, LocalDate birthDate,
                                       String phoneNumber, String email, String gender, boolean activeStatus) {
@@ -16,15 +46,12 @@ public class ClientService {
     validateName(lastName, errors, "Surname");
     validateEmail(email, errors);
     validatePhoneNumber(phoneNumber, errors);
+    validateGender(gender, errors);
                                 
-    /*if (birthDate == null || birthDate.isAfter(LocalDate.now())) {
+    if ( birthDate!=null && birthDate.isAfter(LocalDate.now())) {
         errors.add("Enter a valid date of birth.");
-    }*/
-                                
-    /*if (dateJoined == null || dateJoined.isAfter(LocalDate.now())) {
-        errors.add("Enter a valid date of joined.");
-    }*/
-                                
+    }
+                                                  
     /*if (lastPurchaseDate != null && lastPurchaseDate.isAfter(LocalDate.now())) {
         errors.add("Enter a valid date of last purchase.");
     }
@@ -47,11 +74,22 @@ public class ClientService {
         return client.getEmail().equals(input) || client.getPhoneNumber().equals(input);
     }
 
+    // 2a. Customer identification by email or phone
+    public static long authenticateClient(List<Client> clients,String input) {
+        for (Client client : clients) {
+            if (client.getEmail().equals(input) || client.getPhoneNumber().equals(input)){
+                System.out.println(input + " : successfully authenticated for client: " + client.getClientId() + " : " + client.getFirstName() + " "+ client.getLastName());
+                return client.getClientId();
+            }
+            
+        } 
+        System.out.println("Client with: "+input + " does not exist.");
+        return -1;
+    }
+
     // 3. Update customer details (with optional new prices)
     public static Client updateClient(Client client, String newFirstName, String newLastName, String newEmail, String newPhoneNumber) {
-        /*String firstName, String lastName, LocalDate birthDate,
-                                      String phoneNumber, String email, String gender, boolean activeStatus,
-                                      LocalDate dateJoined, double clientSumTotal, LocalDate lastPurchaseDate*/
+    
         List<String> errors = new ArrayList<>();
 
         if (newFirstName != null) {
@@ -85,31 +123,14 @@ public class ClientService {
         if (!errors.isEmpty()) {
             throw new IllegalArgumentException(String.join("\n", errors));
         }
+
         return client;
     }
 
-    private static void validateName(String name, List<String> errors, String fieldName) {
-        if (name == null || name.trim().isEmpty()) {
-            errors.add(fieldName + " cannot be empty.");
-        } else if (!name.matches("^[A-Za-zΑ-Ωα-ωΆ-Ώά-ώ\\s'-]+$")) {
-            errors.add(fieldName + " contains invalid characters.");
-        }
-    }
-
-    private static void validateEmail(String email, List<String> errors) {
-        if (email == null || !email.matches("^[\\w.-]+@[\\w.-]+\\.\\w{2,}$")) {
-            errors.add("Invalid email address.");
-        }
-    }
-
-    private static void validatePhoneNumber(String phoneNumber, List<String> errors) {
-        if (phoneNumber == null || !phoneNumber.matches("^\\d{10}$")) {
-            errors.add("The phone number must have exactly 10 digits.");
-        }
-    }
+    
 
     // 4. Delete customer from customer list
-    public static void deleteClient(List<Client> clients, int clientId) {
+    public static void deleteClient(List<Client> clients, long clientId) {
         Iterator<Client> iterator = clients.iterator();
         while (iterator.hasNext()) {
             Client client = iterator.next();
@@ -121,9 +142,14 @@ public class ClientService {
     }
 
     // 5. Check if the customer has been inactive for more than 5 years
-    public static boolean isInactiveMoreThan5Years(Client client) {
-        if (client.getLastPurchaseDate() == null) return true;
-        return ChronoUnit.YEARS.between(client.getLastPurchaseDate(), LocalDate.now()) > 5;
+    public static List<Long> isInactiveMoreThan5Years(List<Client> clients) {
+        List<Long>inactiveIds= new ArrayList<>();
+        for (Client client : clients) {
+            if(ChronoUnit.YEARS.between(client.getLastPurchaseDate(), LocalDate.now()) > 5){
+                inactiveIds.add(client.getClientId());
+            }
+        }
+        return inactiveIds;
     }
 
     // Returns client details in JSON format

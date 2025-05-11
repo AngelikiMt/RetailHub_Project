@@ -1,11 +1,11 @@
 public class Stock {
-    private long storeId;
+    private int storeId;
     private long productId;
     private int stockQuantity=0;
     private boolean activeFlag;
 
     // Constructor 
-    public Stock(long storeId, long productId, int stockQuantity, boolean activeFlag) {
+    public Stock(int storeId, long productId, int stockQuantity, boolean activeFlag) {
         this.storeId = storeId;
         this.productId = productId;
         this.stockQuantity = stockQuantity;
@@ -13,7 +13,7 @@ public class Stock {
     }
 
     // Getters & Setters
-    public long getStoreId() { return storeId; }
+    public int getStoreId() { return storeId; }
     public long getProductId() { return productId; }
     public int getStockQuantity() { return stockQuantity; }
     public boolean isActiveFlag() { return activeFlag; }

@@ -6,7 +6,7 @@ public class StockService {
     private static final int threshold=3;
 
     // Add a stock type object to the list of all stocks
-    public void addStock(long storeId, long productId, int stockQuantity) { 
+    public void addStock(int storeId, long productId, int stockQuantity) { 
     	if (storeId <= 0 || productId <= 0) {
             System.out.println("Invalid store or product.");
             return;
@@ -24,7 +24,7 @@ public class StockService {
     
 
     // Inventory control for a specific product and store 
-    public List<Stock> getStock(long productId, long storeId) {   
+    public List<Stock> getStock(long productId, int storeId) {   
         List<Stock> result = new ArrayList<>();
 
         if (stocks != null && !stocks.isEmpty()) { 
@@ -39,7 +39,7 @@ public class StockService {
 
     
     // Update stock
-    public void updateStock(long productId, long storeId, int newQuantity) {  
+    public void updateStock(long productId, int storeId, int newQuantity) {  
         List<Stock>currentStocks=getStock(productId, storeId);
         if (currentStocks!=null){
             for(Stock s : currentStocks){
@@ -50,7 +50,7 @@ public class StockService {
 
     
     // Reduce stock
-    public void reduceStockOnPurchase(long productId, long storeId, int quantity) { 
+    public void reduceStockOnPurchase(long productId, int storeId, int quantity) { 
         List<Stock> stockList = getStock(productId, storeId);
         if (!stockList.isEmpty()) {
             // Take the first available stock for the product and store
@@ -79,7 +79,7 @@ public class StockService {
     }
 
     // Searches if the product is available in another store
-    public List<Stock> searchProductInOtherStores(long productId, long excludedStoreId) {
+    public List<Stock> searchProductInOtherStores(long productId, int excludedStoreId) {
         ArrayList<Stock> result = new ArrayList<>();  // New list for results
     
         for (Stock s : stocks) {  
