@@ -404,12 +404,10 @@ import java.util.Scanner;
                         int newQuantity = in.nextInt();
                         StockService.updateStock(product1Id, store1Id,newQuantity);
                         System.out.println("Update Stock: " + StockService.getStock(product1Id, store1Id).get(0).getStockQuantity());
-
                     break;
 
                     case "4": //GET LOW STOCK ( BELLOW 3)
                         StockService.getLowStockProducts();
-
                     break;
 
                     case "5": //SEARCH STOCK IN OTHER STORE

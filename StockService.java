@@ -90,6 +90,7 @@ public class StockService {
                 System.out.println("The product with code: " + s.getProductId() + " in store: " + s.getStoreId() + " has low inventory: " + s.getStockQuantity());
             }
         }
+        System.out.println("No product with low quantity.");
     }
 
     // Searches if the product is available in another store
