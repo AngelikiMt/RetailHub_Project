@@ -67,7 +67,7 @@ public class ClientService {
     }
 
     // 2a. Customer identification by email or phone
-    public static long authenticateClient(List<Client> clients,String input) {
+    public static long authenticateClient1(List<Client> clients,String input) {
         for (Client client : clients) {
             if (client.getEmail().equals(input) || client.getPhoneNumber().equals(input)){
                 System.out.println(input + " : successfully authenticated for client: " + client.getClientId() + " : " + client.getFirstName() + " "+ client.getLastName());
@@ -77,6 +77,18 @@ public class ClientService {
         } 
         System.out.println("Client with: "+input + " does not exist.");
         return -1;
+    }
+
+    // 2β. Customer identification by email or phone
+    public static Client authenticateClient( List<Client>clients,String input) {
+        for ( Client client : clients) {
+ 
+          if (client.getEmail().equals(input) || client.getPhoneNumber().equals(input)){
+            return client;
+          }
+       
+        }
+        return null;
     }
 
     // 3. Update customer details (with optional new prices)

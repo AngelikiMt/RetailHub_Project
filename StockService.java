@@ -2,13 +2,27 @@ import java.util.*;
 
 public class StockService {
     private static List<Stock> stocks = new ArrayList<Stock>();
+    private static ProductService productService=new ProductService();
 
     private static final int threshold=3;
+    
 
     // Add a stock type object to the list of all stocks
     public static void addStock(int storeId, long productId, int stockQuantity) { 
     	if (storeId <= 0 || productId <= 0) {
             System.out.println("Invalid store or product.");
+            return;
+        }
+        //Check if the store exist
+        if (!StoreService.validateId(storeId)) {
+         System.out.println("Cannot add stock. Store ID " + storeId + " does not exist.");
+         return;
+        }
+
+        // Check if the product exists
+        Product product = productService.findProductById(productId);
+        if (product == null) {
+            System.out.println("Cannot add stock. Product ID " + productId + " does not exist.");
             return;
         }
 

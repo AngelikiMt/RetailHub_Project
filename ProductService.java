@@ -2,7 +2,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 public class ProductService {
-	private ArrayList<Product> products;
+	private static ArrayList<Product> products;
 	public Object deleteProduct;
 
 	public ProductService() {
