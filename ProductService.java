@@ -34,6 +34,7 @@ public class ProductService {
 		Product newProduct = new Product(description, category, price, cost);
 		products.add(newProduct);
 		System.out.println("Product added successfully with ID: " + newProduct.getProductId());
+		System.out.println(newProduct);
 		return newProduct;
 	}
 
@@ -89,8 +90,8 @@ public class ProductService {
 				product.setPrice(price);
 				product.setCost(cost);
 
-				System.out.println("Product updated successfully:" + productId + " " + description + " " + category + " " + price + " " + cost);
-				return;
+				System.out.println("Product updated successfully:" + "\n" + product);// + productId + " " + description + " " + category + " " + price + " " + cost);
+				return ;
 			}
 	    }
 	    if (!found) {
@@ -120,12 +121,13 @@ public class ProductService {
 	}
 
 	// Search product by ID
-	public Product findProductById(int productId) {
+	public Product findProductById(long productId) {
 		for (Product product : products) {
 			if (product.getProductId() == productId) {
 				return product;
 			}
 		}
+		System.out.println("No product found with specific id.");
 		return null;
 	}
 	

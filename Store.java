@@ -69,7 +69,7 @@ public class Store {
 	@Override
 	public String toString(){
 		return "Store ID: " + storeId + "\n" + "Store Name: " + storeName + "\n" + "Address: " + address + "\n"
-			+ "Country: " + country + "\n" + "Phone: " + phone + "\n" ;
+			+ "Country: " + country + "\n" + "Phone: " + phone + "\n" + "Active: " + active + "\n";
 	}
 }
 
