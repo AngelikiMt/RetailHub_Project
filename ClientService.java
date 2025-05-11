@@ -40,31 +40,23 @@ public class ClientService {
     public static Client createClient(String firstName, String lastName, LocalDate birthDate,
                                       String phoneNumber, String email, String gender, boolean activeStatus) {
 
-    List<String> errors = new ArrayList<>();
+        List<String> errors = new ArrayList<>();
 
-    validateName(firstName, errors, "Name");
-    validateName(lastName, errors, "Surname");
-    validateEmail(email, errors);
-    validatePhoneNumber(phoneNumber, errors);
-    validateGender(gender, errors);
-                                
-    if ( birthDate!=null && birthDate.isAfter(LocalDate.now())) {
-        errors.add("Enter a valid date of birth.");
-    }
-                                                  
-    /*if (lastPurchaseDate != null && lastPurchaseDate.isAfter(LocalDate.now())) {
-        errors.add("Enter a valid date of last purchase.");
-    }
-                                
-    if (clientSumTotal < 0) {
-        errors.add("The total customer amount cannot be negative.");
-    }*/
-                                
-    if (!errors.isEmpty()) {
-        throw new IllegalArgumentException(String.join("\n", errors));
-    }
-                                
-    return new Client(firstName, lastName, birthDate, phoneNumber, email, gender,activeStatus);
+        validateName(firstName, errors, "Name");
+        validateName(lastName, errors, "Surname");
+        validateEmail(email, errors);
+        validatePhoneNumber(phoneNumber, errors);
+        validateGender(gender, errors);
+                                    
+        if ( birthDate!=null && birthDate.isAfter(LocalDate.now())) {
+            errors.add("Enter a valid date of birth.");
+        }
+                                                    
+        if (!errors.isEmpty()) {
+            throw new IllegalArgumentException(String.join("\n", errors));
+        }
+                                    
+        return new Client(firstName, lastName, birthDate, phoneNumber, email, gender,activeStatus);
     }
         
     
@@ -92,28 +84,28 @@ public class ClientService {
     
         List<String> errors = new ArrayList<>();
 
-        if (newFirstName != null) {
+        if (newFirstName != null && !newFirstName.equals("")) {
             validateName(newFirstName, errors, "Name");
             if (errors.isEmpty()) {
                 client.setFirstName(newFirstName);
             }
         }
 
-        if (newLastName != null) {
+        if (newLastName != null && !newLastName.equals("")) {
             validateName(newLastName, errors, "Surname");
             if (errors.isEmpty()) {
                 client.setLastName(newLastName);
             }
         }
 
-        if (newEmail != null) {
+        if (newEmail != null && !newEmail.equals("")) {
             validateEmail(newEmail, errors);
             if (errors.isEmpty()) {
                 client.setEmail(newEmail);
             }
         }
 
-        if (newPhoneNumber != null) {
+        if (newPhoneNumber != null && !newPhoneNumber.equals("")) {
             validatePhoneNumber(newPhoneNumber, errors);
             if (errors.isEmpty()) {
                 client.setPhoneNumber(newPhoneNumber);
