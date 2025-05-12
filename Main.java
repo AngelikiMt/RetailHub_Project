@@ -26,7 +26,7 @@
                     case "4": TestData.runStockTests(); break; 
                     case "5": TestData.runSimpleTransactionMenu(); break;
                     case "0": running = false; break;
-                    default: System.out.println("Μη έγκυρη επιλογή.");
+                    default: System.out.println("Invalid option.");
                 }
             }
         }

@@ -27,9 +27,9 @@ import java.util.Scanner;
                 System.out.println("1.CREATE CLIENT");
                 System.out.println("2.AUTHENTICATE CLIENT");
                 System.out.println("3.UPDATE CLIENT");
-                System.out.println("4. DELETE CLIENT");
-                System.out.println("5. GET CLIENT AS JSON");
-                System.out.println("0. Exit");
+                System.out.println("4.DELETE CLIENT");
+                System.out.println("5.GET CLIENT AS JSON");
+                System.out.println("0.Exit");
                 System.out.print("CHOOSE: ");
                 String choice = in.nextLine();
                
@@ -41,7 +41,7 @@ import java.util.Scanner;
                         case "4": menuDeleteClient(); break;
                         case "5": menuGetJson(); break;
                         case "0": running = false; break;
-                        default: System.out.println("Μη έγκυρη επιλογή.");
+                        default: System.out.println("Invalid option.");
                 }
             }
         }
@@ -390,31 +390,45 @@ import java.util.Scanner;
                     case "2"://GET STOCK FOR SPECIFIC PRODUCT AND STORE
                         System.out.println("Stock for Product: ");
                         long productId =  in.nextLong();
+                        in.nextLine();
+
                         System.out.println("Stock in Store: ");
                         int storeId = in.nextInt();
+                        in.nextLine();
+
                         System.out.println("Stock: " + StockService.getStock(productId, storeId).get(0).getStockQuantity());
                     break;
 
                     case "3": //UPDATE STOCK
                         System.out.println("Update stock for product Id:");
                         long product1Id=in.nextLong();
+                        in.nextLine();
+
                         System.out.println("Update stock in store Id: ");
                         int store1Id =  in.nextInt();
-                        System.out.println("New quontity: ");
+                        in.nextLine();
+
+                        System.out.println("New quantity: ");
                         int newQuantity = in.nextInt();
+                        in.nextLine();
+
                         StockService.updateStock(product1Id, store1Id,newQuantity);
                         System.out.println("Update Stock: " + StockService.getStock(product1Id, store1Id).get(0).getStockQuantity());
                     break;
 
-                    case "4": //GET LOW STOCK ( BELLOW 3)
+                    case "4": //GET LOW STOCK ( BELOW 3)
                         StockService.getLowStockProducts();
                     break;
 
                     case "5": //SEARCH STOCK IN OTHER STORE
-                        System.out.println("Stock for producr Id:");
+                        System.out.println("Stock for product Id:");
                         long product2Id =  in.nextLong();
+                        in.nextLine();
+
                         System.out.println("Provide the store Id which has no stock: ");
                         int excludedStoreId = in.nextInt();
+                        in.nextLine();
+                        
                         StockService.searchProductInOtherStores(product2Id, excludedStoreId);
                     break;
 
@@ -430,7 +444,7 @@ import java.util.Scanner;
                     break;
 
                     case "0": running = false; break;
-                    default: System.out.println("Μη έγκυρη επιλογή.");
+                    default: System.out.println("Invalid option.");
                 }
             }
             
@@ -457,34 +471,33 @@ import java.util.Scanner;
                             //Κάνει αναγνώριση του πελάτη με ClientService.authenticateClient()
                             //Αν βρεθεί, ζητά:ID καταστήματος,ID προϊόντος,Ποσότητα,Τρόπο πληρωμή
                             //Δημιουργεί νέα συναλλαγή και την προσθέτει στη λίστα
-                        case "1" :  
-                        System.out.println("give us email or phone number");
-                        String input = in.nextLine();
-                        Client c= ClientService.authenticateClient(clients,input);
-            
-                        System.out.print("Store ID: ");
+                            case "1" :  
+                                System.out.println("give us email or phone number");
+                                String input = in.nextLine();
+                                Client c= ClientService.authenticateClient(clients,input);
+                
+                                System.out.print("Store ID: ");
                                 int storeId = Integer.parseInt(in.nextLine());
-            
+                
                                 System.out.print("Product ID: ");
                                 long productId = Long.parseLong(in.nextLine());
-            
+                
                                 System.out.print("Quontity: ");
                                 int quantity = Integer.parseInt(in.nextLine());
-            
+                
                                 System.out.print("Payment Method (Cash/Card/Credit): ");
                                 String payment = in.nextLine();
-            
-                                Transaction t = TransactionService.createTransaction(
-                                    List.of(productId), List.of(quantity), storeId,
-                                    c , productService, stockService, payment);
-            
+                
+                                Transaction t = TransactionService.createTransaction(List.of(productId), List.of(quantity), storeId,
+                                        c , productService, stockService, payment);
+                
                                 transactions.add(t);
                                 System.out.println(" Create transaction \n" + t);
-                                break;
-            
-                            //Παίρνει όλες τις συναλλαγές με TransactionService.getAllTransactions().
-                            //Αν η λίστα είναι άδεια → εμφανίζει μήνυμα.
-                            //Αλλιώς, τις εμφανίζει στην κονσόλα.
+                            break;
+                
+                                //Παίρνει όλες τις συναλλαγές με TransactionService.getAllTransactions().
+                                //Αν η λίστα είναι άδεια → εμφανίζει μήνυμα.
+                                //Αλλιώς, τις εμφανίζει στην κονσόλα.
                             case "2":
                                 List<Transaction> allTx = TransactionService.getAllTransactions();
                                 if (allTx.isEmpty()) {
@@ -492,7 +505,7 @@ import java.util.Scanner;
                                 } else {
                                     allTx.forEach(System.out::println);
                                 }
-                                break;
+                            break;
             
             
                             //Ζητά από τον χρήστη το ID μιας συναλλαγής.
@@ -517,22 +530,24 @@ import java.util.Scanner;
                                     System.out.println("Transaction in JSON:");
                                     System.out.println(json);
                                 }
-                                break;
+                            break;
                         
                             //Τερματίζει το μενού συναλλαγών και επιστρέφει στον χρήστη
                             case "0":
                                 running = false;
                                 System.out.println("Exiting the transaction menu.");
-                                break;
+                            break;
             
                             default:
                                 System.out.println(" Invalid selection. Please try again.");
-                            }
-                            } catch (NumberFormatException e) {
-                            System.out.println("Invalid numeric value. Please try again.");
+                        }
+                    } 
+                    catch (NumberFormatException e) {
+                        System.out.println("Invalid numeric value. Please try again.");
             
-                            } catch (Exception e) {
-                            System.out.println(" Error: " + e.getMessage());
+                    } 
+                    catch (Exception e) {
+                        System.out.println(" Error: " + e.getMessage());
                     }
             }
         }
