@@ -170,9 +170,6 @@ public class ClientService {
                 break;
             }
         }
-        
-        // Check and delete inactive clients
-        isInactiveMoreThan5Years(clients);
     }
 	
     // 5. Checks if the customer has been inactive for more than 5 years. If true removes him. 

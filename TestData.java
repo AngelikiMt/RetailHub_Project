@@ -140,7 +140,7 @@ public class TestData {
 
     // DELETE CLIENT 
     public static void menuDeleteClient(){
-        System.out.println("Validation : Are you sure you want to delete the client with: " + clientId);
+        System.out.println("Validation : Are you sure you want to delete the client? ");
         String answer = in.nextLine().toUpperCase();
         if(answer.equals("YES")){ 
             try {
