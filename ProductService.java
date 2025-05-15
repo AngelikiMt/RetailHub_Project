@@ -38,7 +38,19 @@ public class ProductService {
 		return newProduct;
 	}
 
-	// Delete product based on productId
+	public void deactivateProduct(long productId,boolean active) {
+		for (Product product:products) {
+			if (product.getProductId() == productId) {
+				product.setActive(active);
+				String status = active ? "activated" : "deactivated";
+           		System.out.println("The product with ID " + productId + " is " + status + ".");
+          		return;
+			}
+		}
+		System.out.println("No product found with this ID.");
+	}
+
+	/*  Delete product based on productId
 	public void deleteProduct(long productId) {
 		Iterator<Product> iterator = products.iterator();
 		boolean found = false;
@@ -56,7 +68,7 @@ public class ProductService {
 		if (!found) {
 			System.out.println("No product found with the specified ID.");
 		}
-	}
+	} */
 
 	// Update product details
 	public void updateProduct(long productId, String description, String category, double price, double cost) {

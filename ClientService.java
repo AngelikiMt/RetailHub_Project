@@ -14,16 +14,29 @@ public class ClientService {
         }
     }
 
-    private static void validateEmail(String email, List<String> errors) {
+    private static void validateEmail(String email, List<String> errors, List <Client> clients) {
         if (email == null || !email.matches("^[\\w.-]+@[\\w.-]+\\.\\w{2,}$")) {
             errors.add("Invalid email address.");
-        }
+        } else {
+            for (Client client : clients) {
+                if (email.equals(client.getEmail())) {
+                errors.add("This email is already used.");
+                }
+            }
+        } 
     }
 
-    private static void validatePhoneNumber(String phoneNumber, List<String> errors) {
+    private static void validatePhoneNumber(String phoneNumber, List<String> errors, List <Client> clients) {
         if (phoneNumber == null || !phoneNumber.matches("^\\d{10}$")) {
             errors.add("The phone number must have exactly 10 digits.");
         }
+        else {
+            for (Client client : clients) {
+                if (phoneNumber.equals(client.getPhoneNumber())) {
+                errors.add("This phone number is already used.");
+                }
+            }
+        } 
     }
 
     private static void validateGender(String gender, List<String> errors) {
@@ -33,19 +46,30 @@ public class ClientService {
           gender.equalsIgnoreCase("OTHER"))) {
 
         errors.add("Gender must be either MALE, FEMALE, or OTHER.");
+        }
     }
-}
+
+    /* chech the uniqueness of email or phone number
+    private static boolean checkunique(String x, List<Client> clients, boolean unique) {
+        for (Client client : clients) {
+            if (x == client.getEmail() || x == client.getPhoneNumber()){
+                System.out.println("There is already client with the same email or phone number");
+                return unique = false;
+                }
+        }
+        return unique = true;
+    } */
 
     // 1. Customer registration
-    public static Client createClient(String firstName, String lastName, LocalDate birthDate,
+    public static Client createClient(List <Client> clients, String firstName, String lastName, LocalDate birthDate,
                                       String phoneNumber, String email, String gender, boolean activeStatus) {
 
         List<String> errors = new ArrayList<>();
 
         validateName(firstName, errors, "Name");
         validateName(lastName, errors, "Surname");
-        validateEmail(email, errors);
-        validatePhoneNumber(phoneNumber, errors);
+        validateEmail(email, errors, clients);
+        validatePhoneNumber(phoneNumber, errors, clients);
         validateGender(gender, errors);
                                     
         if ( birthDate!=null && birthDate.isAfter(LocalDate.now())) {
@@ -59,7 +83,6 @@ public class ClientService {
         return new Client(firstName, lastName, birthDate, phoneNumber, email, gender,activeStatus);
     }
         
-    
 
     // 2. Customer identification by email or phone
     public static boolean authenticateClient(Client client, String input) {
@@ -92,7 +115,7 @@ public class ClientService {
     }
 
     // 3. Update customer details (with optional new prices)
-    public static Client updateClient(Client client, String newFirstName, String newLastName, String newEmail, String newPhoneNumber) {
+    public static Client updateClient(List <Client> clients,Client client, String newFirstName, String newLastName, String newEmail, String newPhoneNumber) {
     
         List<String> errors = new ArrayList<>();
 
@@ -111,14 +134,14 @@ public class ClientService {
         }
 
         if (newEmail != null && !newEmail.equals("")) {
-            validateEmail(newEmail, errors);
+            validateEmail(newEmail, errors,clients);
             if (errors.isEmpty()) {
                 client.setEmail(newEmail);
             }
         }
 
         if (newPhoneNumber != null && !newPhoneNumber.equals("")) {
-            validatePhoneNumber(newPhoneNumber, errors);
+            validatePhoneNumber(newPhoneNumber, errors, clients);
             if (errors.isEmpty()) {
                 client.setPhoneNumber(newPhoneNumber);
             }
@@ -151,6 +174,9 @@ public class ClientService {
         for (Client client : clients) {
             if(ChronoUnit.YEARS.between(client.getLastPurchaseDate(), LocalDate.now()) > 5){
                 inactiveIds.add(client.getClientId());
+                client.setActiveStatus(false);
+                client.setFirstName(null);
+                client.setLastName(null);
             }
         }
         return inactiveIds;
@@ -166,6 +192,7 @@ public class ClientService {
         json.append("  \"lastName\": ").append(client.getLastName()).append(",\n");
         json.append("  \"birthDate\": ").append(client.getBirthDate()).append(",\n");
         json.append("  \"phoneNumber\": ").append(client.getPhoneNumber()).append(",\n");
+        json.append(" \"email\": ").append(client.getEmail()).append(",\n");
         json.append("  \"gender\": ").append(client.getGender()).append(",\n");
         json.append("  \"activeStatus\": ").append(client.isActiveStatus()).append(",\n");
         json.append("  \"dateJoined\": ").append(client.getDateJoined()).append(",\n");

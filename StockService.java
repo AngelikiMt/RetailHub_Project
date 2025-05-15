@@ -30,12 +30,18 @@ public class StockService {
             System.out.println("The inventory quantity cannot be negative.");
             return;
         }
-    	
+
+        for (Stock s : stocks) {
+            if (productId == s.getProductId() && storeId == s.getStoreId()) {
+                System.out.println("This product is already added in this store.");
+                return;
+            } 
+        }
+        
     	stocks.add(new Stock(storeId, productId, stockQuantity, true));
         System.out.println("Stock added successfully in the Product ID: " + productId + " for the Store ID: " + storeId + " wiht Quantity " + stockQuantity );
     }
-
-    
+ 
 
     // Inventory control for a specific product and store 
     public static List<Stock> getStock(long productId, int storeId) {   
@@ -88,6 +94,7 @@ public class StockService {
         for (Stock s : stocks) {
             if (s.getStockQuantity() <= threshold) {
                 System.out.println("The product with code: " + s.getProductId() + " in store: " + s.getStoreId() + " has low inventory: " + s.getStockQuantity());
+                return;
             }
         }
         System.out.println("No product with low quantity.");

@@ -7,6 +7,7 @@ public class Product
     private String category;
     private double price;
     private double cost;
+    private boolean active;
 
 
     // Constructor: productId to be automatically generated
@@ -17,6 +18,7 @@ public class Product
         this.category = category;
         this.price = price;
         this.cost = cost;
+        this.active = true;
     }
     
     // Getters
@@ -38,6 +40,10 @@ public class Product
 
     public double getCost() {
         return cost;
+    }
+
+    public boolean getActive() {
+        return active;
     }
 
     // Setters (without productId)
@@ -75,10 +81,14 @@ public class Product
         }
     }
 
+    public void setActive (boolean active) {
+        this.active = active;
+    }
+
     @Override
     public String toString() 
     {
         return "Product ID: " + productId + "\n" + "Description: " + description + "\n" + 
-        		"Category: " + category + "\n" + "Price: " + price + "\n" + "Cost: " + cost;
+        		"Category: " + category + "\n" + "Price: " + price + "\n" + "Cost: " + cost + "\n" +"Active: " + active;
     }
 }

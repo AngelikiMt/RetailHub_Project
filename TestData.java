@@ -26,9 +26,10 @@ import java.util.Scanner;
                 System.out.println("\n========= Retail Hub CLIENT Menu =========");
                 System.out.println("1.CREATE CLIENT");
                 System.out.println("2.AUTHENTICATE CLIENT");
-                System.out.println("3.UPDATE CLIENT");
-                System.out.println("4.DELETE CLIENT");
-                System.out.println("5.GET CLIENT AS JSON");
+                System.out.println("3.SHOW CLIENT");
+                System.out.println("4.UPDATE CLIENT");
+                System.out.println("5.DELETE CLIENT");
+                System.out.println("6.GET CLIENT AS JSON");
                 System.out.println("0.Exit");
                 System.out.print("CHOOSE: ");
                 String choice = in.nextLine();
@@ -37,15 +38,16 @@ import java.util.Scanner;
                 switch (choice) {
                         case "1": menuCreateClient();break;
                         case "2": menuAuthenticateClient();break;
-                        case "3": menuUpdateClient(); break;
-                        case "4": menuDeleteClient(); break;
-                        case "5": menuGetJson(); break;
+                        case "3": menuShowClient(); break;
+                        case "4": menuUpdateClient(); break;
+                        case "5": menuDeleteClient(); break;
+                        case "6": menuGetJson(); break;
                         case "0": running = false; break;
                         default: System.out.println("Invalid option.");
                 }
             }
         }
-        // CCREATE NEW CLIENT 
+        // CREATE NEW CLIENT 
         public static void menuCreateClient(){
             long clientId;
             Client client; 
@@ -82,7 +84,7 @@ import java.util.Scanner;
             }
 
             try{
-            client = ClientService.createClient(firstName, lastName, birthDate, phoneNumber, email, gender, activeStatus);
+            client = ClientService.createClient(clients,firstName, lastName, birthDate, phoneNumber, email, gender, activeStatus);
             clients.add(client);
             System.out.println("Client was successfully created with ID: " + client.getClientId());
             }
@@ -96,6 +98,13 @@ import java.util.Scanner;
             System.out.println("Email or Phone number of the client: ");
             input= in.nextLine();
             clientId= ClientService.authenticateClient1(clients,input);
+        }
+
+        //SHOW CLIENT
+        public static void menuShowClient(){
+            System.out.println("Email or Phone number of the client: ");
+            String input = in.nextLine();
+            System.out.println(ClientService.authenticateClient(clients, input));
         }
 
         //UPDATE CLIENT
@@ -114,7 +123,7 @@ import java.util.Scanner;
 
                     for (Client client : clients) {
                         if (client.getClientId()== clientId){
-                            ClientService.updateClient(client, newFirstName, newLasttName, newEmail, newPhoneNumber);
+                            ClientService.updateClient(clients, client, newFirstName, newLasttName, newEmail, newPhoneNumber);
                         }
                     }
                     System.out.println("Client successfully updated.");
@@ -171,7 +180,7 @@ import java.util.Scanner;
                 System.out.println("\n========= Retail Hub PRODUCT Menu =========");
                 System.out.println("1.CREATE PRODUCT");
                 System.out.println("2.UPDATE PRODUCT");
-                System.out.println("3.DELETE PRODUCT");
+                System.out.println("3.ACTIVATE/DEACTIVATE PRODUCT");
                 System.out.println("4.DISPLAY ALL PRODUCTS");
                 System.out.println("5.SEARCH PRODUCT BY ID");
                 System.out.println("6.GET PRODUCT AS Json");
@@ -213,11 +222,14 @@ import java.util.Scanner;
                         productService.updateProduct(productId,newDescription,newCategory,newPrice,newCost);
                     break;
 
-                    case "3": //DELETE PRODUCT
-                        System.out.println("Give the id of the product you want to delete"); 
+                    case "3": //ACTIVATE/DEACTIVATE PRODUCT
+                        System.out.println("Give the id of the product you want to deactivate or reactivate"); 
                         productId = in.nextLong();
                         in.nextLine();
-                        productService.deleteProduct(productId);
+                        System.out.print("Activate or deactivate? (true/false): ");
+                        boolean active = in.nextBoolean();
+                        in.nextLine();
+                        productService.deactivateProduct(productId,active);
                     break;
 
                     case "4": productService.displayAllProducts (); break;
@@ -471,28 +483,44 @@ import java.util.Scanner;
                             //Κάνει αναγνώριση του πελάτη με ClientService.authenticateClient()
                             //Αν βρεθεί, ζητά:ID καταστήματος,ID προϊόντος,Ποσότητα,Τρόπο πληρωμή
                             //Δημιουργεί νέα συναλλαγή και την προσθέτει στη λίστα
-                            case "1" :  
-                                System.out.println("give us email or phone number");
+                            case "1":
+                                System.out.println("Give us email or phone number");
                                 String input = in.nextLine();
-                                Client c= ClientService.authenticateClient(clients,input);
-                
+                                Client c = ClientService.authenticateClient(clients, input);
+                            
                                 System.out.print("Store ID: ");
                                 int storeId = Integer.parseInt(in.nextLine());
-                
-                                System.out.print("Product ID: ");
-                                long productId = Long.parseLong(in.nextLine());
-                
-                                System.out.print("Quontity: ");
-                                int quantity = Integer.parseInt(in.nextLine());
-                
+                            
+                                // New logic: allow multiple products
+                                List<Long> productIds = new ArrayList<>();
+                                List<Integer> quantities = new ArrayList<>();
+                            
+                                boolean addingProducts = true;
+                                while (addingProducts) {
+                                    System.out.print("Product ID: ");
+                                    long productId = Long.parseLong(in.nextLine());
+                                    productIds.add(productId);
+                            
+                                    System.out.print("Quantity: ");
+                                    int quantity = Integer.parseInt(in.nextLine());
+                                    quantities.add(quantity);
+                            
+                                    System.out.print("Add another product? (yes/no): ");
+                                    String more = in.nextLine().trim().toLowerCase();
+                                    if (!more.equals("yes")) {
+                                        addingProducts = false;
+                                    }
+                                }
+                            
                                 System.out.print("Payment Method (Cash/Card/Credit): ");
                                 String payment = in.nextLine();
-                
-                                Transaction t = TransactionService.createTransaction(List.of(productId), List.of(quantity), storeId,
-                                        c , productService, stockService, payment);
-                
+                            
+                                Transaction t = TransactionService.createTransaction(
+                                    productIds, quantities, storeId, c, productService, stockService, payment
+                                );
+                            
                                 transactions.add(t);
-                                System.out.println(" Create transaction \n" + t);
+                                System.out.println("Transaction created:\n" + t);
                             break;
                 
                                 //Παίρνει όλες τις συναλλαγές με TransactionService.getAllTransactions().

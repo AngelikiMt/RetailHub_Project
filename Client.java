@@ -53,10 +53,6 @@ public class Client {
         return clientId;
     }
 
-    public void setClientId(long clientId) {
-        this.clientId = clientId;
-    }
-
     public String getFirstName() {
         return firstName;
     }
