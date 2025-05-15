@@ -5,12 +5,15 @@ import java.util.Iterator;
 import java.util.List;
 
 public class ClientService {
+	private static int count = 0;
 
     private static void validateName(String name, List<String> errors, String fieldName) {
         if (name == null || name.trim().isEmpty()) {
             errors.add(fieldName + " cannot be empty.");
         } else if (!name.matches("^[A-Za-zΑ-Ωα-ωΆ-Ώά-ώ\\s'-]+$")) {
             errors.add(fieldName + " contains invalid characters.");
+        } else if (name.length() < 3) {
+            errors.add("Name must be more than 2 characters.");
         }
     }
 
@@ -49,7 +52,7 @@ public class ClientService {
         }
     }
 
-    /* chech the uniqueness of email or phone number
+    // Checks the uniqueness of email or phone number
     private static boolean checkunique(String x, List<Client> clients, boolean unique) {
         for (Client client : clients) {
             if (x == client.getEmail() || x == client.getPhoneNumber()){
@@ -58,7 +61,7 @@ public class ClientService {
                 }
         }
         return unique = true;
-    } */
+    }
 
     // 1. Customer registration
     public static Client createClient(List <Client> clients, String firstName, String lastName, LocalDate birthDate,
@@ -93,25 +96,23 @@ public class ClientService {
     public static long authenticateClient1(List<Client> clients,String input) {
         for (Client client : clients) {
             if (client.getEmail().equals(input) || client.getPhoneNumber().equals(input)){
-                System.out.println(input + " : successfully authenticated for client: " + client.getClientId() + " : " + client.getFirstName() + " "+ client.getLastName());
+                System.out.println(input + " Successfully authenticated for client with ID: " + client.getClientId() + " and name: " + client.getFirstName() + " "+ client.getLastName());
                 return client.getClientId();
             }
-            
+			
         } 
-        System.out.println("Client with: "+input + " does not exist.");
+        System.out.println("Client with: "+ input + " does not exist.");
         return -1;
     }
 
     // 2β. Customer identification by email or phone
     public static Client authenticateClient( List<Client>clients,String input) {
         for ( Client client : clients) {
- 
-          if (client.getEmail().equals(input) || client.getPhoneNumber().equals(input)){
-            return client;
-          }
-       
+            if (client.getEmail().equals(input) || client.getPhoneNumber().equals(input)){
+                return client;
+            }
         }
-        return null;
+        throw new IllegalArgumentException("Invalid input. No client found.");
     }
 
     // 3. Update customer details (with optional new prices)
@@ -154,32 +155,40 @@ public class ClientService {
         return client;
     }
 
-    
-
-    // 4. Delete customer from customer list
+    // 4. Turns customer's private info into null. The system keeps his purchases.
     public static void deleteClient(List<Client> clients, long clientId) {
         Iterator<Client> iterator = clients.iterator();
+
         while (iterator.hasNext()) {
             Client client = iterator.next();
             if (client.getClientId() == clientId) {
-                iterator.remove();
+                client.setActiveStatus(false);
+                client.setEmail(null);
+                client.setBirthDate(null);
+                client.setFirstName(null);
+                client.setLastName(null);
                 break;
             }
         }
+        
+        // Check and delete inactive clients
+        isInactiveMoreThan5Years(clients);
     }
+	
+    // 5. Checks if the customer has been inactive for more than 5 years. If true removes him. 
+    public static void isInactiveMoreThan5Years(List<Client> clients) {
+        Iterator<Client> iterator = clients.iterator();
 
-    // 5. Check if the customer has been inactive for more than 5 years
-    public static List<Long> isInactiveMoreThan5Years(List<Client> clients) {
-        List<Long>inactiveIds= new ArrayList<>();
-        for (Client client : clients) {
-            if(ChronoUnit.YEARS.between(client.getLastPurchaseDate(), LocalDate.now()) > 5){
-                inactiveIds.add(client.getClientId());
-                client.setActiveStatus(false);
-                client.setFirstName(null);
-                client.setLastName(null);
+        while (iterator.hasNext()) {
+            Client client = iterator.next();
+            long yearsInactive = ChronoUnit.YEARS.between(client.getLastPurchaseDate(), LocalDate.now());
+            if (yearsInactive > 5) {
+                iterator.remove(); // Remove client permanently
+                count++;
             }
+            System.out.println(count + " clients have been removed.");
         }
-        return inactiveIds;
+		count = 0;
     }
 
     // Returns client details in JSON format

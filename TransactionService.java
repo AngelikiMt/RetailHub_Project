@@ -127,7 +127,7 @@ public class TransactionService {
 
         @Override
         public String toString() {
-            return "Client ID: " + clientId + " | Sum Total: " + sumTotal + " | Discount: " + discount;
+            return "Client ID: " + clientId + "\nSum Total: " + sumTotal + "\nDiscount: " + discount;
         }
     }
 

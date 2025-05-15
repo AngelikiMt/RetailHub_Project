@@ -39,7 +39,7 @@ public class StockService {
         }
         
     	stocks.add(new Stock(storeId, productId, stockQuantity, true));
-        System.out.println("Stock added successfully in the Product ID: " + productId + " for the Store ID: " + storeId + " wiht Quantity " + stockQuantity );
+        System.out.println("Stock added successfully in the Product ID: " + productId + " for the Store ID: " + storeId + " with Quantity " + stockQuantity );
     }
  
 

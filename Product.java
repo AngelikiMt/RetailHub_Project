@@ -1,6 +1,6 @@
 public class Product
 { 
-    private static long nextId = 1; // Auto set id
+    private static long nextId = 1; // Auto-incremented internally 
     
     private long productId;
     private String description;
@@ -13,7 +13,7 @@ public class Product
     // Constructor: productId to be automatically generated
     public Product (String description, String category, double price, double cost) 
     {
-	    this.productId = nextId++;
+	    productId = nextId++;
         this.description = description;
         this.category = category;
         this.price = price;

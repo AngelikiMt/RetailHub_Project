@@ -1,5 +1,5 @@
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.List;
 
 public class ProductService {
 	private static ArrayList<Product> products;
@@ -71,37 +71,29 @@ public class ProductService {
 	} */
 
 	// Update product details
-	public void updateProduct(long productId, String description, String category, double price, double cost) {
+	public void updateProduct(long productId, String newDescription, String newCategory, double newPrice, double newCost) {
 		boolean found = false;
+		List<String> errors = new ArrayList<>();
 
 	    for (Product product : products) {
 			if (product.getProductId() == productId) {
 
 				// Data validation
-				if (description == null || description.trim().isEmpty()) {
-					System.out.println("Description cannot be empty.");
-					return;
+				if (newDescription != null && !newDescription.trim().isEmpty()) {
+					product.setDescription(newDescription);
 				}
-				if (category == null || category.trim().isEmpty()) {
-					System.out.println("Category cannot be empty.");
-					return;
+				if (newCategory != null && !newCategory.trim().isEmpty()) {
+					product.setCategory(newCategory);
 				}
-				if (price < 0) {
+				if (newPrice < 0) {
 					System.out.println("Price cannot be negative.");
-					return;
-				}
-				if (cost < 0) {
+				} 
+				if (newCost < 0) {
 					System.out.println("Cost cannot be negative.");
-					return;
-				}
-
-
-				// If entry correct:
-				product.setDescription(description);
-				product.setCategory(category);
-				product.setPrice(price);
-				product.setCost(cost);
-
+				} 
+				
+				product.setPrice(newPrice);
+				product.setCost(newCost);
 				System.out.println("Product updated successfully:" + "\n" + product);// + productId + " " + description + " " + category + " " + price + " " + cost);
 				return ;
 			}

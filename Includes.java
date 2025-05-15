@@ -27,6 +27,6 @@ public class Includes {
 
 	@Override
 	public String toString() {
-		return "Includes: Transaction: " + transactionId + " | Product: " + productId + " | sold quantity: " + soldQuantity;
+		return "TransactionId: " + transactionId + "\nProductId: " + productId + "\nSold quantity: " + soldQuantity;
 	}
 }

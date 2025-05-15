@@ -21,7 +21,7 @@ public class Client {
                   String phoneNumber, String email, String gender, boolean activeStatus) 
                   {
 
-        clientId = nextId++; // Auto set id
+        clientId = nextId++; // Auto-incremented internally 
         this.firstName = firstName;
         this.lastName = lastName;
         this.birthDate = birthDate;
@@ -30,7 +30,6 @@ public class Client {
         this.gender = gender;
         this.activeStatus = activeStatus;
         dateJoined = LocalDate.now();
-
     }
 
     
@@ -61,7 +60,6 @@ public class Client {
         this.firstName = firstName;
     }
     
-
     public String getLastName() {
         return lastName;
     }
@@ -112,10 +110,6 @@ public class Client {
 
     public LocalDate getDateJoined() {
         return dateJoined;
-    }
-
-    public void setDateJoined(LocalDate dateJoined) {
-        this.dateJoined = dateJoined;
     }
 
     public double getClientSumTotal() {
