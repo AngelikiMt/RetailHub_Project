@@ -13,7 +13,7 @@ public class ClientService {
         } else if (!name.matches("^[A-Za-zΑ-Ωα-ωΆ-Ώά-ώ\\s'-]+$")) {
             errors.add(fieldName + " contains invalid characters.");
         } else if (name.length() < 3) {
-            errors.add("Name must be more than 2 characters.");
+            errors.add("Name must contain more than 3 characters.");
         }
     }
 
@@ -52,6 +52,13 @@ public class ClientService {
         }
     }
 
+    private static void validateAge(LocalDate birthDate) {
+        long age = ChronoUnit.YEARS.between(birthDate, LocalDate.now());
+        if (age < 15) {
+            throw new IllegalArgumentException("Client must be over 15 years old.");
+        }
+    }
+
     // Checks the uniqueness of email or phone number
     private static boolean checkunique(String x, List<Client> clients, boolean unique) {
         for (Client client : clients) {
@@ -75,8 +82,14 @@ public class ClientService {
         validatePhoneNumber(phoneNumber, errors, clients);
         validateGender(gender, errors);
                                     
-        if ( birthDate!=null && birthDate.isAfter(LocalDate.now())) {
+        if (birthDate!=null && birthDate.isAfter(LocalDate.now())) {
             errors.add("Enter a valid date of birth.");
+        } else {
+            try {
+                validateAge(birthDate);
+            } catch (IllegalArgumentException e) {
+                errors.add(e.getMessage());
+            }
         }
                                                     
         if (!errors.isEmpty()) {
@@ -165,14 +178,12 @@ public class ClientService {
                 client.setActiveStatus(false);
                 client.setEmail(null);
                 client.setBirthDate(null);
+				client.setPhoneNumber(null);
                 client.setFirstName(null);
                 client.setLastName(null);
                 break;
             }
         }
-        
-        // Check and delete inactive clients
-        isInactiveMoreThan5Years(clients);
     }
 	
     // 5. Checks if the customer has been inactive for more than 5 years. If true removes him. 
@@ -201,12 +212,12 @@ public class ClientService {
         json.append("  \"lastName\": ").append(client.getLastName()).append(",\n");
         json.append("  \"birthDate\": ").append(client.getBirthDate()).append(",\n");
         json.append("  \"phoneNumber\": ").append(client.getPhoneNumber()).append(",\n");
-        json.append(" \"email\": ").append(client.getEmail()).append(",\n");
+        json.append("  \"email\": ").append(client.getEmail()).append(",\n");
         json.append("  \"gender\": ").append(client.getGender()).append(",\n");
         json.append("  \"activeStatus\": ").append(client.isActiveStatus()).append(",\n");
         json.append("  \"dateJoined\": ").append(client.getDateJoined()).append(",\n");
         json.append("  \"clientSumTotal\": ").append(client.getClientSumTotal()).append(",\n");
-        json.append("  \"lastPurchaseDate\": ").append(client.getLastPurchaseDate()).append(",\n}");
+        json.append("  \"lastPurchaseDate\": ").append(client.getLastPurchaseDate()).append("\n}");
 
         return json.toString();
     }

@@ -2,6 +2,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 public class TransactionService {
 
@@ -53,43 +54,47 @@ public class TransactionService {
     }
 
     // Create Transaction
-    public static Transaction createTransaction(
-            List<Long> productIds, List<Integer> quantities, int storeId,
-            Client client, ProductService productService, StockService stockService, String paymentMethod) {
+    public static Transaction createTransaction(List<Long> productIds, List<Integer> quantities, int storeId,
+        Client client, ProductService productService, StockService stockService, String paymentMethod) {
 
         ShowTotalResult totalResult = showTotal(productIds, quantities, storeId, client, productService, stockService);
         double finalTotal = totalResult.getSumTotal() - totalResult.getDiscount();
 
-        // Update Stock
-        for (int i = 0; i < productIds.size(); i++) {
-            long productId = productIds.get(i);
-            int quantity = quantities.get(i);
-            stockService.reduceStockOnPurchase((int) productId, storeId, quantity);
-        }
+        System.out.println("\nShow Total (Total amount before the discount & Discount): " + totalResult + "\nTotal amount after the discount: " + finalTotal + "\nDo you want to procceed with the transaction? (YES/NO)");
+        Scanner in = new Scanner(System.in);
+        String answer = in.nextLine();
 
-        // Update Client info
-        client.setClientSumTotal(client.getClientSumTotal() + (float) finalTotal);
-        client.setLastPurchaseDate(LocalDate.now());
+        // If customer agrees with the total amount, then the employee may procceed with the transaction.  
+        if (answer.trim().toUpperCase().equals("YES")) {
+                    // Update Stock
+            for (int i = 0; i < productIds.size(); i++) {
+                long productId = productIds.get(i);
+                int quantity = quantities.get(i);
+                stockService.reduceStockOnPurchase((int) productId, storeId, quantity);
+            }
 
-        // Create new Transaction
-        Transaction newTransaction = new Transaction(
-                client.getClientId(),
-                storeId,
-                finalTotal,
-                totalResult.getDiscount(),
-                paymentMethod
-        );
-        transactions.add(newTransaction);
+            // Update Client info
+            client.setClientSumTotal(client.getClientSumTotal() + (double) finalTotal);
+            client.setLastPurchaseDate(LocalDate.now());
 
-        // Create Includes records
-        for (int i = 0; i < productIds.size(); i++) {
-            long productId = productIds.get(i);
-            int quantity = quantities.get(i);
-            Includes include = new Includes(newTransaction.getTransactionId(), productId, quantity);
-            includesList.add(include);
-        }
+            // Create new Transaction
+            Transaction newTransaction = new Transaction(client.getClientId(), storeId, finalTotal, totalResult.getDiscount(),
+                    paymentMethod );
 
-        return newTransaction;
+            transactions.add(newTransaction);
+
+            // Create Includes records
+            for (int i = 0; i < productIds.size(); i++) {
+                long productId = productIds.get(i);
+                int quantity = quantities.get(i);
+                Includes include = new Includes(newTransaction.getTransactionId(), productId, quantity);
+                includesList.add(include);
+            }
+
+            return newTransaction;
+        } else {
+            throw new IllegalArgumentException("Transaction with " + totalResult + "cancelled.") ;
+        } 
     }
 
     // Gets all transactions

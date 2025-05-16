@@ -13,8 +13,8 @@ public class Main {
             System.out.println("1. CLIENT");
             System.out.println("2. PRODUCT");
             System.out.println("3. STORE (PIN)");
-            System.out.println("4. Stock");
-            System.out.println("5. Transaction");
+            System.out.println("4. STOCK");
+            System.out.println("5. TRANSACTION");
             System.out.println("0. EXIT");
             System.out.print("CHOOSE: ");
             String choice = in.nextLine();

@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class ProductService {
@@ -50,7 +51,7 @@ public class ProductService {
 		System.out.println("No product found with this ID.");
 	}
 
-	/*  Delete product based on productId
+	// Delete product based on productId
 	public void deleteProduct(long productId) {
 		Iterator<Product> iterator = products.iterator();
 		boolean found = false;
@@ -68,7 +69,7 @@ public class ProductService {
 		if (!found) {
 			System.out.println("No product found with the specified ID.");
 		}
-	} */
+	}
 
 	// Update product details
 	public void updateProduct(long productId, String newDescription, String newCategory, double newPrice, double newCost) {
@@ -110,17 +111,18 @@ public class ProductService {
 			return;
 		}
 
-		System.out.printf("%-6s | %-20s | %-15s | %-10s | %-10s%n",
-				"ID", "Description", "Category", "Price", "Cost");
-		System.out.println("------------------------------------------------------------------");
+		System.out.printf("%-6s | %-20s | %-15s | %-10s |  %-10s | %-10s%n",
+				"ID", "Description", "Category", "Price", "Cost", "Active");
+		System.out.println("----------------------------------------------------------------------");
 
 		for (Product product : products) {
-			System.out.printf("%-6d | %-20s | %-15s | %-10.2f | %-10.2f%n",
+			System.out.printf("%-6d | %-20s | %-15s | %-10.2f | %-10.2f | %-10b%n",
 					product.getProductId(),
 					product.getDescription(),
 					product.getCategory(),
 					product.getPrice(),
-					product.getCost());
+					product.getCost(),
+					product.getActive());
 		}
 	}
 
@@ -144,7 +146,8 @@ public class ProductService {
 		json.append("  \"description\": ").append(product.getDescription()).append(",\n");
 		json.append("  \"category\": ").append(product.getCategory()).append(",\n");
 		json.append("  \"price\": ").append(product.getPrice()).append(",\n");
-		json.append("  \"cost\": ").append(product.getCost()).append(",\n}");
+		json.append("  \"cost\": ").append(product.getCost()).append(",\n");
+		json.append("  \"active\": ").append(product.getActive()).append("\n}");
 
 		return json.toString();
 	}

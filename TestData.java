@@ -31,7 +31,7 @@ public class TestData {
             System.out.println("5. DELETE CLIENT");                
             System.out.println("6. DELETE INACTIVE CLIENTS (PIN)");
             System.out.println("7. GET CLIENT AS JSON");
-            System.out.println("0. Exit");
+            System.out.println("0. EXIT");
             System.out.print("CHOOSE: ");
             String choice = in.nextLine();
                
@@ -89,6 +89,7 @@ public class TestData {
 		client = ClientService.createClient(clients,firstName, lastName, birthDate, phoneNumber, email, gender, activeStatus);
 		clients.add(client);
 		System.out.println("Client was successfully created with ID: " + client.getClientId());
+		System.out.println("\n" + client);
 		}
 		catch(Exception x ){
 			System.out.println(x.getMessage());
@@ -189,9 +190,10 @@ public class TestData {
 			System.out.println("1. CREATE PRODUCT");
 			System.out.println("2. UPDATE PRODUCT");
 			System.out.println("3. ACTIVATE/DEACTIVATE PRODUCT");
-			System.out.println("4. DISPLAY ALL PRODUCTS");
-			System.out.println("5. SEARCH PRODUCT BY ID");
-			System.out.println("6. GET PRODUCT AS Json");
+			System.out.println("4. DELETE PRODUCT");
+			System.out.println("5. DISPLAY ALL PRODUCTS");
+			System.out.println("6. SEARCH PRODUCT BY ID");
+			System.out.println("7. GET PRODUCT AS JSON");
 			System.out.println("0. EXIT");
 			System.out.print("CHOOSE: ");
 			String choice = in.nextLine();
@@ -210,8 +212,8 @@ public class TestData {
 					System.out.println("Give product cost");
 					double cost=in.nextDouble();
 					in.nextLine();
-					productService.createProduct(description,category,price,cost); 
-				break;
+					productService.createProduct(description, category, price, cost); 
+					break;
 
 				case "2": // UPDATE PRODUCT
 					System.out.println("Give the id of the product you want to change"); 
@@ -227,8 +229,8 @@ public class TestData {
 					System.out.println("Give product new cost");
 					double newCost=in.nextDouble();
 					in.nextLine();
-					productService.updateProduct(productId,newDescription,newCategory,newPrice,newCost);
-				break;
+					productService.updateProduct(productId, newDescription, newCategory, newPrice, newCost);
+					break;
 
 				case "3": // ACTIVATE/DEACTIVATE PRODUCT
 					System.out.println("Give the id of the product you want to deactivate or reactivate"); 
@@ -248,22 +250,34 @@ public class TestData {
 					}
 					productService.deactivateProduct(productId,active);
 					break;
-
-				case "4": productService.displayAllProducts (); break;
-
-				case "5":
-					System.out.println("Give the id of the product you want to search");
+							
+				case "4": 
+					System.out.println("Give product id: ");
 					productId = in.nextLong();
 					in.nextLine();
-					System.out.println(productService.findProductById(productId));
-				break;
+					System.out.print("Are you sure you want to delete the product with " + productId + "? (YES/NO): ");
+					String answer = in.nextLine().trim();
+					if (answer.equalsIgnoreCase("YES")) {
+						productService.deleteProduct(productId);
+					} else {
+						runProductTests();
+					} break;
+
+				case "5": productService.displayAllProducts (); break;
 
 				case "6":
+					System.out.println("Give the id of the product you want to search");
+					long prodId = in.nextLong();
+					in.nextLine();
+					System.out.println(productService.findProductById(prodId));
+					break;
+
+				case "7":
 					System.out.println("Give the id of the product you want in json");
 					productId = in.nextLong();
 					in.nextLine();
 					System.out.println(ProductService.getProductAsJson(productService.findProductById(productId)));
-				break;
+					break;
 
 				case "0": running=false; 
 				default: System.out.println("Not valid option.");
@@ -292,7 +306,7 @@ public class TestData {
 			System.out.println("3. DEACTIVATE STORE");
 			System.out.println("4. SHOW SPECIFIC STORE");
 			System.out.println("5. SHOW ALL STORES");
-			System.out.println("6. GET STORE AS Json");
+			System.out.println("6. GET STORE AS JSON");
 			System.out.println("0. EXIT");
 			System.out.print("CHOOSE: ");
 			String choice = in.nextLine();
@@ -386,19 +400,19 @@ public class TestData {
 		boolean running = true;
 		while (running) {
 			System.out.println("\n========= Retail Hub STOCK Menu =========");
-			System.out.println("1. ADD STOCK");
+			System.out.println("1. CREATE STOCK");
 			System.out.println("2. GET STOCK FOR SPECIFIC PRODUCT AND STORE");
 			System.out.println("3. UPDATE STOCK");
 			System.out.println("4. GET LOW STOCK ( BELLOW 3) ");
-			System.out.println("5. SEARCH STOCK IN OTHER STORE");
+			System.out.println("5. SEARCH STOCK IN OTHER STORES");
 			System.out.println("6. GET STOCK AS JSON ");
-			System.out.println("0. Exit");
+			System.out.println("0. EXIT");
 			System.out.print("CHOOSE: ");
 			String choice = in.nextLine();
 		   
 		
 			switch (choice) {
-				case "1": // ADD STOCK 
+				case "1": // CREATE STOCK 
 					try {
 						System.out.print("Add Stock for product ID: ");
 						long productId = Long.parseLong(in.nextLine());
@@ -488,10 +502,10 @@ public class TestData {
 		while (running) {
 				try {
 					System.out.println("\n===== Retail Hub TRANSACTION Menu ====");
-					System.out.println("1. Create Transaction");
-					System.out.println("2. View all Transactions");
-					System.out.println("3. Transaction in JSON");
-					System.out.println("0. Exit");
+					System.out.println("1. CREATE TRANSACTION");
+					System.out.println("2. VIEW ALL TRANSACTIONS");
+					System.out.println("3. TRANSACTION AS JSON");
+					System.out.println("0. EXIT");
 					System.out.print("CHOOSE: ");
 					String choice = in.nextLine().trim();
 		
@@ -584,7 +598,7 @@ public class TestData {
 						break;
 		
 						default:
-							System.out.println(" Invalid selection. Please try again.");
+							System.out.println("Invalid selection. Please try again.");
 					}
 				} 
 				catch (NumberFormatException e) {
@@ -592,7 +606,7 @@ public class TestData {
 		
 				} 
 				catch (Exception e) {
-					System.out.println(" Error: " + e.getMessage());
+					System.out.println("Error: " + e.getMessage());
 				}
 		}
 	}

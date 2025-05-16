@@ -101,7 +101,7 @@ public class StoreService {
         json.append("  \"address\": ").append(store.getAddress()).append(",\n");
         json.append("  \"country\": ").append(store.getCountry()).append(",\n");
         json.append("  \"storename\": ").append(store.getStoreName()).append(",\n");
-        json.append("  \"active\": ").append(store.isActive()).append(",\n}");
+        json.append("  \"active\": ").append(store.isActive()).append("\n}");
 
         return json.toString();
     }
