@@ -2,62 +2,71 @@ import javax.swing.*;
 import java.awt.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 
 public class ClientFrame extends JFrame {
-    private JComboBox<String> menu;
-    private JButton selectBtn;
-    
+    private final JPanel contentPanel;
 
     public ClientFrame() {
-        setExtendedState(JFrame.MAXIMIZED_BOTH);
         setTitle("Client Menu");
-        setSize(450, 200);
-        setLayout(new FlowLayout());
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
-        String[] options = {
-            "Select an option",
-            "1. Create Client",
-            "2. Authenticate Client",
-            "3. Show Client",
-            "4. Update Client",
-            "5. Delete Client",
-            "6. Delete Inactive Clients (PIN)",
-            "7. Get All Clients as JSON",
+        // === Φόντο ===
+        BackgroundPanel background = new BackgroundPanel("RetailHub.png");
+        background.setLayout(new BorderLayout());
+        setContentPane(background);
+
+        // === Πλαϊνό Μενού ===
+        JPanel leftMenu = new JPanel();
+        leftMenu.setLayout(new GridLayout(8, 1, 10, 10));
+        leftMenu.setOpaque(false);
+        leftMenu.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 10));
+
+        Font buttonFont = new Font("Arial", Font.BOLD, 16);
+
+        String[] actions = {
+            "Create Client", "Authenticate Client", "Show Client",
+            "Update Client", "Delete Client", "Delete Inactive Clients",
+            "Get All Clients as JSON", "Back to Main Menu"
         };
 
-        menu = new JComboBox<>(options);
-        selectBtn = new JButton("Go");
+        JButton[] buttons = new JButton[actions.length];
 
-        selectBtn.addActionListener(e -> handleOption(menu.getSelectedIndex()));
+        for (int i = 0; i < actions.length; i++) {
+            buttons[i] = new JButton(actions[i]);
+            buttons[i].setFont(buttonFont);
+            buttons[i].setFocusPainted(false);
+            leftMenu.add(buttons[i]);
+        }
 
-        add(menu);
-        add(selectBtn);
+        background.add(leftMenu, BorderLayout.WEST);
+
+        // === Περιεχόμενο ===
+        contentPanel = new JPanel();
+        contentPanel.setOpaque(false);
+        background.add(contentPanel, BorderLayout.CENTER);
+
+        // === Συνδέσεις Κουμπιών ===
+        buttons[0].addActionListener(e -> menuCreateClient());
+        buttons[1].addActionListener(e -> menuAuthenticateClient());
+        buttons[2].addActionListener(e -> menuShowClient());
+        buttons[3].addActionListener(e -> menuUpdateClient());
+        buttons[4].addActionListener(e -> menuDeleteClient());
+        buttons[5].addActionListener(e -> menuDeleteInactiveClients());
+        buttons[6].addActionListener(e -> menuGetJson());
+        buttons[7].addActionListener(e -> dispose());
+
         setVisible(true);
     }
 
-    private void handleOption(int index) {
-        switch (index) {
-            case 1 -> menuCreateClient();
-            case 2 -> menuAuthenticateClient();
-            case 3 -> menuShowClient();
-            case 4 -> menuUpdateClient();
-            case 5 -> menuDeleteClient();
-            case 6 -> menuDeleteInactiveClients();
-            case 7 -> menuGetJson();
-            default -> JOptionPane.showMessageDialog(this, "Please select a valid option.");
-        }
-    }
-
     private void menuCreateClient() {
-        JTextField fname = new JTextField();
-        JTextField lname = new JTextField();
-        JTextField phone = new JTextField();
-        JTextField email = new JTextField();
+        JTextField fname = new JTextField(15);
+        JTextField lname = new JTextField(15);
+        JTextField phone = new JTextField(15);
+        JTextField email = new JTextField(15);
         String[] genderOptions = {"MALE", "FEMALE", "OTHER"};
         JComboBox<String> genderBox = new JComboBox<>(genderOptions);
-        JTextField birth = new JTextField(); // dd/MM/yyyy
+        JTextField birth = new JTextField(10); // dd/MM/yyyy
 
         Object[] fields = {
             "First Name:", fname,
@@ -92,11 +101,15 @@ public class ClientFrame extends JFrame {
         }
     }
 
+    // === Οι υπόλοιπες μέθοδοι (menuAuthenticateClient, menuShowClient, κ.λπ.) παραμένουν όπως ήταν ===
+
     private void menuAuthenticateClient() {
         String input = JOptionPane.showInputDialog(this, "Enter Email or Phone:");
         long clientId = ClientService.authenticateClient1(TestData.clients, input);
         if (clientId == -1) {
             JOptionPane.showMessageDialog(this, "Client not found.");
+        } else {
+            JOptionPane.showMessageDialog(this, "Authenticated. ID: " + clientId);
         }
     }
 
@@ -111,24 +124,20 @@ public class ClientFrame extends JFrame {
     }
 
     private void menuUpdateClient() {
-        String input = JOptionPane.showInputDialog(this, "Enter Email or Phone to identify client:");
-        Client client = null;
-        for (Client c : TestData.clients) {
-            if (c.getEmail().equals(input) || c.getPhoneNumber().equals(input)) {
-                client = c;
-                break;
-            }
-        }
+        String input = JOptionPane.showInputDialog(this, "Enter Email or Phone:");
+        Client client = TestData.clients.stream()
+            .filter(c -> c.getEmail().equals(input) || c.getPhoneNumber().equals(input))
+            .findFirst().orElse(null);
 
         if (client == null) {
             JOptionPane.showMessageDialog(this, "Client not found.");
             return;
         }
 
-        JTextField newFname = new JTextField(client.getFirstName());
-        JTextField newLname = new JTextField(client.getLastName());
-        JTextField newEmail = new JTextField(client.getEmail());
-        JTextField newPhone = new JTextField(client.getPhoneNumber());
+        JTextField newFname = new JTextField(client.getFirstName(), 15);
+        JTextField newLname = new JTextField(client.getLastName(), 15);
+        JTextField newEmail = new JTextField(client.getEmail(), 15);
+        JTextField newPhone = new JTextField(client.getPhoneNumber(), 15);
 
         Object[] fields = {
             "New First Name:", newFname,
@@ -151,13 +160,9 @@ public class ClientFrame extends JFrame {
 
     private void menuDeleteClient() {
         String input = JOptionPane.showInputDialog(this, "Enter Email or Phone:");
-        Client client = null;
-        for (Client c : TestData.clients) {
-            if (c.getEmail().equals(input) || c.getPhoneNumber().equals(input)) {
-                client = c;
-                break;
-            }
-        }
+        Client client = TestData.clients.stream()
+            .filter(c -> c.getEmail().equals(input) || c.getPhoneNumber().equals(input))
+            .findFirst().orElse(null);
 
         if (client == null) {
             JOptionPane.showMessageDialog(this, "Client not found.");
@@ -176,6 +181,7 @@ public class ClientFrame extends JFrame {
         String pin = JOptionPane.showInputDialog(this, "Enter PIN:");
         if (pin.equals(ADMIN_PIN)) {
             ClientService.isInactiveMoreThan5Years(TestData.clients);
+            JOptionPane.showMessageDialog(this, "Inactive clients deleted.");
         } else {
             JOptionPane.showMessageDialog(this, "Incorrect PIN.");
         }
@@ -191,5 +197,22 @@ public class ClientFrame extends JFrame {
         area.setEditable(false);
         JScrollPane scroll = new JScrollPane(area);
         JOptionPane.showMessageDialog(this, scroll, "All Clients as JSON", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    // === Background Panel ===
+    static class BackgroundPanel extends JPanel {
+        private final Image image;
+
+        public BackgroundPanel(String path) {
+            this.image = new ImageIcon(path).getImage();
+        }
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            if (image != null) {
+                g.drawImage(image, 0, 0, getWidth(), getHeight(), this);
+            }
+        }
     }
 }
