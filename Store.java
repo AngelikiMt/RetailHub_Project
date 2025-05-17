@@ -5,8 +5,7 @@ public class Store {
 	private String address;
 	private String country;
 	private String storeName;
-	//private int storeSum;
-	private boolean active;
+	private static boolean active;
 
 
 	public Store (String storeName, String address, String country, String phone) {
@@ -41,7 +40,7 @@ public class Store {
 	}
 
 	// Is
-	public boolean isActive () {
+	public static boolean isActive () {
 		return active;
 	}
 

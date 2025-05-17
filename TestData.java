@@ -77,7 +77,7 @@ public class TestData {
 		!(gender.equals("MALE") || gender.equals("FEMALE") || gender.equals("OTHER"))) {
 			gender = "OTHER"; 
 		}
-		System.out.println("Birthdate: dd/MM/yyyy (Press enter to skip): ");
+		System.out.println("Birthdate: dd/MM/yyyy : ");
 		String birthDateInput = in.nextLine();
 		if (!birthDateInput.isEmpty()) {
 			birthDate = LocalDate.parse(birthDateInput, formatter);
@@ -611,11 +611,5 @@ public class TestData {
 		}
 	}
             
-	private static Client findClientById(long id) {
-		for (Client c : clients) {
-			if (c.getClientId() == id) return c;
-		}
-		return null;
-	}
 }
 

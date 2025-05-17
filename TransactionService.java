@@ -24,13 +24,17 @@ public class TransactionService {
             throw new IllegalArgumentException("Product and quantity lists size mismatch");
         }
 
+        if (Store.isActive() == false) {
+            throw new IllegalArgumentException("The store is not active.");
+        }
+
         double sumTotal = 0;
 
         for (int i = 0; i < productIds.size(); i++) {
             long productId = productIds.get(i);
             int quantity = quantities.get(i);
 
-            List<Stock> stockList = stockService.getStock((int) productId, storeId);
+            List<Stock> stockList = StockService.getStock((int) productId, storeId);
             if (stockList == null || stockList.isEmpty()) {
                 throw new RuntimeException("No stock found for product ID: " + productId);
             }
@@ -43,6 +47,9 @@ public class TransactionService {
             Product product = productService.findProductById((int) productId);
             if (product == null) {
                 throw new RuntimeException("Product not found with ID: " + productId);
+            }
+            else if (product.getActive() == false){
+                throw new RuntimeException("Product with ID: " + productId + " is not active.");
             }
 
             sumTotal += product.getPrice() * quantity;
@@ -70,7 +77,7 @@ public class TransactionService {
             for (int i = 0; i < productIds.size(); i++) {
                 long productId = productIds.get(i);
                 int quantity = quantities.get(i);
-                stockService.reduceStockOnPurchase((int) productId, storeId, quantity);
+                StockService.reduceStockOnPurchase((int) productId, storeId, quantity);
             }
 
             // Update Client info

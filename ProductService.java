@@ -22,6 +22,11 @@ public class ProductService {
 			System.out.println("Category cannot be empty.");
 			return null;
 		}
+		else if (!category.equals("clothing") && !category.equals("beauty") && !category.equals("electronis")){
+			System.out.println("Not a valid category.");
+			return null;
+		}
+
 		if (price < 0) {
 			System.out.println("Price cannot be negative.");
 			return null;
