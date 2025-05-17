@@ -7,7 +7,7 @@ import java.util.Scanner;
 public class TestData {
     private static final Scanner in = new Scanner(System.in);
     
-    private static final List<Client> clients = new ArrayList<>();
+    public static final List<Client> clients = new ArrayList<>();
     private static final List<Includes> includesList = new ArrayList<>();
     private static final List<Transaction> transactions = new ArrayList<>();
         
@@ -288,6 +288,7 @@ public class TestData {
 
 //====================================================== STORE TEST ==========================================================================    
 	   public static boolean checkPIN() {
+		String ADMIN_PIN = "12345";
 		System.out.print("Please enter your PIN: ");
 		String pin = in.nextLine();
 		if (!pin.equals(ADMIN_PIN)) {
