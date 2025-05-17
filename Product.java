@@ -8,7 +8,7 @@ public class Product
     private double price;
     private double cost;
     private boolean active;
-//change test
+//gggg
 
     // Constructor: productId to be automatically generated
     public Product (String description, String category, double price, double cost) 
