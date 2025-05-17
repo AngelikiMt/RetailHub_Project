@@ -12,7 +12,7 @@ public class ClientFrame extends JFrame {
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
         // === Φόντο ===
-        BackgroundPanel background = new BackgroundPanel("RetailHub.png");
+        BackgroundPanel background = new BackgroundPanel("RETAIL1.png");
         background.setLayout(new BorderLayout());
         setContentPane(background);
 

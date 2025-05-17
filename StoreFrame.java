@@ -10,7 +10,7 @@ public class StoreFrame extends JFrame {
         setExtendedState(JFrame.MAXIMIZED_BOTH); // Πλήρης οθόνη
 
         // === Φόντο ===
-        BackgroundPanel backgroundPanel = new BackgroundPanel("RetailHub.png");
+        BackgroundPanel backgroundPanel = new BackgroundPanel("RETAIL1.png");
         backgroundPanel.setLayout(new BorderLayout());
         setContentPane(backgroundPanel);
 

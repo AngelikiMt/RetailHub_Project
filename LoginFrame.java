@@ -10,35 +10,33 @@ public class LoginFrame extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setExtendedState(JFrame.MAXIMIZED_BOTH); // Πλήρης οθόνη
 
-        // === Κύριο Panel ===
-        JPanel mainPanel = new JPanel();
-        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
-
-        // === Εικόνα ===
-        try {
-            ImageIcon imageIcon = new ImageIcon("RetailHub.png");
-            JLabel imageLabel = new JLabel(imageIcon);
-            imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-            mainPanel.add(Box.createVerticalStrut(30));
-            mainPanel.add(imageLabel);
-        } catch (Exception e) {
-            System.err.println("Image not found: " + e.getMessage());
-        }
+        // === Custom JPanel με background εικόνα ===
+        JPanel backgroundPanel = new JPanel() {
+            Image background = new ImageIcon("RetailHub.png").getImage();
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                g.drawImage(background, 0, 0, getWidth(), getHeight(), this);
+            }
+        };
+        backgroundPanel.setLayout(new GridBagLayout()); // Κεντράρει το login panel
 
         // === Panel σύνδεσης ===
         JPanel loginPanel = new JPanel(new GridBagLayout());
-        loginPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        loginPanel.setOpaque(false); // Να φαίνεται το background πίσω του
+
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
         JLabel userLabel = new JLabel("Username:");
-        JTextField userField = new JTextField();
+        JTextField userField = new JTextField(15);
 
         JLabel passLabel = new JLabel("Password:");
-        JPasswordField passField = new JPasswordField();
+        JPasswordField passField = new JPasswordField(15);
 
         JCheckBox showPass = new JCheckBox("Show Password");
+        showPass.setOpaque(false); // Για να είναι διάφανο
         showPass.addActionListener(e -> {
             passField.setEchoChar(showPass.isSelected() ? (char) 0 : '•');
         });
@@ -52,15 +50,15 @@ public class LoginFrame extends JFrame {
 
             if (USERNAME.equals(enteredUser) && PASSWORD.equals(enteredPass)) {
                 SwingUtilities.invokeLater(() -> {
-                    dispose();       // Κλείνει το LoginFrame
-                    new MainMenu();  // Ανοίγει το MainMenu
+                    dispose();
+                    new MainMenu();
                 });
             } else {
                 JOptionPane.showMessageDialog(this, "Invalid credentials", "Error", JOptionPane.ERROR_MESSAGE);
             }
         });
 
-        // === Προσθήκη στο loginPanel ===
+        // === Προσθήκη στοιχείων ===
         gbc.gridx = 0; gbc.gridy = 0;
         loginPanel.add(userLabel, gbc);
         gbc.gridx = 1;
@@ -77,10 +75,10 @@ public class LoginFrame extends JFrame {
         gbc.gridx = 1; gbc.gridy = 3;
         loginPanel.add(loginBtn, gbc);
 
-        mainPanel.add(Box.createVerticalStrut(50));
-        mainPanel.add(loginPanel);
+        // === Τοποθέτηση loginPanel στο κέντρο ===
+        backgroundPanel.add(loginPanel, new GridBagConstraints());
 
-        setContentPane(mainPanel);
+        setContentPane(backgroundPanel);
         setVisible(true);
     }
 
