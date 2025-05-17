@@ -14,7 +14,7 @@ public class StockService {
             return;
         }
         //Check if the store exist
-        if (!StoreService.validateId(storeId)) {
+        if (!StoreService.validateId(storeId) || Store.isActive() == false) {
          System.out.println("Cannot add stock. Store ID " + storeId + " does not exist.");
          return;
         }
@@ -23,6 +23,10 @@ public class StockService {
         Product product = productService.findProductById(productId);
         if (product == null) {
             System.out.println("Cannot add stock. Product ID " + productId + " does not exist.");
+            return;
+        }
+        else if (product.getActive() == false){
+            System.out.println("The product you choose is not active.");
             return;
         }
 
