@@ -1,52 +1,57 @@
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 public class ClientFrame extends JFrame {
     private final JPanel contentPanel;
+    private final JTable clientTable;
+    private final DefaultTableModel tableModel;
 
     public ClientFrame() {
         setTitle("Client Menu");
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
-        // === Φόντο ===
         BackgroundPanel background = new BackgroundPanel("RETAIL1.png");
         background.setLayout(new BorderLayout());
         setContentPane(background);
 
-        // === Πλαϊνό Μενού ===
         JPanel leftMenu = new JPanel();
-        leftMenu.setLayout(new GridLayout(8, 1, 10, 10));
+        leftMenu.setLayout(new GridLayout(9, 1, 10, 10));
         leftMenu.setOpaque(false);
         leftMenu.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 10));
 
         Font buttonFont = new Font("Arial", Font.BOLD, 16);
-
         String[] actions = {
             "Create Client", "Authenticate Client", "Show Client",
             "Update Client", "Delete Client", "Delete Inactive Clients",
             "Get All Clients as JSON", "Back to Main Menu"
         };
-
         JButton[] buttons = new JButton[actions.length];
-
         for (int i = 0; i < actions.length; i++) {
             buttons[i] = new JButton(actions[i]);
             buttons[i].setFont(buttonFont);
             buttons[i].setFocusPainted(false);
             leftMenu.add(buttons[i]);
         }
-
         background.add(leftMenu, BorderLayout.WEST);
 
-        // === Περιεχόμενο ===
-        contentPanel = new JPanel();
+        JPanel topPanel = new JPanel(new BorderLayout());
+        tableModel = new DefaultTableModel(new String[]{
+            "ID", "First Name", "Last Name", "Email", "Phone", "Gender", "Birth Date", "Active", "Date Joined", "Last Purchase", "Sum"
+        }, 0);
+        clientTable = new JTable(tableModel);
+        refreshTable();
+        topPanel.add(new JScrollPane(clientTable), BorderLayout.CENTER);
+        background.add(topPanel, BorderLayout.NORTH);
+
+        contentPanel = new JPanel(new BorderLayout());
         contentPanel.setOpaque(false);
         background.add(contentPanel, BorderLayout.CENTER);
 
-        // === Συνδέσεις Κουμπιών ===
         buttons[0].addActionListener(e -> menuCreateClient());
         buttons[1].addActionListener(e -> menuAuthenticateClient());
         buttons[2].addActionListener(e -> menuShowClient());
@@ -60,57 +65,62 @@ public class ClientFrame extends JFrame {
     }
 
     private void menuCreateClient() {
-        JTextField fname = new JTextField(15);
-        JTextField lname = new JTextField(15);
-        JTextField phone = new JTextField(15);
-        JTextField email = new JTextField(15);
+        contentPanel.removeAll();
+
+        JPanel form = new JPanel(new GridLayout(0, 2, 10, 5));
+        JTextField fname = new JTextField(10);
+        JTextField lname = new JTextField(10);
+        JTextField phone = new JTextField(10);
+        JTextField email = new JTextField(10);
         String[] genderOptions = {"MALE", "FEMALE", "OTHER"};
         JComboBox<String> genderBox = new JComboBox<>(genderOptions);
-        JTextField birth = new JTextField(10); // dd/MM/yyyy
+        JTextField birth = new JTextField(10);
+        JButton submit = new JButton("Create Client");
 
-        Object[] fields = {
-            "First Name:", fname,
-            "Last Name:", lname,
-            "Phone Number:", phone,
-            "Email:", email,
-            "Gender:", genderBox,
-            "Birth Date (dd/MM/yyyy):", birth
-        };
+        form.add(new JLabel("First Name:")); form.add(fname);
+        form.add(new JLabel("Last Name:")); form.add(lname);
+        form.add(new JLabel("Phone Number:")); form.add(phone);
+        form.add(new JLabel("Email:")); form.add(email);
+        form.add(new JLabel("Gender:")); form.add(genderBox);
+        form.add(new JLabel("Birth Date (dd/MM/yyyy):")); form.add(birth);
+        contentPanel.add(form, BorderLayout.CENTER);
+        contentPanel.add(submit, BorderLayout.SOUTH);
 
-        int ok = JOptionPane.showConfirmDialog(this, fields, "Create Client", JOptionPane.OK_CANCEL_OPTION);
-        if (ok == JOptionPane.OK_OPTION) {
+        submit.addActionListener(e -> {
             try {
                 LocalDate birthDate = birth.getText().isEmpty() ? null :
                         LocalDate.parse(birth.getText(), DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-
                 Client client = ClientService.createClient(
                         TestData.clients,
-                        fname.getText(),
-                        lname.getText(),
-                        birthDate,
-                        phone.getText(),
-                        email.getText(),
-                        genderBox.getSelectedItem().toString(),
-                        true
-                );
+                        fname.getText(), lname.getText(), birthDate,
+                        phone.getText(), email.getText(),
+                        genderBox.getSelectedItem().toString(), true);
                 TestData.clients.add(client);
+                refreshTable();
                 JOptionPane.showMessageDialog(this, "Client created with ID: " + client.getClientId());
-            } catch (Exception e) {
-                JOptionPane.showMessageDialog(this, e.getMessage(), "Validation Error", JOptionPane.ERROR_MESSAGE);
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, ex.getMessage(), "Validation Error", JOptionPane.ERROR_MESSAGE);
             }
-        }
-    }
+        });
 
-    // === Οι υπόλοιπες μέθοδοι (menuAuthenticateClient, menuShowClient, κ.λπ.) παραμένουν όπως ήταν ===
+        contentPanel.revalidate();
+        contentPanel.repaint();
+    }
 
     private void menuAuthenticateClient() {
         String input = JOptionPane.showInputDialog(this, "Enter Email or Phone:");
-        long clientId = ClientService.authenticateClient1(TestData.clients, input);
-        if (clientId == -1) {
-            JOptionPane.showMessageDialog(this, "Client not found.");
-        } else {
-            JOptionPane.showMessageDialog(this, "Authenticated. ID: " + clientId);
+        int rowCount = clientTable.getRowCount();
+        for (int i = 0; i < rowCount; i++) {
+            clientTable.setRowSelectionAllowed(true);
+            String email = (String) clientTable.getValueAt(i, 3);
+            String phone = (String) clientTable.getValueAt(i, 4);
+            if (input.equals(email) || input.equals(phone)) {
+                clientTable.setRowSelectionInterval(i, i);
+                clientTable.setSelectionBackground(Color.GREEN);
+                return;
+            }
         }
+        JOptionPane.showMessageDialog(this, "Client not found.");
     }
 
     private void menuShowClient() {
@@ -126,43 +136,49 @@ public class ClientFrame extends JFrame {
     private void menuUpdateClient() {
         String input = JOptionPane.showInputDialog(this, "Enter Email or Phone:");
         Client client = TestData.clients.stream()
-            .filter(c -> c.getEmail().equals(input) || c.getPhoneNumber().equals(input))
-            .findFirst().orElse(null);
+                .filter(c -> input.equals(c.getEmail()) || input.equals(c.getPhoneNumber()))
+                .findFirst().orElse(null);
 
         if (client == null) {
             JOptionPane.showMessageDialog(this, "Client not found.");
             return;
         }
 
-        JTextField newFname = new JTextField(client.getFirstName(), 15);
-        JTextField newLname = new JTextField(client.getLastName(), 15);
-        JTextField newEmail = new JTextField(client.getEmail(), 15);
-        JTextField newPhone = new JTextField(client.getPhoneNumber(), 15);
+        contentPanel.removeAll();
+        JPanel form = new JPanel(new GridLayout(0, 2, 10, 5));
+        JTextField newFname = new JTextField(client.getFirstName(), 10);
+        JTextField newLname = new JTextField(client.getLastName(), 10);
+        JTextField newEmail = new JTextField(client.getEmail(), 10);
+        JTextField newPhone = new JTextField(client.getPhoneNumber(), 10);
+        JButton submit = new JButton("Update Client");
 
-        Object[] fields = {
-            "New First Name:", newFname,
-            "New Last Name:", newLname,
-            "New Email:", newEmail,
-            "New Phone Number:", newPhone
-        };
+        form.add(new JLabel("New First Name:")); form.add(newFname);
+        form.add(new JLabel("New Last Name:")); form.add(newLname);
+        form.add(new JLabel("New Email:")); form.add(newEmail);
+        form.add(new JLabel("New Phone Number:")); form.add(newPhone);
 
-        int ok = JOptionPane.showConfirmDialog(this, fields, "Update Client", JOptionPane.OK_CANCEL_OPTION);
-        if (ok == JOptionPane.OK_OPTION) {
+        contentPanel.add(form, BorderLayout.CENTER);
+        contentPanel.add(submit, BorderLayout.SOUTH);
+
+        submit.addActionListener(e -> {
             try {
-                ClientService.updateClient(TestData.clients, client,
-                        newFname.getText(), newLname.getText(), newEmail.getText(), newPhone.getText());
+                ClientService.updateClient(TestData.clients, client, newFname.getText(), newLname.getText(), newEmail.getText(), newPhone.getText());
+                refreshTable();
                 JOptionPane.showMessageDialog(this, "Client updated.");
-            } catch (Exception e) {
-                JOptionPane.showMessageDialog(this, e.getMessage(), "Update Failed", JOptionPane.ERROR_MESSAGE);
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, ex.getMessage(), "Update Failed", JOptionPane.ERROR_MESSAGE);
             }
-        }
+        });
+
+        contentPanel.revalidate();
+        contentPanel.repaint();
     }
 
     private void menuDeleteClient() {
         String input = JOptionPane.showInputDialog(this, "Enter Email or Phone:");
         Client client = TestData.clients.stream()
-            .filter(c -> c.getEmail().equals(input) || c.getPhoneNumber().equals(input))
-            .findFirst().orElse(null);
+                .filter(c -> c.getEmail().equals(input) || c.getPhoneNumber().equals(input))
+                .findFirst().orElse(null);
 
         if (client == null) {
             JOptionPane.showMessageDialog(this, "Client not found.");
@@ -172,6 +188,7 @@ public class ClientFrame extends JFrame {
         int confirm = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete this client?", "Confirm", JOptionPane.YES_NO_OPTION);
         if (confirm == JOptionPane.YES_OPTION) {
             ClientService.deleteClient(TestData.clients, client.getClientId());
+            refreshTable();
             JOptionPane.showMessageDialog(this, "Client deleted.");
         }
     }
@@ -181,6 +198,7 @@ public class ClientFrame extends JFrame {
         String pin = JOptionPane.showInputDialog(this, "Enter PIN:");
         if (pin.equals(ADMIN_PIN)) {
             ClientService.isInactiveMoreThan5Years(TestData.clients);
+            refreshTable();
             JOptionPane.showMessageDialog(this, "Inactive clients deleted.");
         } else {
             JOptionPane.showMessageDialog(this, "Incorrect PIN.");
@@ -192,21 +210,28 @@ public class ClientFrame extends JFrame {
         for (Client client : TestData.clients) {
             sb.append(ClientService.getClientAsJson(client)).append("\n\n");
         }
-
         JTextArea area = new JTextArea(sb.toString(), 20, 40);
         area.setEditable(false);
         JScrollPane scroll = new JScrollPane(area);
         JOptionPane.showMessageDialog(this, scroll, "All Clients as JSON", JOptionPane.INFORMATION_MESSAGE);
     }
 
-    // === Background Panel ===
+    private void refreshTable() {
+        tableModel.setRowCount(0);
+        for (Client c : TestData.clients) {
+            tableModel.addRow(new Object[]{
+                    c.getClientId(), c.getFirstName(), c.getLastName(), c.getEmail(),
+                    c.getPhoneNumber(), c.getGender(), c.getBirthDate(),
+                    c.isActiveStatus(), c.getDateJoined(), c.getLastPurchaseDate(), c.getClientSumTotal()
+            });
+        }
+    }
+
     static class BackgroundPanel extends JPanel {
         private final Image image;
-
         public BackgroundPanel(String path) {
             this.image = new ImageIcon(path).getImage();
         }
-
         @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);

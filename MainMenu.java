@@ -9,18 +9,19 @@ public class MainMenu extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setExtendedState(JFrame.MAXIMIZED_BOTH); // Fullscreen
 
-        // === ΚΥΡΙΟ PANEL ===
-        JPanel mainPanel = new JPanel(new BorderLayout());
+        // === PANEL ΜΕ ΦΟΝΤΟ ===
+        JPanel backgroundPanel = new JPanel() {
+            Image bg = new ImageIcon("RetailHub.png").getImage();
 
-        // === ΕΙΚΟΝΑ ΣΤΟ ΠΑΝΩ ΜΕΡΟΣ ===
-        ImageIcon imageIcon = new ImageIcon("RetailHub.png"); // Αντικατέστησέ το με την εικόνα σου
-        JLabel imageLabel = new JLabel(imageIcon);
-        imageLabel.setHorizontalAlignment(JLabel.CENTER);
-        mainPanel.add(imageLabel, BorderLayout.NORTH);
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                g.drawImage(bg, 0, 0, getWidth(), getHeight(), this);
+            }
+        };
+        backgroundPanel.setLayout(new BorderLayout());
 
-        // === PANEL ΚΟΥΜΠΙΩΝ ΜΕ 2 ΣΤΗΛΕΣ ===
-        JPanel buttonPanel = new JPanel(new GridLayout(3, 2, 40, 40)); // 3 γραμμές, 2 στήλες, με κενά
-
+        // === ΚΟΥΜΠΙΑ ===
         JButton clientBtn = new JButton("CLIENT");
         JButton productBtn = new JButton("PRODUCT");
         JButton storeBtn = new JButton("STORE (PIN)");
@@ -28,14 +29,30 @@ public class MainMenu extends JFrame {
         JButton transactionBtn = new JButton("TRANSACTION");
         JButton exitBtn = new JButton("EXIT");
 
-        // Στυλ για κουμπιά
-        Font buttonFont = new Font("Arial", Font.BOLD, 22);
-        for (JButton btn : new JButton[]{clientBtn, productBtn, storeBtn, stockBtn, transactionBtn, exitBtn}) {
+        Font buttonFont = new Font("Arial", Font.BOLD, 20);
+        Dimension buttonSize = new Dimension(200, 50);
+
+        JButton[] buttons = {clientBtn, productBtn, storeBtn, stockBtn, transactionBtn, exitBtn};
+        for (JButton btn : buttons) {
             btn.setFont(buttonFont);
-            buttonPanel.add(btn);
+            btn.setPreferredSize(buttonSize);
         }
 
-        // === ΔΡΑΣΕΙΣ ΚΟΥΜΠΙΩΝ ===
+        // === PANEL ΜΕ 3 ΣΤΗΛΕΣ × 2 ΓΡΑΜΜΕΣ ===
+        JPanel buttonGrid = new JPanel(new GridLayout(2, 3, 30, 30));
+        buttonGrid.setOpaque(false); // διαφανές για να φαίνεται το background
+        for (JButton btn : buttons) {
+            buttonGrid.add(btn);
+        }
+
+        // === ΚΕΝΤΡΑΡΙΣΜΑ ΚΟΥΜΠΙΩΝ ΚΑΤΩ ===
+        JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 40));
+        bottomPanel.setOpaque(false);
+        bottomPanel.add(buttonGrid);
+
+        backgroundPanel.add(bottomPanel, BorderLayout.SOUTH);
+
+        // === ΔΡΑΣΕΙΣ ===
         clientBtn.addActionListener(e -> new ClientFrame());
         productBtn.addActionListener(e -> new ProductFrame());
         storeBtn.addActionListener(e -> {
@@ -48,18 +65,16 @@ public class MainMenu extends JFrame {
         });
         stockBtn.addActionListener(e -> new StockFrame());
         transactionBtn.addActionListener(e -> new TransactionFrame());
-        exitBtn.addActionListener(e ->{dispose();       
-                    new LoginFrame();});
+        exitBtn.addActionListener(e -> {
+            dispose();
+            new LoginFrame();
+        });
 
-        // Κέντρο: κουμπιά κάτω από την εικόνα
-        JPanel centerPanel = new JPanel();
-        centerPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 50, 50));
-        centerPanel.add(buttonPanel);
-        mainPanel.add(centerPanel, BorderLayout.CENTER);
-
-        setContentPane(mainPanel);
+        setContentPane(backgroundPanel);
         setVisible(true);
     }
 
+
 }
+
 
