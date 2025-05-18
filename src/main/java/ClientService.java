@@ -52,22 +52,20 @@ public class ClientService {
         }
     }
 
-    private static void validateAge(LocalDate birthDate) {
-        long age = ChronoUnit.YEARS.between(birthDate, LocalDate.now());
-        if (age < 15) {
-            throw new IllegalArgumentException("Client must be over 15 years old.");
-        }
-    }
+    private static void validateAge(LocalDate birthDate, List<String> errors) {
 
-    // Checks the uniqueness of email or phone number
-    private static boolean checkunique(String x, List<Client> clients, boolean unique) {
-        for (Client client : clients) {
-            if (x == client.getEmail() || x == client.getPhoneNumber()){
-                System.out.println("There is already client with the same email or phone number");
-                return unique = false;
-                }
+        if (birthDate == null) {
+            errors.add( "Birth date cannot be empty.");
+         }
+        else if (birthDate!=null && birthDate.isAfter(LocalDate.now())) {
+            errors.add("Enter a valid date of birth.");
         }
-        return unique = true;
+        else {
+            long age = ChronoUnit.YEARS.between(birthDate, LocalDate.now());
+            if (age < 15) {
+                throw new IllegalArgumentException("Client must be over 15 years old.");
+            }
+        }
     }
 
     // 1. Customer registration
@@ -82,15 +80,14 @@ public class ClientService {
         validatePhoneNumber(phoneNumber, errors, clients);
         validateGender(gender, errors);
                                     
-        if (birthDate!=null && birthDate.isAfter(LocalDate.now())) {
-            errors.add("Enter a valid date of birth.");
-        } else {
+
+
             try {
-                validateAge(birthDate);
+                validateAge(birthDate, errors);
             } catch (IllegalArgumentException e) {
                 errors.add(e.getMessage());
             }
-        }
+
                                                     
         if (!errors.isEmpty()) {
             throw new IllegalArgumentException(String.join("\n", errors));
