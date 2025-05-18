@@ -2,100 +2,251 @@ import javax.swing.*;
 import java.awt.*;
 
 public class StockFrame extends JFrame {
+    private JPanel contentPanel;
+
     public StockFrame() {
         setTitle("Stock Management");
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        setLayout(new GridLayout(6, 1, 5, 5));
+        setExtendedState(JFrame.MAXIMIZED_BOTH); // Πλήρης οθόνη
+
+        StoreFrame.BackgroundPanel backgroundPanel = new StoreFrame.BackgroundPanel("RETAIL1.png");
+        backgroundPanel.setLayout(new BorderLayout());
+        setContentPane(backgroundPanel);
+
+        JPanel sidePanel = new JPanel(new GridLayout(7, 1, 10, 10)); // Αύξησα τις γραμμές σε 7
+        sidePanel.setOpaque(false);
+        sidePanel.setPreferredSize(new Dimension(250, 0));
 
         JButton addBtn = new JButton("Add Stock");
-        JButton getBtn = new JButton("Get Stock for Product & Store");
+        JButton getBtn = new JButton("Get Stock");
         JButton updateBtn = new JButton("Update Stock");
-        JButton lowStockBtn = new JButton("Get Low Stock (<3)");
+        JButton lowStockBtn = new JButton("Low Stock (<3)");
         JButton jsonBtn = new JButton("Get Stock as JSON");
+        JButton searchOtherStoresBtn = new JButton("Search Other Stores"); // Νέο κουμπί
         JButton closeBtn = new JButton("Close");
 
-        addBtn.addActionListener(e -> {
-            JTextField productId = new JTextField();
-            JTextField storeId = new JTextField();
-            JTextField quantity = new JTextField();
+        for (JButton btn : new JButton[]{addBtn, getBtn, updateBtn, lowStockBtn, jsonBtn, searchOtherStoresBtn, closeBtn}) {
+            btn.setFont(new Font("Arial", Font.BOLD, 16));
+            sidePanel.add(btn);
+        }
 
-            Object[] message = {
-                "Product ID:", productId,
-                "Store ID:", storeId,
-                "Quantity:", quantity
-            };
+        contentPanel = new JPanel();
+        contentPanel.setOpaque(false);
+        contentPanel.setLayout(new GridBagLayout());
 
-            int option = JOptionPane.showConfirmDialog(this, message, "Add Stock", JOptionPane.OK_CANCEL_OPTION);
-            if (option == JOptionPane.OK_OPTION) {
-                try {
-                    StockService.addStock(
+        backgroundPanel.add(sidePanel, BorderLayout.WEST);
+        backgroundPanel.add(contentPanel, BorderLayout.CENTER);
+
+        addBtn.addActionListener(e -> showAddStockPanel());
+        getBtn.addActionListener(e -> showGetStockPanel());
+        updateBtn.addActionListener(e -> showUpdateStockPanel());
+        lowStockBtn.addActionListener(e -> {
+            StockService.getLowStockProducts();
+            JOptionPane.showMessageDialog(this, "Check console for low stock items.");
+        });
+        jsonBtn.addActionListener(e -> showJsonPanel());
+        searchOtherStoresBtn.addActionListener(e -> showSearchOtherStoresPanel()); // Προσθήκη ακροατή για το νέο panel
+        closeBtn.addActionListener(e -> dispose());
+
+        setVisible(true);
+    }
+
+    private void showAddStockPanel() {
+        contentPanel.removeAll();
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        JTextField productId = new JTextField(10);
+        JTextField storeId = new JTextField(10);
+        JTextField quantity = new JTextField(10);
+        JButton submit = new JButton("Add");
+
+        int y = 0;
+        gbc.gridx = 0; gbc.gridy = y; contentPanel.add(new JLabel("Product ID:"), gbc);
+        gbc.gridx = 1; contentPanel.add(productId, gbc);
+
+        gbc.gridx = 0; gbc.gridy = ++y; contentPanel.add(new JLabel("Store ID:"), gbc);
+        gbc.gridx = 1; contentPanel.add(storeId, gbc);
+
+        gbc.gridx = 0; gbc.gridy = ++y; contentPanel.add(new JLabel("Quantity:"), gbc);
+        gbc.gridx = 1; contentPanel.add(quantity, gbc);
+
+        gbc.gridx = 1; gbc.gridy = ++y; contentPanel.add(submit, gbc);
+
+        submit.addActionListener(e -> {
+            try {
+                StockService.addStock(
                         Integer.parseInt(storeId.getText()),
                         Long.parseLong(productId.getText()),
                         Integer.parseInt(quantity.getText())
-                    );
-                    JOptionPane.showMessageDialog(this, "Stock Added");
-                } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
-                }
+                );
+                JOptionPane.showMessageDialog(this, "Stock Added");
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
         });
+
+        contentPanel.revalidate();
+        contentPanel.repaint();
+    }
+
+    private void showGetStockPanel() {
+        contentPanel.removeAll();
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        JTextField productId = new JTextField(10);
+        JTextField storeId = new JTextField(10);
+        JButton getBtn = new JButton("Get");
+
+        int y = 0;
+        gbc.gridx = 0; gbc.gridy = y; contentPanel.add(new JLabel("Product ID:"), gbc);
+        gbc.gridx = 1; contentPanel.add(productId, gbc);
+
+        gbc.gridx = 0; gbc.gridy = ++y; contentPanel.add(new JLabel("Store ID:"), gbc);
+        gbc.gridx = 1; contentPanel.add(storeId, gbc);
+
+        gbc.gridx = 1; gbc.gridy = ++y; contentPanel.add(getBtn, gbc);
 
         getBtn.addActionListener(e -> {
-            String p = JOptionPane.showInputDialog("Product ID:");
-            String s = JOptionPane.showInputDialog("Store ID:");
-            var result = StockService.getStock(Long.parseLong(p), Integer.parseInt(s));
-            if (result.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "No stock found.");
-            } else {
-                JOptionPane.showMessageDialog(this, "Stock: " + result.get(0).getStockQuantity());
+            try {
+                var result = StockService.getStock(
+                        Long.parseLong(productId.getText()),
+                        Integer.parseInt(storeId.getText())
+                );
+                if (result.isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "No stock found.");
+                } else {
+                    JOptionPane.showMessageDialog(this, "Stock quantity: " + result.get(0).getStockQuantity());
+                }
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
         });
+
+        contentPanel.revalidate();
+        contentPanel.repaint();
+    }
+
+    private void showUpdateStockPanel() {
+        contentPanel.removeAll();
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        JTextField productId = new JTextField(10);
+        JTextField storeId = new JTextField(10);
+        JTextField quantity = new JTextField(10);
+        JButton updateBtn = new JButton("Update");
+
+        int y = 0;
+        gbc.gridx = 0; gbc.gridy = y; contentPanel.add(new JLabel("Product ID:"), gbc);
+        gbc.gridx = 1; contentPanel.add(productId, gbc);
+
+        gbc.gridx = 0; gbc.gridy = ++y; contentPanel.add(new JLabel("Store ID:"), gbc);
+        gbc.gridx = 1; contentPanel.add(storeId, gbc);
+
+        gbc.gridx = 0; gbc.gridy = ++y; contentPanel.add(new JLabel("New Quantity:"), gbc);
+        gbc.gridx = 1; contentPanel.add(quantity, gbc);
+
+        gbc.gridx = 1; gbc.gridy = ++y; contentPanel.add(updateBtn, gbc);
 
         updateBtn.addActionListener(e -> {
-            JTextField productId = new JTextField();
-            JTextField storeId = new JTextField();
-            JTextField quantity = new JTextField();
-
-            Object[] message = {
-                "Product ID:", productId,
-                "Store ID:", storeId,
-                "New Quantity:", quantity
-            };
-
-            int option = JOptionPane.showConfirmDialog(this, message, "Update Stock", JOptionPane.OK_CANCEL_OPTION);
-            if (option == JOptionPane.OK_OPTION) {
+            try {
                 StockService.updateStock(
-                    Long.parseLong(productId.getText()),
-                    Integer.parseInt(storeId.getText()),
-                    Integer.parseInt(quantity.getText())
+                        Long.parseLong(productId.getText()),
+                        Integer.parseInt(storeId.getText()),
+                        Integer.parseInt(quantity.getText())
                 );
-                JOptionPane.showMessageDialog(this, "Stock Updated");
+                JOptionPane.showMessageDialog(this, "Stock updated");
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
         });
 
-        lowStockBtn.addActionListener(e -> {
-            StockService.getLowStockProducts(); // Assuming it shows via console or modifies something else
-            JOptionPane.showMessageDialog(this, "Check console for low stock items.");
-        });
+        contentPanel.revalidate();
+        contentPanel.repaint();
+    }
+
+    private void showJsonPanel() {
+        contentPanel.removeAll();
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        JTextField productId = new JTextField(10);
+        JButton jsonBtn = new JButton("Get JSON");
+
+        int y = 0;
+        gbc.gridx = 0; gbc.gridy = y; contentPanel.add(new JLabel("Product ID:"), gbc);
+        gbc.gridx = 1; contentPanel.add(productId, gbc);
+
+        gbc.gridx = 1; gbc.gridy = ++y; contentPanel.add(jsonBtn, gbc);
 
         jsonBtn.addActionListener(e -> {
-            String p = JOptionPane.showInputDialog("Enter product ID:");
-            String json = StockService.getStockAsJson(Long.parseLong(p));
-            JOptionPane.showMessageDialog(this, json);
+            try {
+                String json = StockService.getStockAsJson(Long.parseLong(productId.getText()));
+                JOptionPane.showMessageDialog(this, json);
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
         });
 
-        closeBtn.addActionListener(e -> dispose());
+        contentPanel.revalidate();
+        contentPanel.repaint();
+    }
 
-        add(addBtn);
-        add(getBtn);
-        add(updateBtn);
-        add(lowStockBtn);
-        add(jsonBtn);
-        add(closeBtn);
+    private void showSearchOtherStoresPanel() {
+        contentPanel.removeAll();
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        pack();
-        setLocationRelativeTo(null);
-        setVisible(true);
+        JTextField productIdField = new JTextField(10);
+        JTextField excludedStoreIdField = new JTextField(10);
+        JButton searchBtn = new JButton("Search");
+
+        JTextArea resultArea = new JTextArea(10, 30);
+        resultArea.setEditable(false);
+        JScrollPane scrollPane = new JScrollPane(resultArea);
+
+        int y = 0;
+        gbc.gridx = 0; gbc.gridy = y; contentPanel.add(new JLabel("Product ID:"), gbc);
+        gbc.gridx = 1; contentPanel.add(productIdField, gbc);
+
+        gbc.gridx = 0; gbc.gridy = ++y; contentPanel.add(new JLabel("Excluded Store ID:"), gbc);
+        gbc.gridx = 1; contentPanel.add(excludedStoreIdField, gbc);
+
+        gbc.gridx = 1; gbc.gridy = ++y; contentPanel.add(searchBtn, gbc);
+
+        gbc.gridx = 0; gbc.gridy = ++y; gbc.gridwidth = 2; contentPanel.add(scrollPane, gbc);
+
+        searchBtn.addActionListener(e -> {
+            try {
+                long productId = Long.parseLong(productIdField.getText());
+                int excludedStoreId = Integer.parseInt(excludedStoreIdField.getText());
+
+                var stocks = StockService.searchProductInOtherStores(productId, excludedStoreId);
+
+                if (stocks.isEmpty()) {
+                    resultArea.setText("No stock found in other stores.");
+                } else {
+                    StringBuilder sb = new StringBuilder();
+                    for (var s : stocks) {
+                        sb.append("Store ID: ").append(s.getStoreId())
+                          .append(", Quantity: ").append(s.getStockQuantity())
+                          .append("\n");
+                    }
+                    resultArea.setText(sb.toString());
+                }
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+
+        contentPanel.revalidate();
+        contentPanel.repaint();
     }
 }
-
