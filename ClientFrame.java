@@ -3,7 +3,6 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 
 public class ClientFrame extends JFrame {
     private final JPanel contentPanel;
@@ -18,7 +17,7 @@ public class ClientFrame extends JFrame {
         BackgroundPanel background = new BackgroundPanel("RETAIL1.png");
         background.setLayout(new BorderLayout());
         setContentPane(background);
-
+        //Δημιουργια κουμπιων στα αριστερα
         JPanel leftMenu = new JPanel();
         leftMenu.setLayout(new GridLayout(9, 1, 10, 10));
         leftMenu.setOpaque(false);
@@ -38,7 +37,7 @@ public class ClientFrame extends JFrame {
             leftMenu.add(buttons[i]);
         }
         background.add(leftMenu, BorderLayout.WEST);
-
+        //ΠΙΝΑΚΑΣ
         JPanel topPanel = new JPanel(new BorderLayout());
         tableModel = new DefaultTableModel(new String[]{
             "ID", "First Name", "Last Name", "Email", "Phone", "Gender", "Birth Date", "Active", "Date Joined", "Last Purchase", "Sum"
@@ -65,156 +64,215 @@ public class ClientFrame extends JFrame {
     }
 
     private void menuCreateClient() {
-        contentPanel.removeAll();
+    contentPanel.removeAll();
 
-        JPanel form = new JPanel(new GridLayout(0, 2, 10, 5));
-        JTextField fname = new JTextField(10);
-        JTextField lname = new JTextField(10);
-        JTextField phone = new JTextField(10);
-        JTextField email = new JTextField(10);
-        String[] genderOptions = {"MALE", "FEMALE", "OTHER"};
-        JComboBox<String> genderBox = new JComboBox<>(genderOptions);
-        JTextField birth = new JTextField(10);
-        JButton submit = new JButton("Create Client");
+    JPanel form = new JPanel(new GridLayout(0, 2, 10, 10));
+    form.setOpaque(false);
 
-        form.add(new JLabel("First Name:")); form.add(fname);
-        form.add(new JLabel("Last Name:")); form.add(lname);
-        form.add(new JLabel("Phone Number:")); form.add(phone);
-        form.add(new JLabel("Email:")); form.add(email);
-        form.add(new JLabel("Gender:")); form.add(genderBox);
-        form.add(new JLabel("Birth Date (dd/MM/yyyy):")); form.add(birth);
-        contentPanel.add(form, BorderLayout.CENTER);
-        contentPanel.add(submit, BorderLayout.SOUTH);
+    JTextField fname = new JTextField(15);
+    JTextField lname = new JTextField(15);
+    JTextField phone = new JTextField(15);
+    JTextField email = new JTextField(15);
+    String[] genderOptions = {"MALE", "FEMALE", "OTHER"};
+    JComboBox<String> genderBox = new JComboBox<>(genderOptions);
+    JTextField birth = new JTextField(15);
 
-        submit.addActionListener(e -> {
-            try {
-                LocalDate birthDate = birth.getText().isEmpty() ? null :
-                        LocalDate.parse(birth.getText(), DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-                Client client = ClientService.createClient(
-                        TestData.clients,
-                        fname.getText(), lname.getText(), birthDate,
-                        phone.getText(), email.getText(),
-                        genderBox.getSelectedItem().toString(), true);
-                TestData.clients.add(client);
-                refreshTable();
-                JOptionPane.showMessageDialog(this, "Client created with ID: " + client.getClientId());
-            } catch (Exception ex) {
-                JOptionPane.showMessageDialog(this, ex.getMessage(), "Validation Error", JOptionPane.ERROR_MESSAGE);
-            }
-        });
+    form.add(new JLabel("First Name:"));
+    form.add(fname);
+    form.add(new JLabel("Last Name:"));
+    form.add(lname);
+    form.add(new JLabel("Phone Number:"));
+    form.add(phone);
+    form.add(new JLabel("Email:"));
+    form.add(email);
+    form.add(new JLabel("Gender:"));
+    form.add(genderBox);
+    form.add(new JLabel("Birth Date (dd/MM/yyyy):"));
+    form.add(birth);
 
-        contentPanel.revalidate();
-        contentPanel.repaint();
+    JButton submit = new JButton("Create Client");
+
+    JPanel buttonPanel = new JPanel();
+    buttonPanel.setOpaque(false);
+    buttonPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
+    buttonPanel.add(submit);
+
+    JPanel wrapper = new JPanel(new BorderLayout(10, 10));
+    wrapper.setOpaque(false);
+    wrapper.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
+    wrapper.add(form, BorderLayout.CENTER);
+    wrapper.add(buttonPanel, BorderLayout.SOUTH);
+    wrapper.setMaximumSize(new Dimension(500, 350));
+
+    JPanel centerWrapper = new JPanel(new GridBagLayout());
+    centerWrapper.setOpaque(false);
+    centerWrapper.add(wrapper);
+
+    contentPanel.setLayout(new BorderLayout());
+    contentPanel.add(centerWrapper, BorderLayout.CENTER);
+
+    submit.addActionListener(e -> {
+        try {
+            LocalDate birthDate = birth.getText().isEmpty() ? null :
+                    LocalDate.parse(birth.getText(), DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+            Client client = ClientService.createClient(
+                    TestData.clients,
+                    fname.getText(), lname.getText(), birthDate,
+                    phone.getText(), email.getText(),
+                    genderBox.getSelectedItem().toString(), true);
+            TestData.clients.add(client);
+            refreshTable();
+            JOptionPane.showMessageDialog(this, "Client created with ID: " + client.getClientId());
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "Validation Error", JOptionPane.ERROR_MESSAGE);
+        }
+    });
+
+    contentPanel.revalidate();
+    contentPanel.repaint();
+}
+
+private void menuUpdateClient() {
+    String input = JOptionPane.showInputDialog(this, "Enter Email or Phone:");
+    Client client = TestData.clients.stream()
+            .filter(c -> input.equals(c.getEmail()) || input.equals(c.getPhoneNumber()))
+            .findFirst().orElse(null);
+
+    if (client == null) {
+        JOptionPane.showMessageDialog(this, "Client not found.");
+        return;
     }
 
-    private void menuAuthenticateClient() {
-        String input = JOptionPane.showInputDialog(this, "Enter Email or Phone:");
-        int rowCount = clientTable.getRowCount();
-        for (int i = 0; i < rowCount; i++) {
-            clientTable.setRowSelectionAllowed(true);
-            String email = (String) clientTable.getValueAt(i, 3);
-            String phone = (String) clientTable.getValueAt(i, 4);
-            if (input.equals(email) || input.equals(phone)) {
-                clientTable.setRowSelectionInterval(i, i);
-                clientTable.setSelectionBackground(Color.GREEN);
-                return;
-            }
+    contentPanel.removeAll();
+
+    JPanel form = new JPanel(new GridLayout(0, 2, 10, 10));
+    form.setOpaque(false);
+
+    JTextField newFname = new JTextField(client.getFirstName(), 15);
+    JTextField newLname = new JTextField(client.getLastName(), 15);
+    JTextField newEmail = new JTextField(client.getEmail(), 15);
+    JTextField newPhone = new JTextField(client.getPhoneNumber(), 15);
+
+    form.add(new JLabel("New First Name:"));
+    form.add(newFname);
+    form.add(new JLabel("New Last Name:"));
+    form.add(newLname);
+    form.add(new JLabel("New Email:"));
+    form.add(newEmail);
+    form.add(new JLabel("New Phone Number:"));
+    form.add(newPhone);
+
+    JButton submit = new JButton("Update Client");
+
+    JPanel buttonPanel = new JPanel();
+    buttonPanel.setOpaque(false);
+    buttonPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
+    buttonPanel.add(submit);
+
+    JPanel wrapper = new JPanel(new BorderLayout(10, 10));
+    wrapper.setOpaque(false);
+    wrapper.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
+    wrapper.add(form, BorderLayout.CENTER);
+    wrapper.add(buttonPanel, BorderLayout.SOUTH);
+    wrapper.setMaximumSize(new Dimension(500, 300));
+
+    JPanel centerWrapper = new JPanel(new GridBagLayout());
+    centerWrapper.setOpaque(false);
+    centerWrapper.add(wrapper);
+
+    contentPanel.setLayout(new BorderLayout());
+    contentPanel.add(centerWrapper, BorderLayout.CENTER);
+
+    submit.addActionListener(e -> {
+        try {
+            ClientService.updateClient(TestData.clients, client,
+                    newFname.getText(), newLname.getText(), newEmail.getText(), newPhone.getText());
+            refreshTable();
+            JOptionPane.showMessageDialog(this, "Client updated.");
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "Update Failed", JOptionPane.ERROR_MESSAGE);
         }
+    });
+
+    contentPanel.revalidate();
+    contentPanel.repaint();
+}
+
+private void menuAuthenticateClient() {
+    String input = JOptionPane.showInputDialog(this, "Enter Email or Phone:");
+    int rowCount = clientTable.getRowCount();
+    for (int i = 0; i < rowCount; i++) {
+        clientTable.setRowSelectionAllowed(true);
+        String email = (String) clientTable.getValueAt(i, 3);
+        String phone = (String) clientTable.getValueAt(i, 4);
+        if (input.equals(email) || input.equals(phone)) {
+            clientTable.setRowSelectionInterval(i, i);
+            clientTable.setSelectionBackground(Color.GREEN);
+            return;
+        }
+    }
+    JOptionPane.showMessageDialog(this, "Client not found.");
+}
+
+private void menuShowClient() {
+    String input = JOptionPane.showInputDialog(this, "Enter Email or Phone:");
+    try {
+        Client client = ClientService.authenticateClient(TestData.clients, input);
+        JTextArea area = new JTextArea(client.toString(), 15, 40);
+        area.setEditable(false);
+        area.setOpaque(false);
+        JScrollPane scroll = new JScrollPane(area);
+        scroll.getViewport().setOpaque(false);
+        JOptionPane.showMessageDialog(this, scroll);
+    } catch (Exception e) {
         JOptionPane.showMessageDialog(this, "Client not found.");
     }
+}
 
-    private void menuShowClient() {
-        String input = JOptionPane.showInputDialog(this, "Enter Email or Phone:");
-        try {
-            Client client = ClientService.authenticateClient(TestData.clients, input);
-            JOptionPane.showMessageDialog(this, client.toString());
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Client not found.");
-        }
+private void menuDeleteClient() {
+    String input = JOptionPane.showInputDialog(this, "Enter Email or Phone:");
+    Client client = TestData.clients.stream()
+            .filter(c -> c.getEmail().equals(input) || c.getPhoneNumber().equals(input))
+            .findFirst().orElse(null);
+
+    if (client == null) {
+        JOptionPane.showMessageDialog(this, "Client not found.");
+        return;
     }
 
-    private void menuUpdateClient() {
-        String input = JOptionPane.showInputDialog(this, "Enter Email or Phone:");
-        Client client = TestData.clients.stream()
-                .filter(c -> input.equals(c.getEmail()) || input.equals(c.getPhoneNumber()))
-                .findFirst().orElse(null);
-
-        if (client == null) {
-            JOptionPane.showMessageDialog(this, "Client not found.");
-            return;
-        }
-
-        contentPanel.removeAll();
-        JPanel form = new JPanel(new GridLayout(0, 2, 10, 5));
-        JTextField newFname = new JTextField(client.getFirstName(), 10);
-        JTextField newLname = new JTextField(client.getLastName(), 10);
-        JTextField newEmail = new JTextField(client.getEmail(), 10);
-        JTextField newPhone = new JTextField(client.getPhoneNumber(), 10);
-        JButton submit = new JButton("Update Client");
-
-        form.add(new JLabel("New First Name:")); form.add(newFname);
-        form.add(new JLabel("New Last Name:")); form.add(newLname);
-        form.add(new JLabel("New Email:")); form.add(newEmail);
-        form.add(new JLabel("New Phone Number:")); form.add(newPhone);
-
-        contentPanel.add(form, BorderLayout.CENTER);
-        contentPanel.add(submit, BorderLayout.SOUTH);
-
-        submit.addActionListener(e -> {
-            try {
-                ClientService.updateClient(TestData.clients, client, newFname.getText(), newLname.getText(), newEmail.getText(), newPhone.getText());
-                refreshTable();
-                JOptionPane.showMessageDialog(this, "Client updated.");
-            } catch (Exception ex) {
-                JOptionPane.showMessageDialog(this, ex.getMessage(), "Update Failed", JOptionPane.ERROR_MESSAGE);
-            }
-        });
-
-        contentPanel.revalidate();
-        contentPanel.repaint();
+    int confirm = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete this client?", "Confirm", JOptionPane.YES_NO_OPTION);
+    if (confirm == JOptionPane.YES_OPTION) {
+        ClientService.deleteClient(TestData.clients, client.getClientId());
+        refreshTable();
+        JOptionPane.showMessageDialog(this, "Client deleted.");
     }
+}
 
-    private void menuDeleteClient() {
-        String input = JOptionPane.showInputDialog(this, "Enter Email or Phone:");
-        Client client = TestData.clients.stream()
-                .filter(c -> c.getEmail().equals(input) || c.getPhoneNumber().equals(input))
-                .findFirst().orElse(null);
-
-        if (client == null) {
-            JOptionPane.showMessageDialog(this, "Client not found.");
-            return;
-        }
-
-        int confirm = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete this client?", "Confirm", JOptionPane.YES_NO_OPTION);
-        if (confirm == JOptionPane.YES_OPTION) {
-            ClientService.deleteClient(TestData.clients, client.getClientId());
-            refreshTable();
-            JOptionPane.showMessageDialog(this, "Client deleted.");
-        }
+private void menuDeleteInactiveClients() {
+    String ADMIN_PIN = "12345";
+    String pin = JOptionPane.showInputDialog(this, "Enter PIN:");
+    if (pin != null && pin.equals(ADMIN_PIN)) {
+        ClientService.isInactiveMoreThan5Years(TestData.clients);
+        refreshTable();
+        JOptionPane.showMessageDialog(this, "Inactive clients deleted.");
+    } else {
+        JOptionPane.showMessageDialog(this, "Incorrect PIN.");
     }
+}
 
-    private void menuDeleteInactiveClients() {
-        String ADMIN_PIN = "12345";
-        String pin = JOptionPane.showInputDialog(this, "Enter PIN:");
-        if (pin.equals(ADMIN_PIN)) {
-            ClientService.isInactiveMoreThan5Years(TestData.clients);
-            refreshTable();
-            JOptionPane.showMessageDialog(this, "Inactive clients deleted.");
-        } else {
-            JOptionPane.showMessageDialog(this, "Incorrect PIN.");
-        }
+private void menuGetJson() {
+    StringBuilder sb = new StringBuilder();
+    for (Client client : TestData.clients) {
+        sb.append(ClientService.getClientAsJson(client)).append("\n\n");
     }
+    JTextArea area = new JTextArea(sb.toString(), 20, 40);
+    area.setEditable(false);
+    area.setOpaque(false);
+    JScrollPane scroll = new JScrollPane(area);
+    scroll.getViewport().setOpaque(false);
+    JOptionPane.showMessageDialog(this, scroll, "All Clients as JSON", JOptionPane.INFORMATION_MESSAGE);
+}
 
-    private void menuGetJson() {
-        StringBuilder sb = new StringBuilder();
-        for (Client client : TestData.clients) {
-            sb.append(ClientService.getClientAsJson(client)).append("\n\n");
-        }
-        JTextArea area = new JTextArea(sb.toString(), 20, 40);
-        area.setEditable(false);
-        JScrollPane scroll = new JScrollPane(area);
-        JOptionPane.showMessageDialog(this, scroll, "All Clients as JSON", JOptionPane.INFORMATION_MESSAGE);
-    }
 
     private void refreshTable() {
         tableModel.setRowCount(0);

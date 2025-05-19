@@ -1,4 +1,4 @@
-// Updated StoreFrame.java with full actions for all buttons
+
 import javax.swing.*;
 import java.awt.*;
 
