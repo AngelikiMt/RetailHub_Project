@@ -1,5 +1,6 @@
+
 /*  Connects Product.Java and ProductService.java with the MySQL database.
- *  Handles: Inserting, Retrieving, Updating, Deleting a product and Retrieving all products (CRUD).
+ *  Handles: Inserting, Retrieving, Updating, Deleting products * * (CRUD).
 */
 
 import java.sql.Connection;
@@ -12,7 +13,7 @@ import java.util.List;
 
 public class ProductDAO {
 
-    /*  Retrieves and prints the productId */
+    /* Adds a product into the database */
     public void insertProduct(Product product) {
         String sql = "INSERT INTO products (description, category, price, cost, active) VALUES (?, ?, ?, ?, ?)";
         try(Connection conn = DatabaseConnector.getConnection();
@@ -27,23 +28,25 @@ public class ProductDAO {
 
             ResultSet rs = stmt.getGeneratedKeys();
             if (rs.next()) {
+                //  Retrieves and prints the productId 
                 long id = rs.getLong(1);
                 System.out.println("Inserted product with ID: " + id);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-    /* Fetches a single product by it's ID.
-        Converts the result set into a Product object using mapResultSetToProduct */    }
+    }
 
+    /* Fetches a single product by it's ID.
+     * Converts the result set into a Product object using mapResultSetToProduct */    
     public Product getProductById(long productId) {
         String sql = "SELECT * FROM products WHERE productId = ?";
+
         try (Connection conn = DatabaseConnector.getConnection();
         PreparedStatement stmt = conn.prepareStatement(sql)) {
-
             stmt.setLong(1, productId);
-            ResultSet rs = stmt.executeQuery();
 
+            ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 return mapResultSetToProduct(rs);
             }
@@ -90,7 +93,7 @@ public class ProductDAO {
         return false;
     }
 
-    /* Deletes ther product from the database by ID. */
+    /* Deletes the product from the database by ID. */
     public boolean deleteProduct(long productId) {
         String sql = "DELETE FROM products WHERE productId = ?";
         try (Connection conn = DatabaseConnector.getConnection();
@@ -125,5 +128,32 @@ public class ProductDAO {
         }
         product.setActive(active);
         return product;
+    }
+
+    public String getProductAsJson(long productId) {
+        StringBuilder json = new StringBuilder();
+        json.append("{\n  \"productId\": ").append(productId).append(",\n");
+        
+        String sql = "SELECT * FROM products WHERE productId = ?";
+        try (Connection conn = DatabaseConnector.getConnection();
+        PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setLong(1, productId);
+
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                json.append("  \"description\": ").append(rs.getString("description")).append(",\n");
+                json.append("  \"category\": ").append(rs.getString("category")).append(",\n");
+                json.append("  \"price\": ").append(rs.getDouble("price")).append(",\n");
+                json.append("  \"cost\": ").append(rs.getDouble("cost")).append(",\n");
+                json.append("  \"active\": ").append(rs.getBoolean("active")).append("\n}");
+
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return json.toString();
+
     }
 }
