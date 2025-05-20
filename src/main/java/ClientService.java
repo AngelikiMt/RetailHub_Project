@@ -5,7 +5,8 @@ import java.util.Iterator;
 import java.util.List;
 
 public class ClientService {
-	private static int count = 0;
+    private static final ClientDAO clientDAO = new ClientDAO();
+    private static int count = 0;
 
     private static void validateName(String name, List<String> errors, String fieldName) {
         if (name == null || name.trim().isEmpty()) {
@@ -17,50 +18,45 @@ public class ClientService {
         }
     }
 
-    private static void validateEmail(String email, List<String> errors, List <Client> clients) {
+    private static void validateEmail(String email, List<String> errors, List<Client> clients) {
         if (email == null || !email.matches("^[\\w.-]+@[\\w.-]+\\.\\w{2,}$")) {
             errors.add("Invalid email address.");
         } else {
             for (Client client : clients) {
                 if (email.equals(client.getEmail())) {
-                errors.add("This email is already used.");
+                    errors.add("This email is already used.");
                 }
             }
-        } 
+        }
     }
 
-    private static void validatePhoneNumber(String phoneNumber, List<String> errors, List <Client> clients) {
+    private static void validatePhoneNumber(String phoneNumber, List<String> errors, List<Client> clients) {
         if (phoneNumber == null || !phoneNumber.matches("^\\d{10}$")) {
             errors.add("The phone number must have exactly 10 digits.");
-        }
-        else {
+        } else {
             for (Client client : clients) {
                 if (phoneNumber.equals(client.getPhoneNumber())) {
-                errors.add("This phone number is already used.");
+                    errors.add("This phone number is already used.");
                 }
             }
-        } 
+        }
     }
 
     private static void validateGender(String gender, List<String> errors) {
-    if (gender == null || 
-        !(gender.equalsIgnoreCase("MALE") || 
-          gender.equalsIgnoreCase("FEMALE") || 
-          gender.equalsIgnoreCase("OTHER"))) {
-
-        errors.add("Gender must be either MALE, FEMALE, or OTHER.");
+        if (gender == null ||
+                !(gender.equalsIgnoreCase("MALE") ||
+                        gender.equalsIgnoreCase("FEMALE") ||
+                        gender.equalsIgnoreCase("OTHER"))) {
+            errors.add("Gender must be either MALE, FEMALE, or OTHER.");
         }
     }
 
     private static void validateAge(LocalDate birthDate, List<String> errors) {
-
         if (birthDate == null) {
-            errors.add( "Birth date cannot be empty.");
-         }
-        else if (birthDate!=null && birthDate.isAfter(LocalDate.now())) {
+            errors.add("Birth date cannot be empty.");
+        } else if (birthDate.isAfter(LocalDate.now())) {
             errors.add("Enter a valid date of birth.");
-        }
-        else {
+        } else {
             long age = ChronoUnit.YEARS.between(birthDate, LocalDate.now());
             if (age < 15) {
                 throw new IllegalArgumentException("Client must be over 15 years old.");
@@ -69,9 +65,10 @@ public class ClientService {
     }
 
     // 1. Customer registration
-    public static Client createClient(List <Client> clients, String firstName, String lastName, LocalDate birthDate,
+    public static Client createClient(String firstName, String lastName, LocalDate birthDate,
                                       String phoneNumber, String email, String gender, boolean activeStatus) {
 
+        List<Client> clients = clientDAO.getAllClients();
         List<String> errors = new ArrayList<>();
 
         validateName(firstName, errors, "Name");
@@ -79,127 +76,95 @@ public class ClientService {
         validateEmail(email, errors, clients);
         validatePhoneNumber(phoneNumber, errors, clients);
         validateGender(gender, errors);
-                                    
 
+        try {
+            validateAge(birthDate, errors);
+        } catch (IllegalArgumentException e) {
+            errors.add(e.getMessage());
+        }
 
-            try {
-                validateAge(birthDate, errors);
-            } catch (IllegalArgumentException e) {
-                errors.add(e.getMessage());
-            }
-
-                                                    
         if (!errors.isEmpty()) {
             throw new IllegalArgumentException(String.join("\n", errors));
         }
-                                    
-        return new Client(firstName, lastName, birthDate, phoneNumber, email, gender,activeStatus);
+
+        Client newClient = new Client(firstName, lastName, birthDate, phoneNumber, email, gender, activeStatus);
+        clientDAO.insertClient(newClient);
+        return newClient;
     }
-        
 
     // 2. Customer identification by email or phone
     public static boolean authenticateClient(Client client, String input) {
         return client.getEmail().equals(input) || client.getPhoneNumber().equals(input);
     }
 
-    // 2a. Customer identification by email or phone
-    public static long authenticateClient1(List<Client> clients,String input) {
-        for (Client client : clients) {
-            if (client.getEmail().equals(input) || client.getPhoneNumber().equals(input)){
-                System.out.println(input + " Successfully authenticated for client with ID: " + client.getClientId() + " and name: " + client.getFirstName() + " "+ client.getLastName());
-                return client.getClientId();
-            }
-			
-        } 
-        System.out.println("Client with: "+ input + " does not exist.");
+    // 2a. Get client ID by input
+    public static long authenticateClient1(String input) {
+        Client client = clientDAO.getClientByEmailOrPhone(input);
+        if (client != null) {
+            System.out.println(input + " Successfully authenticated for client with ID: " +
+                    client.getClientId() + " and name: " + client.getFirstName() + " " + client.getLastName());
+            return client.getClientId();
+        }
+        System.out.println("Client with: " + input + " does not exist.");
         return -1;
     }
 
-    // 2β. Customer identification by email or phone
-    public static Client authenticateClient( List<Client>clients,String input) {
-        for ( Client client : clients) {
-            if (client.getEmail().equals(input) || client.getPhoneNumber().equals(input)){
-                return client;
-            }
+    // 2b. Get full client object by input
+    public static Client authenticateClient(String input) {
+        Client client = clientDAO.getClientByEmailOrPhone(input);
+        if (client != null) {
+            return client;
         }
         throw new IllegalArgumentException("Invalid input. No client found.");
     }
 
-    // 3. Update customer details (with optional new prices)
-    public static Client updateClient(List <Client> clients,Client client, String newFirstName, String newLastName, String newEmail, String newPhoneNumber) {
-    
+    // 3. Update client details
+    public static Client updateClient(Client client, String newFirstName, String newLastName,
+                                      String newEmail, String newPhoneNumber) {
+
+        List<Client> clients = clientDAO.getAllClients();
         List<String> errors = new ArrayList<>();
 
-        if (newFirstName != null && !newFirstName.equals("")) {
+        if (newFirstName != null && !newFirstName.isEmpty()) {
             validateName(newFirstName, errors, "Name");
-            if (errors.isEmpty()) {
-                client.setFirstName(newFirstName);
-            }
+            if (errors.isEmpty()) client.setFirstName(newFirstName);
         }
 
-        if (newLastName != null && !newLastName.equals("")) {
+        if (newLastName != null && !newLastName.isEmpty()) {
             validateName(newLastName, errors, "Surname");
-            if (errors.isEmpty()) {
-                client.setLastName(newLastName);
-            }
+            if (errors.isEmpty()) client.setLastName(newLastName);
         }
 
-        if (newEmail != null && !newEmail.equals("")) {
-            validateEmail(newEmail, errors,clients);
-            if (errors.isEmpty()) {
-                client.setEmail(newEmail);
-            }
+        if (newEmail != null && !newEmail.isEmpty()) {
+            validateEmail(newEmail, errors, clients);
+            if (errors.isEmpty()) client.setEmail(newEmail);
         }
 
-        if (newPhoneNumber != null && !newPhoneNumber.equals("")) {
+        if (newPhoneNumber != null && !newPhoneNumber.isEmpty()) {
             validatePhoneNumber(newPhoneNumber, errors, clients);
-            if (errors.isEmpty()) {
-                client.setPhoneNumber(newPhoneNumber);
-            }
+            if (errors.isEmpty()) client.setPhoneNumber(newPhoneNumber);
         }
 
         if (!errors.isEmpty()) {
             throw new IllegalArgumentException(String.join("\n", errors));
         }
 
+        clientDAO.updateClient(client);
         return client;
     }
 
-    // 4. Turns customer's private info into null. The system keeps his purchases.
-    public static void deleteClient(List<Client> clients, long clientId) {
-        Iterator<Client> iterator = clients.iterator();
-
-        while (iterator.hasNext()) {
-            Client client = iterator.next();
-            if (client.getClientId() == clientId) {
-                client.setActiveStatus(false);
-                client.setEmail(null);
-                client.setBirthDate(null);
-				client.setPhoneNumber(null);
-                client.setFirstName(null);
-                client.setLastName(null);
-                break;
-            }
-        }
-    }
-	
-    // 5. Checks if the customer has been inactive for more than 5 years. If true removes him. 
-    public static void isInactiveMoreThan5Years(List<Client> clients) {
-        Iterator<Client> iterator = clients.iterator();
-
-        while (iterator.hasNext()) {
-            Client client = iterator.next();
-            long yearsInactive = ChronoUnit.YEARS.between(client.getLastPurchaseDate(), LocalDate.now());
-            if (yearsInactive > 5) {
-                iterator.remove(); // Remove client permanently
-                count++;
-            }
-            System.out.println(count + " clients have been removed.");
-        }
-		count = 0;
+    // 4. Anonymize client (soft delete)
+    public static void deleteClient(long clientId) {
+        clientDAO.anonymizeClient(clientId);
     }
 
-    // Returns client details in JSON format
+    // 5. Remove clients inactive for over 5 years
+    public static void isInactiveMoreThan5Years() {
+        int removed = clientDAO.deleteClientsInactiveMoreThan5Years();
+        System.out.println(removed + " clients have been removed.");
+    }
+
+    // 6. Return client as JSON
     public static String getClientAsJson(Client client) {
         if (client == null) return "{}";
 

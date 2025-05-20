@@ -1,38 +1,170 @@
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ClientDAO {
 
-    public static void insertClient(Client client) {
-        String sql = "INSERT INTO client (first_name, last_name, birth_date, phone_number, email, gender, active_status, date_joined, client_sum_total, last_purchase_date) " +
+    public boolean insertClient(Client client) {
+        String sql = "INSERT INTO client (firstName, lastName, birthDate, phoneNumber, email, gender, activeStatus, dateJoined, clientSumTotal, lastPurchaseDate) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+        try (Connection conn = DatabaseConnector.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+
+            stmt.setString(1, client.getFirstName());
+            stmt.setString(2, client.getLastName());
+            stmt.setDate(3, Date.valueOf(client.getBirthDate()));
+            stmt.setString(4, client.getPhoneNumber());
+            stmt.setString(5, client.getEmail());
+            stmt.setString(6, client.getGender());
+            stmt.setBoolean(7, client.isActiveStatus());
+            stmt.setDate(8, Date.valueOf(client.getDateJoined()));
+            stmt.setDouble(9, client.getClientSumTotal());
+
+            if (client.getLastPurchaseDate() != null) {
+                stmt.setDate(10, Date.valueOf(client.getLastPurchaseDate()));
+            } else {
+                stmt.setNull(10, Types.DATE);
+            }
+
+            int rows = stmt.executeUpdate();
+
+            ResultSet rs = stmt.getGeneratedKeys();
+            if (rs.next()) {
+                long id = rs.getLong(1);
+                java.lang.reflect.Field field = Client.class.getDeclaredField("clientId");
+                field.setAccessible(true);
+                field.set(client, id);
+            }
+
+            return rows > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    public List<Client> getAllClients() {
+        List<Client> clients = new ArrayList<>();
+        String sql = "SELECT * FROM client";
+
+        try (Connection conn = DatabaseConnector.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+
+            while (rs.next()) {
+                clients.add(map(rs));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return clients;
+    }
+
+    public Client getClientByEmailOrPhone(String input) {
+        String sql = "SELECT * FROM client WHERE email = ? OR phoneNumber = ?";
+
+        try (Connection conn = DatabaseConnector.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, input);
+            stmt.setString(2, input);
+
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return map(rs);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public boolean updateClient(Client client) {
+        String sql = "UPDATE client SET firstName = ?, lastName = ?, phoneNumber = ?, email = ?, birthDate = ? WHERE clientId = ?";
 
         try (Connection conn = DatabaseConnector.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, client.getFirstName());
             stmt.setString(2, client.getLastName());
-            stmt.setDate(3, java.sql.Date.valueOf(client.getBirthDate()));
-            stmt.setString(4, client.getPhoneNumber());
-            stmt.setString(5, client.getEmail());
-            stmt.setString(6, client.getGender());
-            stmt.setBoolean(7, client.isActiveStatus());
-            stmt.setDate(8, java.sql.Date.valueOf(client.getDateJoined()));
-            stmt.setDouble(9, client.getClientSumTotal());
+            stmt.setString(3, client.getPhoneNumber());
+            stmt.setString(4, client.getEmail());
+            stmt.setDate(5, Date.valueOf(client.getBirthDate()));
+            stmt.setLong(6, client.getClientId());
 
-            if (client.getLastPurchaseDate() != null) {
-                stmt.setDate(10, java.sql.Date.valueOf(client.getLastPurchaseDate()));
-            } else {
-                stmt.setNull(10, java.sql.Types.DATE);
-            }
-
-            stmt.executeUpdate();
-            System.out.println("✅ Client inserted into database.");
+            return stmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            System.err.println("❌ Error inserting client: " + e.getMessage());
+            e.printStackTrace();
         }
+
+        return false;
+    }
+
+    public boolean anonymizeClient(long clientId) {
+        String sql = "UPDATE client SET activeStatus = false, email = NULL, phoneNumber = NULL, birthDate = NULL, firstName = NULL, lastName = NULL WHERE clientId = ?";
+
+        try (Connection conn = DatabaseConnector.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setLong(1, clientId);
+            return stmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    public int deleteClientsInactiveMoreThan5Years() {
+        String sql = "DELETE FROM client WHERE lastPurchaseDate IS NOT NULL AND lastPurchaseDate < ?";
+
+        try (Connection conn = DatabaseConnector.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            LocalDate fiveYearsAgo = LocalDate.now().minusYears(5);
+            stmt.setDate(1, Date.valueOf(fiveYearsAgo));
+
+            return stmt.executeUpdate(); // returns number of rows deleted
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return 0;
+    }
+
+    private Client map(ResultSet rs) throws SQLException {
+        Client client = new Client(
+                rs.getString("firstName"),
+                rs.getString("lastName"),
+                rs.getDate("birthDate") != null ? rs.getDate("birthDate").toLocalDate() : null,
+                rs.getString("phoneNumber"),
+                rs.getString("email"),
+                rs.getString("gender"),
+                rs.getBoolean("activeStatus")
+        );
+
+        try {
+            java.lang.reflect.Field field = Client.class.getDeclaredField("clientId");
+            field.setAccessible(true);
+            field.set(client, rs.getLong("clientId"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        client.setClientSumTotal(rs.getDouble("clientSumTotal"));
+        Date lastPurchase = rs.getDate("lastPurchaseDate");
+        if (lastPurchase != null) {
+            client.setLastPurchaseDate(lastPurchase.toLocalDate());
+        }
+
+        return client;
     }
 }
