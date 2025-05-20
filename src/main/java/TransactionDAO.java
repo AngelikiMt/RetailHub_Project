@@ -140,7 +140,7 @@ public class TransactionDAO {
                 }
             json.append("\n  ]\n}");
             } else {
-                return "{}"; //No transaction found to display
+                return "{}"; // No transaction found to display
             }
         } catch (SQLException e) {
             e.printStackTrace();
