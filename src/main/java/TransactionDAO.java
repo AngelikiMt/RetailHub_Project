@@ -12,8 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.time.LocalDateTime;
 
-import javax.print.attribute.standard.DateTimeAtCreation;
-
 public class TransactionDAO {
     
     /* Adds a transaction with the includes info into the database (tables transaction and includes)*/
