@@ -1,0 +1,119 @@
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
+public class StoreDAO {
+    private final String jdbcURL = "jdbc:mysql://localhost:3306/your_database";
+    private final String jdbcUsername = "your_username";
+    private final String jdbcPassword = "your_password";
+
+    private Connection getConnection() throws SQLException {
+        return DriverManager.getConnection(jdbcURL, jdbcUsername, jdbcPassword);
+    }
+
+    // Insert a new store
+    public void insertStore(Store store) {
+        String sql = "INSERT INTO stores (storeName, address, country, phone, active) VALUES (?, ?, ?, ?, ?)";
+
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+
+            stmt.setString(1, store.getStoreName());
+            stmt.setString(2, store.getAddress());
+            stmt.setString(3, store.getCountry());
+            stmt.setString(4, store.getPhone());
+            stmt.setBoolean(5, store.isActive());
+
+            int affectedRows = stmt.executeUpdate();
+
+            if (affectedRows > 0) {
+                try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        store.setStoreId(generatedKeys.getInt(1));
+                    }
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Retrieve all stores
+    public List<Store> getAllStores() {
+        List<Store> stores = new ArrayList<>();
+        String sql = "SELECT * FROM stores";
+
+        try (Connection conn = getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+
+            while (rs.next()) {
+                Store store = new Store(
+                    rs.getInt("storeId"),
+                    rs.getString("storeName"),
+                    rs.getString("address"),
+                    rs.getString("country"),
+                    rs.getString("phone"),
+                    rs.getBoolean("active")
+                );
+                stores.add(store);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return stores;
+    }
+
+    // Find store by ID
+    public Store getStoreById(int id) {
+        String sql = "SELECT * FROM stores WHERE storeId = ?";
+        Store store = null;
+
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, id);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                store = new Store(
+                    rs.getInt("storeId"),
+                    rs.getString("storeName"),
+                    rs.getString("address"),
+                    rs.getString("country"),
+                    rs.getString("phone"),
+                    rs.getBoolean("active")
+                );
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return store;
+    }
+
+    // Update store
+    public void updateStore(Store store) {
+        String sql = "UPDATE stores SET storeName = ?, address = ?, country = ?, phone = ?, active = ? WHERE storeId = ?";
+
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, store.getStoreName());
+            stmt.setString(2, store.getAddress());
+            stmt.setString(3, store.getCountry());
+            stmt.setString(4, store.getPhone());
+            stmt.setBoolean(5, store.isActive());
+            stmt.setInt(6, store.getStoreId());
+
+            stmt.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+}
