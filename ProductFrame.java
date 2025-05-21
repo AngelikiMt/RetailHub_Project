@@ -4,148 +4,152 @@ import java.awt.*;
 import java.awt.event.*;
 
 public class ProductFrame extends JFrame {
-
-    private JTextField descField, categoryField, priceField, costField;
+    private JTextField descField, priceField, costField, idField;
+    private JComboBox<String> categoryBox;
     private JTable table;
     private DefaultTableModel model;
+    private ProductService productService;
+    private long lastId = 0;
 
     public ProductFrame() {
-     setTitle("Products");
-     setExtendedState(JFrame.MAXIMIZED_BOTH); // Πλήρης οθόνη
-     setDefaultCloseOperation(EXIT_ON_CLOSE);
-     setLayout(new BorderLayout());
+        setTitle("Products");
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setLayout(new BorderLayout());
 
+        productService = new ProductService();
 
-        // === Πάνω μέρος - Φόρμα ===
-        JPanel form = new JPanel(new GridLayout(5, 2));
+        JPanel inputPanel = new JPanel(new GridLayout(3, 4, 10, 10));
         descField = new JTextField();
-        categoryField = new JTextField();
+        categoryBox = new JComboBox<>(new String[]{"clothing", "beauty", "electronics"});
         priceField = new JTextField();
         costField = new JTextField();
+        idField = new JTextField();
 
-        form.add(new JLabel("Description:")); form.add(descField);
-        form.add(new JLabel("Category:")); form.add(categoryField);
-        form.add(new JLabel("Price:")); form.add(priceField);
-        form.add(new JLabel("Cost:")); form.add(costField);
+        inputPanel.add(new JLabel("Description:"));
+        inputPanel.add(descField);
+        inputPanel.add(new JLabel("Category:"));
+        inputPanel.add(categoryBox);
+        inputPanel.add(new JLabel("Price:"));
+        inputPanel.add(priceField);
+        inputPanel.add(new JLabel("Cost:"));
+        inputPanel.add(costField);
+        inputPanel.add(new JLabel("ID (for update/delete/json):"));
+        inputPanel.add(idField);
+        inputPanel.add(new JLabel(""));
+        inputPanel.add(new JLabel(""));
 
-        JButton addBtn = new JButton("Add");
-        form.add(addBtn);
-
+        JPanel buttonPanel = new JPanel(new GridLayout(2, 3, 10, 10));
+        JButton createBtn = new JButton("Create");
         JButton updateBtn = new JButton("Update");
-        form.add(updateBtn);
+        JButton deleteBtn = new JButton("Delete");
+        JButton toggleBtn = new JButton("Toggle Active");
+        JButton jsonBtn = new JButton("Show JSON");
+        JButton backBtn = new JButton("Back");
 
-        add(form, BorderLayout.NORTH);
+        buttonPanel.add(createBtn);
+        buttonPanel.add(updateBtn);
+        buttonPanel.add(deleteBtn);
+        buttonPanel.add(toggleBtn);
+        buttonPanel.add(jsonBtn);
+        buttonPanel.add(backBtn);
 
-        // === Πίνακας ===
-        model = new DefaultTableModel(new String[]{"Description", "Category", "Price", "Cost", "Status"}, 0);
+        JPanel topPanel = new JPanel(new BorderLayout());
+        topPanel.add(inputPanel, BorderLayout.NORTH);
+        topPanel.add(buttonPanel, BorderLayout.CENTER);
+
+        add(topPanel, BorderLayout.NORTH);
+
+        model = new DefaultTableModel(new String[]{"ID", "Description", "Category", "Price", "Cost", "Active"}, 0);
         table = new JTable(model);
         add(new JScrollPane(table), BorderLayout.CENTER);
 
-        // === Κάτω μέρος - Κουμπιά ===
-        JPanel buttons = new JPanel();
-        JButton deleteBtn = new JButton("Delete");
-        JButton toggleBtn = new JButton("Active");
-        JButton jsonBtn = new JButton("Show as JSON");
-
-        buttons.add(deleteBtn);
-        buttons.add(toggleBtn);
-        buttons.add(jsonBtn);
-        add(buttons, BorderLayout.SOUTH);
-
-        // === Λειτουργίες ===
-        addBtn.addActionListener(e -> {
+        createBtn.addActionListener(e -> {
             try {
-                String desc = descField.getText();
-                String cat = categoryField.getText();
-                double price = Double.parseDouble(priceField.getText());
-                double cost = Double.parseDouble(costField.getText());
-
-                if (!desc.isEmpty() && !cat.isEmpty()) {
-                    model.addRow(new Object[]{desc, cat, price, cost, "Active"});
-                    clearFields();
-                } else {
-                    JOptionPane.showMessageDialog(this, "Συμπλήρωσε όλα τα πεδία.");
+                var p = productService.createProduct(
+                        descField.getText(),
+                        categoryBox.getSelectedItem().toString(),
+                        Double.parseDouble(priceField.getText()),
+                        Double.parseDouble(costField.getText())
+                );
+                if (p != null) {
+                    lastId = Math.max(lastId, p.getProductId());
+                    refreshAll();
                 }
-            } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(this, "Τιμή και Κόστος πρέπει να είναι αριθμοί.");
+            } catch (Exception ex) {
+                showError(ex);
             }
         });
 
         updateBtn.addActionListener(e -> {
-            int row = table.getSelectedRow();
-            if (row != -1) {
-                try {
-                    model.setValueAt(descField.getText(), row, 0);
-                    model.setValueAt(categoryField.getText(), row, 1);
-                    model.setValueAt(Double.parseDouble(priceField.getText()), row, 2);
-                    model.setValueAt(Double.parseDouble(costField.getText()), row, 3);
-                } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(this, "Λάθος στα δεδομένα.");
-                }
-            } else {
-                JOptionPane.showMessageDialog(this, "Επίλεξε γραμμή για ενημέρωση.");
+            try {
+                long id = Long.parseLong(idField.getText());
+                productService.updateProduct(id,
+                        descField.getText(),
+                        categoryBox.getSelectedItem().toString(),
+                        Double.parseDouble(priceField.getText()),
+                        Double.parseDouble(costField.getText())
+                );
+                refreshAll();
+            } catch (Exception ex) {
+                showError(ex);
             }
         });
 
         deleteBtn.addActionListener(e -> {
-            int row = table.getSelectedRow();
-            if (row != -1) model.removeRow(row);
+            try {
+                long id = Long.parseLong(idField.getText());
+                productService.deleteProduct(id);
+                refreshAll();
+            } catch (Exception ex) {
+                showError(ex);
+            }
         });
 
         toggleBtn.addActionListener(e -> {
-            int row = table.getSelectedRow();
-            if (row != -1) {
-                String status = (String) model.getValueAt(row, 4);
-                model.setValueAt(status.equals("Active") ? "Inactive" : "Active", row, 4);
+            try {
+                long id = Long.parseLong(idField.getText());
+                var p = productService.findProductById(id);
+                if (p != null)
+                    productService.deactivateProduct(id, !p.getActive());
+                refreshAll();
+            } catch (Exception ex) {
+                showError(ex);
             }
         });
 
         jsonBtn.addActionListener(e -> {
-            StringBuilder json = new StringBuilder("[\n");
-            for (int i = 0; i < model.getRowCount(); i++) {
-                json.append("  {\n");
-                json.append("    \"description\": \"").append(model.getValueAt(i, 0)).append("\",\n");
-                json.append("    \"category\": \"").append(model.getValueAt(i, 1)).append("\",\n");
-                json.append("    \"price\": ").append(model.getValueAt(i, 2)).append(",\n");
-                json.append("    \"cost\": ").append(model.getValueAt(i, 3)).append(",\n");
-                json.append("    \"status\": \"").append(model.getValueAt(i, 4)).append("\"\n");
-                json.append("  }");
-                if (i < model.getRowCount() - 1) json.append(",");
-                json.append("\n");
-            }
-            json.append("]");
-
-            JTextArea area = new JTextArea(json.toString());
-            area.setEditable(false);
-            JScrollPane pane = new JScrollPane(area);
-            pane.setPreferredSize(new Dimension(600, 300));
-            JOptionPane.showMessageDialog(this, pane, "JSON Προβολή", JOptionPane.INFORMATION_MESSAGE);
-        });
-
-        // Όταν κάνεις κλικ σε γραμμή, να γεμίζει η φόρμα για edit
-        table.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent e) {
-                int row = table.getSelectedRow();
-                if (row != -1) {
-                    descField.setText(model.getValueAt(row, 0).toString());
-                    categoryField.setText(model.getValueAt(row, 1).toString());
-                    priceField.setText(model.getValueAt(row, 2).toString());
-                    costField.setText(model.getValueAt(row, 3).toString());
-                }
+            try {
+                long id = Long.parseLong(idField.getText());
+                var p = productService.findProductById(id);
+                if (p != null)
+                    JOptionPane.showMessageDialog(this, ProductService.getProductAsJson(p));
+                else
+                    JOptionPane.showMessageDialog(this, "Product not found");
+            } catch (Exception ex) {
+                showError(ex);
             }
         });
+
+        backBtn.addActionListener(e -> dispose());
 
         setVisible(true);
     }
 
-    private void clearFields() {
-        descField.setText("");
-        categoryField.setText("");
-        priceField.setText("");
-        costField.setText("");
+    private void refreshAll() {
+        model.setRowCount(0);
+        for (long i = 1; i <= lastId; i++) {
+            var p = productService.findProductById(i);
+            if (p != null) {
+                model.addRow(new Object[]{
+                        p.getProductId(), p.getDescription(), p.getCategory(),
+                        p.getPrice(), p.getCost(), p.getActive()
+                });
+            }
+        }
     }
 
-    public static void main(String[] args) {
-        new ProductFrame();
+    private void showError(Exception e) {
+        JOptionPane.showMessageDialog(this, "Error: " + e.getMessage());
     }
-}
+} 
