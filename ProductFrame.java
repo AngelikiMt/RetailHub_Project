@@ -43,7 +43,7 @@ public class ProductFrame extends JFrame {
         JButton createBtn = new JButton("Create");
         JButton updateBtn = new JButton("Update");
         JButton deleteBtn = new JButton("Delete");
-        JButton toggleBtn = new JButton("Toggle Active");
+        JButton toggleBtn = new JButton("Active/Deactivate");
         JButton jsonBtn = new JButton("Show JSON");
         JButton backBtn = new JButton("Back");
 
@@ -68,7 +68,7 @@ public class ProductFrame extends JFrame {
             try {
                 var p = productService.createProduct(
                         descField.getText(),
-                        categoryBox.getSelectedItem().toString(),
+                        categoryBox.getSelectedItem().toString().toLowerCase(),
                         Double.parseDouble(priceField.getText()),
                         Double.parseDouble(costField.getText())
                 );
@@ -83,12 +83,25 @@ public class ProductFrame extends JFrame {
 
         updateBtn.addActionListener(e -> {
             try {
+                if (idField.getText().trim().isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "Please enter a Product ID to update.");
+                    return;
+                }
                 long id = Long.parseLong(idField.getText());
+
+                String desc = descField.getText();
+                String category = categoryBox.getSelectedItem().toString().toLowerCase();
+                String priceText = priceField.getText();
+                String costText = costField.getText();
+
+                double price = priceText.isEmpty() ? -1 : Double.parseDouble(priceText);
+                double cost = costText.isEmpty() ? -1 : Double.parseDouble(costText);
+
                 productService.updateProduct(id,
-                        descField.getText(),
-                        categoryBox.getSelectedItem().toString(),
-                        Double.parseDouble(priceField.getText()),
-                        Double.parseDouble(costField.getText())
+                        desc.isEmpty() ? null : desc,
+                        category.isEmpty() ? null : category,
+                        price,
+                        cost
                 );
                 refreshAll();
             } catch (Exception ex) {
@@ -110,9 +123,15 @@ public class ProductFrame extends JFrame {
             try {
                 long id = Long.parseLong(idField.getText());
                 var p = productService.findProductById(id);
-                if (p != null)
-                    productService.deactivateProduct(id, !p.getActive());
-                refreshAll();
+                if (p != null) {
+                    boolean newState = !p.getActive();
+                    productService.deactivateProduct(id, newState);
+                    refreshAll();
+                    toggleBtn.setText(newState ? "Deactivated" : "Activated");
+                    Timer timer = new Timer(1500, evt -> toggleBtn.setText("Active/Deactivate"));
+                    timer.setRepeats(false);
+                    timer.start();
+                }
             } catch (Exception ex) {
                 showError(ex);
             }
@@ -120,6 +139,10 @@ public class ProductFrame extends JFrame {
 
         jsonBtn.addActionListener(e -> {
             try {
+                if (idField.getText().trim().isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "Please enter a Product ID to view JSON.");
+                    return;
+                }
                 long id = Long.parseLong(idField.getText());
                 var p = productService.findProductById(id);
                 if (p != null)
