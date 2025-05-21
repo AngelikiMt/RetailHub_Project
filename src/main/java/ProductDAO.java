@@ -1,4 +1,8 @@
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -111,6 +115,32 @@ public class ProductDAO {
         return false;
     }
 
+    public String getProductAsJson(long productId) {
+        StringBuilder json = new StringBuilder();
+        json.append("{\n  \"productId\": ").append(productId).append(",\n");
+        
+        String sql = "SELECT * FROM products WHERE productId = ?";
+        try (Connection conn = DatabaseConnector.getConnection();
+        PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setLong(1, productId);
+
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                json.append("  \"description\": ").append(rs.getString("description")).append(",\n");
+                json.append("  \"category\": ").append(rs.getString("category")).append(",\n");
+                json.append("  \"price\": ").append(rs.getDouble("price")).append(",\n");
+                json.append("  \"cost\": ").append(rs.getDouble("cost")).append(",\n");
+                json.append("  \"active\": ").append(rs.getBoolean("active")).append("\n}");
+
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return json.toString();
+    }
+
     private Product mapResultSetToProduct(ResultSet rs) throws SQLException {
         long id = rs.getLong("productId");
         String description = rs.getString("description");
@@ -132,4 +162,6 @@ public class ProductDAO {
 
         return product;
     }
+
+
 }

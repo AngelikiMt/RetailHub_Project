@@ -1,4 +1,10 @@
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Types;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -62,6 +68,26 @@ public class ClientDAO {
         }
 
         return clients;
+    }
+
+    public Client getClientById(long clientId) {
+        String sql = "SELECT * FROM client WHERE clientId = ?";
+
+        try (Connection conn = DatabaseConnector.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setLong(1, clientId);
+
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return map(rs);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
     public Client getClientByEmailOrPhone(String input) {
