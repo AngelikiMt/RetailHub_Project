@@ -1,11 +1,7 @@
 import java.util.List;
 
 public class ProductService {
-	private final ProductDAO productDAO;
-
-	public ProductService() {
-		productDAO = new ProductDAO();
-	}
+	private final ProductDAO productDAO = new ProductDAO();
 
 	// Create
 	public boolean addProduct(Product product) {
@@ -41,6 +37,11 @@ public class ProductService {
 	public Product findProductById(long productId) {
 		return productDAO.getProductById(productId);
 	}
+
+	// Get stock as JSON string
+    public static String getProductAsJson(long productId) {
+        return productDAO.getProductAsJson(productId);
+    }
 
 	// Basic validation
 	private boolean isValid(Product p) {
