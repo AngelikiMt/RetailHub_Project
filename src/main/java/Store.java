@@ -1,6 +1,5 @@
 public class Store {
-	private static int nextId = 1;
-	private int storeId;
+	private int storeId; // Will be set by the DAO after DB insertion
 	private String phone;
 	private String address;
 	private String country;
@@ -9,14 +8,23 @@ public class Store {
 
 
 	public Store (String storeName, String address, String country, String phone) {
-		this.storeId = nextId++;
 		this.phone = phone;
 		this.address = address;
 		this.country = country;
 		this.storeName = storeName;
-		//storeSum = 0;
 		this.active = true;
 	}
+
+	// Constructor for loading stores FROM THE DATABASE (ID is already known)
+    // This is used by mapResultSetToStore
+    public Store(int storeId, String storeName, String address, String country, String phone, boolean active) {
+        this.storeId = storeId;
+        this.storeName = storeName;
+        this.address = address;
+        this.country = country;
+        this.phone = phone;
+        this.active = active;
+    }
 
 	// Getters
 	public int getStoreId() {
@@ -45,6 +53,11 @@ public class Store {
 	}
 
  	// Setters
+    // Crucial for the DAO to set the database-generated ID
+    public void setStoreId(int storeId) {
+        this.storeId = storeId;
+    }
+
 	public void setPhone (String phone) {
 		this.phone=phone;
 	}

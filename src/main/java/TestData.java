@@ -373,7 +373,7 @@ public class TestData {
 					storeId=in.nextInt();
 					in.nextLine();
 					if (StoreService.validateId(storeId)){
-						StoreService.getStoreById(storeId).setActive(false);
+						StoreService.setStoreActiveStatus(storeId, false);
 						System.out.println("The store with ID " + storeId + " is deactivated.");
 					}                  
 				break;

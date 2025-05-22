@@ -42,13 +42,20 @@ public class StoreService {
         validatePhone(phone, errors);
 
         if (!errors.isEmpty()) {
-            throw new IllegalArgumentException(String.join("\n", errors));
+            throw new IllegalArgumentException("Validation errors:\n" + String.join("\n", errors));
         }
-
-        Store newStore = new Store(storeName.trim(), address.trim(), country.trim(), phone.trim());
-        storeDAO.createStore(newStore);
-        System.out.println("Store added successfully with ID: " + newStore.getStoreId());
-        return newStore;
+        try {
+            Store newStore = new Store(storeName.trim(), address.trim(), country.trim(), phone.trim());
+            if (storeDAO.createStore(newStore)) {
+                System.out.println("Store added successfully with ID: " + newStore.getStoreId());
+                return newStore;
+            } else {
+                throw new RuntimeException("Failed to create store: DAO returned false.");
+            }
+        } catch (RuntimeException e) { // Catch RuntimeException from DAO
+            System.err.println("Error creating store: " + e.getMessage());
+            throw e; // Re-throw to caller
+        }
     }
 
     // Update store
@@ -61,14 +68,27 @@ public class StoreService {
             if (!newCountry.isEmpty()) store.setCountry(newCountry);
             if (!newPhone.isEmpty()) store.setPhone(newPhone);
 
-            storeDAO.updateStore(store);
+        try {
+                if (storeDAO.updateStore(store)) {
+                    System.out.println("Store ID " + storeId + " updated successfully.");
+                } else {
+                    System.out.println("Failed to update store ID " + storeId + ".");
+                }
+            } catch (RuntimeException e) {
+                System.err.println("Error updating store: " + e.getMessage());
+            }
         } else {
-            System.out.println("Store not found or inactive.");
+            System.out.println("Store with ID " + storeId + " not found.");
         }
     }
 
     // Returns store details in JSON format
-    public static String getStoreAsJson(long storeId) {
+    public static String getStoreAsJson(int storeId) {
         return storeDAO.getStoreAsJson(storeId);
+    }
+
+    // Method to change active status
+    public static boolean setStoreActiveStatus(int storeId, boolean activeStatus) {
+        return storeDAO.setStoreActive(storeId, activeStatus);
     }
 }

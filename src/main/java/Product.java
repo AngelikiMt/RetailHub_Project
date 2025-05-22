@@ -1,7 +1,5 @@
 public class Product
-{ 
-    private static long nextId = 1; // Auto-incremented internally 
-    
+{     
     private long productId;
     private String description;
     private String category;
@@ -10,15 +8,26 @@ public class Product
     private boolean active;
 
 
-    // Constructor: productId to be automatically generated
+    // Constructor for creating NEW products (ID is NOT known yet)
+    // The productId will be assigned by the DAO after DB insertion.
     public Product (String description, String category, double price, double cost) 
     {
-	    productId = nextId++;
         this.description = description;
         this.category = category;
         this.price = price;
         this.cost = cost;
-        this.active = true;
+        this.active = true; // Default to active for new products
+    }
+
+    // Constructor for loading products FROM THE DATABASE (ID is already known)
+    // This is used by mapResultSetToProduct
+    public Product(long productId, String description, String category, double price, double cost, boolean active) {
+        this.productId = productId;
+        this.description = description;
+        this.category = category;
+        this.price = price;
+        this.cost = cost;
+        this.active = active;
     }
     
     // Getters
@@ -46,7 +55,12 @@ public class Product
         return active;
     }
 
-    // Setters (without productId)
+    // Setters
+    // Crucial for the DAO to set the generated ID after insertion.
+    public void setProductId(long productId) {
+        this.productId = productId;
+    }
+
     public void setDescription(String description) {
         if (description != null) {
             this.description = description;

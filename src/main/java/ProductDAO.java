@@ -12,7 +12,7 @@ public class ProductDAO {
         String sql = "INSERT INTO products (description, category, price, cost, active) VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = DatabaseConnector.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-
+                
             stmt.setString(1, product.getDescription());
             stmt.setString(2, product.getCategory());
             stmt.setDouble(3, product.getPrice());
@@ -20,20 +20,18 @@ public class ProductDAO {
             stmt.setBoolean(5, product.getActive());
             
             int rows = stmt.executeUpdate();
-            ResultSet rs = stmt.getGeneratedKeys();
-            if (rs.next()) {
-                long id = rs.getLong(1);
-                java.lang.reflect.Field field = Product.class.getDeclaredField("productId");
-                field.setAccessible(true);
-                field.set(product, id);
+            // Retrieve the auto-generated productId from the database
+            try (ResultSet rs = stmt.getGeneratedKeys()) {
+                if (rs.next()) {
+                    long id = rs.getLong(1);
+                    product.setProductId(id);
+                }
             }
-            System.out.println("Product added successfully!");
             return rows > 0;
-        } catch (Exception e) {
-            System.out.println("Error: " + e);
+        } catch (SQLException  e) {
             e.printStackTrace();
+            throw new RuntimeException("Failed to create product in DAO: " + e.getMessage(), e);
         }
-        return false;
     }
 
     public Product getProductById(long productId) {
@@ -48,6 +46,7 @@ public class ProductDAO {
             }
         } catch (SQLException e) {
             e.printStackTrace();
+            throw new RuntimeException("Failed to retrieve product by ID: " + e.getMessage(), e);
         }
         return null;
     }
@@ -65,6 +64,7 @@ public class ProductDAO {
             }
         } catch (SQLException e) {
             e.printStackTrace();
+            throw new RuntimeException("Failed to retrieve all products: " + e.getMessage(), e);
         }
         return products;
     }
@@ -84,8 +84,8 @@ public class ProductDAO {
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
+            throw new RuntimeException("Failed to update product in DAO: " + e.getMessage(), e);
         }
-        return false;
     }
 
     public boolean deleteProduct(long productId) {
@@ -97,8 +97,8 @@ public class ProductDAO {
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
+            throw new RuntimeException("Failed to delete product in DAO: " + e.getMessage(), e);
         }
-        return false;
     }
 
     public boolean setProductActive(long productId, boolean active) {
@@ -111,8 +111,8 @@ public class ProductDAO {
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
+            throw new RuntimeException("Failed to set product active status in DAO: " + e.getMessage(), e);
         }
-        return false;
     }
 
     public String getProductAsJson(long productId) {
@@ -151,17 +151,6 @@ public class ProductDAO {
         double cost = rs.getDouble("cost");
         boolean active = rs.getBoolean("active");
 
-        Product product = new Product(description, category, price, cost);
-        product.setActive(active);
-
-        try {
-            java.lang.reflect.Field field = Product.class.getDeclaredField("productId");
-            field.setAccessible(true);
-            field.set(product, id);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return product;
+        return new Product(id, description, category, price, cost, active);
     }
 }

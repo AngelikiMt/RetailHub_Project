@@ -14,7 +14,6 @@ public class ProductService {
 		try {
 			Product newProduct = new Product(description, category, price, cost);
 			productDAO.createProduct(newProduct);
-			newProduct.setActive(true);
 			return newProduct;	
 		} catch (Exception e) {
 			System.err.println("Failed to create product: " + e.getMessage()); // Log the error
