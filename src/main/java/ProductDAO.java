@@ -8,7 +8,7 @@ import java.util.List;
 
 public class ProductDAO {
 
-    public boolean insertProduct(Product product) {
+    public boolean createProduct(Product product) {
         String sql = "INSERT INTO products (description, category, price, cost, active) VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = DatabaseConnector.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -18,9 +18,8 @@ public class ProductDAO {
             stmt.setDouble(3, product.getPrice());
             stmt.setDouble(4, product.getCost());
             stmt.setBoolean(5, product.getActive());
-
+            
             int rows = stmt.executeUpdate();
-
             ResultSet rs = stmt.getGeneratedKeys();
             if (rs.next()) {
                 long id = rs.getLong(1);
@@ -28,9 +27,10 @@ public class ProductDAO {
                 field.setAccessible(true);
                 field.set(product, id);
             }
-
+            System.out.println("Product added successfully!");
             return rows > 0;
         } catch (Exception e) {
+            System.out.println("Error: " + e);
             e.printStackTrace();
         }
         return false;
@@ -117,7 +117,6 @@ public class ProductDAO {
 
     public String getProductAsJson(long productId) {
         StringBuilder json = new StringBuilder();
-        json.append("{\n  \"productId\": ").append(productId).append(",\n");
         
         String sql = "SELECT * FROM products WHERE productId = ?";
         try (Connection conn = DatabaseConnector.getConnection();
@@ -126,13 +125,16 @@ public class ProductDAO {
 
             ResultSet rs = stmt.executeQuery();
 
-            while (rs.next()) {
+            if (rs.next()) {
+                json.append("{\n  \"productId\": ").append(productId).append(",\n");
                 json.append("  \"description\": ").append(rs.getString("description")).append(",\n");
                 json.append("  \"category\": ").append(rs.getString("category")).append(",\n");
                 json.append("  \"price\": ").append(rs.getDouble("price")).append(",\n");
                 json.append("  \"cost\": ").append(rs.getDouble("cost")).append(",\n");
                 json.append("  \"active\": ").append(rs.getBoolean("active")).append("\n}");
 
+            } else {
+                return "{}"; // No product found
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -162,6 +164,4 @@ public class ProductDAO {
 
         return product;
     }
-
-
 }

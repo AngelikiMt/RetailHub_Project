@@ -86,10 +86,10 @@ public class TestData {
 		}
 
 		try{
-		client = ClientService.createClient(clients,firstName, lastName, birthDate, phoneNumber, email, gender, activeStatus);
-		clients.add(client);
-		System.out.println("Client was successfully created with ID: " + client.getClientId());
-		System.out.println("\n" + client);
+			client = ClientService.createClient(firstName, lastName, birthDate, phoneNumber, email, gender, activeStatus);
+			clients.add(client);
+			System.out.println("Client was successfully created with ID: " + client.getClientId());
+			System.out.println("\n" + client);
 		}
 		catch(Exception x ){
 			System.out.println(x.getMessage());
@@ -101,14 +101,14 @@ public class TestData {
 		String input;
 		System.out.println("Email or Phone number of the client: ");
 		input= in.nextLine();
-		clientId= ClientService.authenticateClient1(clients,input);
+		clientId= ClientService.authenticateClient1(input);
 	}
 
 	// SHOW CLIENT
 	public static void menuShowClient(){
 		System.out.println("Email or Phone number of the client: ");
 		String input = in.nextLine();
-		System.out.println(ClientService.authenticateClient(clients, input));
+		System.out.println(ClientService.authenticateClient(input));
 	}
 
 	// UPDATE CLIENT
@@ -127,7 +127,7 @@ public class TestData {
 
 				for (Client client : clients) {
 					if (client.getClientId()== clientId){
-						ClientService.updateClient(clients, client, newFirstName, newLasttName, newEmail, newPhoneNumber);
+						ClientService.updateClient(client, newFirstName, newLasttName, newEmail, newPhoneNumber);
 					}
 				}
 				System.out.println("Client successfully updated.");
@@ -147,7 +147,7 @@ public class TestData {
             try {
                 menuAuthenticateClient();
                 if (clientId != -1){
-                    ClientService.deleteClient(clients, clientId);
+                    ClientService.deleteClient(clientId);
                     System.out.println("Client successfully deleted.");    
                 }
             }
@@ -162,10 +162,9 @@ public class TestData {
 
     public static void menuDeleteInactiveClient() {
         if (checkPIN()) {
-            ClientService.isInactiveMoreThan5Years(clients);
+            ClientService.isInactiveMoreThan5Years();
         }
     }
-
 
 	// GET JSON 
 	public static void menuGetJson() {
@@ -212,7 +211,14 @@ public class TestData {
 					System.out.println("Give product cost");
 					double cost=in.nextDouble();
 					in.nextLine();
-					productService.createProduct(description, category, price, cost); 
+					try {
+						Product product = productService.createProduct(description, category, price, cost);
+						product.setActive(true);
+						System.out.println("Product was successfully created with ID: " + product.getProductId());
+						System.out.println("\n" + product);
+					} catch (Exception x ){
+						System.out.println(x.getMessage());
+					}
 					break;
 
 				case "2": // UPDATE PRODUCT
@@ -229,7 +235,13 @@ public class TestData {
 					System.out.println("Give product new cost");
 					double newCost=in.nextDouble();
 					in.nextLine();
-					productService.updateProduct(productId, newDescription, newCategory, newPrice, newCost);
+					Product existingProduct = productService.findProductById(productId);
+					if (existingProduct != null) {
+						Product updated = productService.updateProduct(existingProduct, newDescription, newCategory, newPrice, newCost);
+						System.out.println("Product successfully updated.");
+					} else {
+						System.out.println("Product not found.");
+					}
 					break;
 
 				case "3": // ACTIVATE/DEACTIVATE PRODUCT
@@ -248,7 +260,7 @@ public class TestData {
 						System.out.println("Invalid input. Type YES to activate, NO to deactivate.");
         				break;
 					}
-					productService.deactivateProduct(productId,active);
+					productService.setProductActiveStatus(productId, active);
 					break;
 							
 				case "4": 
@@ -260,10 +272,10 @@ public class TestData {
 					if (answer.equalsIgnoreCase("YES")) {
 						productService.deleteProduct(productId);
 					} else {
-						runProductTests();
+						System.out.println("Product deletion cancelled.");
 					} break;
 
-				case "5": productService.displayAllProducts (); break;
+				case "5": productService.getAllProducts (); break;
 
 				case "6":
 					System.out.println("Give the id of the product you want to search");
@@ -276,7 +288,7 @@ public class TestData {
 					System.out.println("Give the id of the product you want in json");
 					productId = in.nextLong();
 					in.nextLine();
-					System.out.println(ProductService.getProductAsJson(productService.findProductById(productId)));
+					System.out.println(ProductService.getProductAsJson(productId));
 					break;
 
 				case "0": running=false; 
@@ -323,12 +335,11 @@ public class TestData {
 					String country=in.nextLine();
 					System.out.println("Give store phone number");
 					String phone=in.nextLine();
-					try{    
+					try{
 						Store store = StoreService.createStore(storeName, address, country, phone);
 						System.out.println("New store's info are:\n" + store);
-					}   
-					catch (IllegalArgumentException e){
-						System.out.println (e.getMessage()); 
+					} catch (IllegalArgumentException | NoSuchFieldException | IllegalAccessException e) {
+						System.out.println(e.getMessage());
 					}
 				break;
 
@@ -382,7 +393,9 @@ public class TestData {
 					System.out.println("Give the id of the store you want as json");
 					storeId = in.nextInt();
 					in.nextLine();
-					System.out.println(StoreService.getStoreAsJson(StoreService.getStoreById(storeId)));
+					if (StoreService.validateId(storeId)){
+						System.out.println(StoreService.getStoreAsJson(storeId));
+					}
 				break;
 
 				case "0": //EXIT
@@ -432,14 +445,14 @@ public class TestData {
 
 				case "2":// GET STOCK FOR SPECIFIC PRODUCT AND STORE
 					System.out.println("Stock for Product with ID: ");
-					long productId =  in.nextLong();
+					long productId = in.nextLong();
 					in.nextLine();
 
 					System.out.println("Stock in Store with ID: ");
 					int storeId = in.nextInt();
 					in.nextLine();
 
-					System.out.println("Stock: " + StockService.getStock(productId, storeId).get(0).getStockQuantity());
+					System.out.println("Stock: " + StockService.getStock(productId, storeId));
 				break;
 
 				case "3": // UPDATE STOCK
@@ -455,8 +468,8 @@ public class TestData {
 					int newQuantity = in.nextInt();
 					in.nextLine();
 
-					StockService.updateStock(product1Id, store1Id,newQuantity);
-					System.out.println("Update Stock: " + StockService.getStock(product1Id, store1Id).get(0).getStockQuantity());
+					StockService.updateStock(product1Id, store1Id, newQuantity);
+					System.out.println("Update Stock: " + StockService.getStock(product1Id, store1Id).getStockQuantity());
 				break;
 
 				case "4": // GET LOW STOCK ( BELOW 3)
@@ -517,7 +530,7 @@ public class TestData {
 						case "1":
 							System.out.println("Give us email or phone number");
 							String input = in.nextLine();
-							Client c = ClientService.authenticateClient(clients, input);
+							Client c = ClientService.authenticateClient(input);
 						
 							System.out.print("Store ID: ");
 							int storeId = Integer.parseInt(in.nextLine());
@@ -545,12 +558,12 @@ public class TestData {
 						
 							System.out.print("Payment Method (Cash/Card/Credit): ");
 							String payment = in.nextLine();
+							long cId = c.getClientId();
+
+							TransactionService service = new TransactionService();
+							Transaction t = service.createTransaction(
+								productIds, quantities, storeId, cId, payment);
 						
-							Transaction t = TransactionService.createTransaction(
-								productIds, quantities, storeId, c, productService, stockService, payment
-							);
-						
-							transactions.add(t);
 							System.out.println("Transaction created:\n" + t);
 						break;
 			
@@ -571,7 +584,7 @@ public class TestData {
 						// Searches for the transaction with a for loop.
 						// If it finds it, displays its full details in JSON format (with products, quantities, payment, etc.).
 						case "3":
-								System.out.print("ID Transaction: ");
+							System.out.print("ID Transaction: ");
 							long tid = Long.parseLong(in.nextLine());
 		
 							Transaction tx = null;
@@ -585,7 +598,7 @@ public class TestData {
 							if (tx == null) {
 								System.out.println("The transaction was not found.");
 							} else {
-								String json = TransactionService.getTransactionAsJson(tx, TransactionService.getAllIncludes());
+								String json = TransactionService.getTransactionAsJson(tx.getTransactionId());
 								System.out.println("Transaction in JSON:");
 								System.out.println(json);
 							}

@@ -3,15 +3,15 @@ import java.util.List;
 
 public class StoreService {
 
-    private final StoreDAO storeDAO = new StoreDAO();
+    private final static StoreDAO storeDAO = new StoreDAO();
 
     // Show all stores
-    public List<Store> getStores() {
+    public static List<Store> getStores() {
         return storeDAO.getAllStores();
     }
 
     // Show store info by Id
-    public Store getStoreById(int storeId) {
+    public static Store getStoreById(int storeId) {
         return storeDAO.getStoreById(storeId);
     }
 
@@ -28,12 +28,12 @@ public class StoreService {
         }
     }
 
-    public boolean validateId(int storeId) {
+    public static boolean validateId(int storeId) {
         return storeDAO.getStoreById(storeId) != null;
     }
 
     // Create store
-    public Store createStore(String storeName, String address, String country, String phone) {
+    public static Store createStore(String storeName, String address, String country, String phone) throws IllegalArgumentException, NoSuchFieldException, IllegalAccessException {
         List<String> errors = new ArrayList<>();
 
         validate("storeName", storeName, errors);
@@ -46,13 +46,13 @@ public class StoreService {
         }
 
         Store newStore = new Store(storeName.trim(), address.trim(), country.trim(), phone.trim());
-        storeDAO.insertStore(newStore);
+        storeDAO.createStore(newStore);
         System.out.println("Store added successfully with ID: " + newStore.getStoreId());
         return newStore;
     }
 
     // Update store
-    public void updateStore(int storeId, String newName, String newAddress, String newCountry, String newPhone) {
+    public static void updateStore(int storeId, String newName, String newAddress, String newCountry, String newPhone) {
         Store store = storeDAO.getStoreById(storeId);
 
         if (store != null && store.isActive()) {
@@ -68,17 +68,7 @@ public class StoreService {
     }
 
     // Returns store details in JSON format
-    public static String getStoreAsJson(Store store) {
-        if (store == null) return "{}";
-
-        StringBuilder json = new StringBuilder();
-        json.append("{\n  \"storeId\": ").append(store.getStoreId()).append(",\n");
-        json.append("  \"phoneNumber\": \"").append(store.getPhone()).append("\",\n");
-        json.append("  \"address\": \"").append(store.getAddress()).append("\",\n");
-        json.append("  \"country\": \"").append(store.getCountry()).append("\",\n");
-        json.append("  \"storename\": \"").append(store.getStoreName()).append("\",\n");
-        json.append("  \"active\": ").append(store.isActive()).append("\n}");
-
-        return json.toString();
+    public static String getStoreAsJson(long storeId) {
+        return storeDAO.getStoreAsJson(storeId);
     }
 }

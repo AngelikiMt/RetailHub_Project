@@ -139,7 +139,6 @@ public class StockDAO {
     /* Retrieves stock info from the database for the product ID given. Builds and returns info in JSON format. */
     public String getStockAsJson(long productId) {
         StringBuilder json = new StringBuilder();
-        json.append("{\n   \"productId\": ").append(productId).append(",\n   \"stockPerStore\": [\n");
 
         String sql = "SELECT storeId, stockQuantity FROM stock WHERE productId = ?";
         try (Connection conn = DatabaseConnector.getConnection();
@@ -149,10 +148,13 @@ public class StockDAO {
             ResultSet rs = stmt.executeQuery();
 
             boolean first = true;
-            while (rs.next()) {
+            if (rs.next()) {
+                json.append("{\n   \"productId\": ").append(productId).append(",\n   \"stockPerStore\": [\n");
                 if (!first) json.append(",\n");
                 json.append("    { \"storeId\": ").append(rs.getInt("storeId")).append(", \"quantity\": ").append(rs.getInt("stockQuantity")).append(" }");
                 first = false;
+            } else {
+                return "{}"; // No stock found
             }
         } catch (SQLException e) {
             e.printStackTrace();

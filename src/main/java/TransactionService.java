@@ -4,7 +4,7 @@ import java.util.List;
 
 public class TransactionService {
 
-    private final TransactionDAO transactionDAO = new TransactionDAO();
+    private final static TransactionDAO transactionDAO = new TransactionDAO();
     private final ProductDAO productDAO = new ProductDAO();
     private final StockDAO stockDAO = new StockDAO();
     private final ClientDAO clientDAO = new ClientDAO();
@@ -87,11 +87,11 @@ public class TransactionService {
         return transaction;
     }
 
-    public List<Transaction> getAllTransactions() {
+    public static List<Transaction> getAllTransactions() {
         return transactionDAO.getAllTransactions();
     }
 
-    public List<Includes> getAllIncludes() {
+    public static List<Includes> getAllIncludes() {
         return transactionDAO.getAllIncludes();
     }
 

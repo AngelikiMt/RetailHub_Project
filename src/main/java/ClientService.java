@@ -1,7 +1,6 @@
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 public class ClientService {
@@ -18,13 +17,14 @@ public class ClientService {
         }
     }
 
-    private static void validateEmail(String email, List<String> errors, List<Client> clients) {
+    private static void validateEmail(String email, List<String> errors, List<Client> clients, long currentClientId) {
         if (email == null || !email.matches("^[\\w.-]+@[\\w.-]+\\.\\w{2,}$")) {
             errors.add("Invalid email address.");
         } else {
             for (Client client : clients) {
-                if (email.equals(client.getEmail())) {
+                if (email.equalsIgnoreCase(client.getEmail()) && client.getClientId() != currentClientId) {
                     errors.add("This email is already used.");
+                    break;
                 }
             }
         }
@@ -73,7 +73,7 @@ public class ClientService {
 
         validateName(firstName, errors, "Name");
         validateName(lastName, errors, "Surname");
-        validateEmail(email, errors, clients);
+        validateEmail(email, errors, clients, -1); // -1 -> No current client yet
         validatePhoneNumber(phoneNumber, errors, clients);
         validateGender(gender, errors);
 
@@ -136,7 +136,7 @@ public class ClientService {
         }
 
         if (newEmail != null && !newEmail.isEmpty()) {
-            validateEmail(newEmail, errors, clients);
+            validateEmail(newEmail, errors, clients, client.getClientId());
             if (errors.isEmpty()) client.setEmail(newEmail);
         }
 
