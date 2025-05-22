@@ -1,5 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
+import java.util.List.*;
 
 public class StockFrame extends JFrame {
     private JPanel contentPanel;
@@ -110,11 +111,20 @@ public class StockFrame extends JFrame {
 
         gbc.gridx = 1; gbc.gridy = ++y; contentPanel.add(getBtn, gbc);
 
+        
+
         getBtn.addActionListener(e -> {
             try {
-                var result = StockService.getStock(
+               /* long pid;
+                int stid;
+                 pid = Long.parseLong(productIdField.getText());
+                        System.out.println(pid);
+                        stid = Integer.parseInt(storeId.getText());
+                        System.out.println(stid); */
+                java.util.List<Stock> result = StockService.getStock( 
                         Long.parseLong(productId.getText()),
-                        Integer.parseInt(storeId.getText())
+                        Integer.parseInt(storeId.getText())                     
+                        
                 );
                 if (result.isEmpty()) {
                     JOptionPane.showMessageDialog(this, "No stock found.");

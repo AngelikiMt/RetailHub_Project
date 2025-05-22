@@ -10,7 +10,11 @@ public class ClientFrame extends JFrame {
     private final JPanel contentPanel;
     private final JTable clientTable;
     private final DefaultTableModel tableModel;
-    private final List<Client> clients = new ArrayList<>();
+    private final static List<Client> clients = new ArrayList<>();
+
+    public static List <Client> getClientsList(){
+        return clients;
+    }
 
 
      public ClientFrame() {

@@ -62,14 +62,14 @@ public class TransactionService {
 
     // Create Transaction
     public static Transaction createTransaction(List<Long> productIds, List<Integer> quantities, int storeId,
-        Client client, ProductService productService, StockService stockService, String paymentMethod) {
+        Client client, ProductService productService, StockService stockService, String paymentMethod, String answer) {
 
         ShowTotalResult totalResult = showTotal(productIds, quantities, storeId, client, productService, stockService);
         double finalTotal = totalResult.getSumTotal() - totalResult.getDiscount();
 
-        System.out.println("\nShow Total (Total amount before the discount & Discount): " + totalResult + "\nTotal amount after the discount: " + finalTotal + "\nDo you want to procceed with the transaction? (YES/NO)");
-        Scanner in = new Scanner(System.in);
-        String answer = in.nextLine();
+        //System.out.println("\nShow Total (Total amount before the discount & Discount): " + totalResult + "\nTotal amount after the discount: " + finalTotal + "\nDo you want to procceed with the transaction? (YES/NO)");
+        //Scanner in = new Scanner(System.in);
+        //String answer = in.nextLine();
 
         // If customer agrees with the total amount, then the employee may procceed with the transaction.  
         if (answer.trim().toUpperCase().equals("YES")) {

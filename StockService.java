@@ -2,7 +2,8 @@ import java.util.*;
 
 public class StockService {
     private static List<Stock> stocks = new ArrayList<Stock>();
-    private static ProductService productService=new ProductService();
+    public static ProductService productService=new ProductService();
+    public static StockService stockService = new StockService();
 
     private static final int threshold=3;
     

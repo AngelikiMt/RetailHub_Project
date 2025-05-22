@@ -8,7 +8,7 @@ public class ProductFrame extends JFrame {
     private JComboBox<String> categoryBox;
     private JTable table;
     private DefaultTableModel model;
-    private ProductService productService;
+    public static ProductService productService;
     private long lastId = 0;
 
     public ProductFrame() {

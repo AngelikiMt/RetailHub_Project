@@ -3,12 +3,12 @@ import java.util.Iterator;
 import java.util.List;
 
 public class ProductService {
-	private static ArrayList<Product> products;
+	private static ArrayList<Product> products =  new ArrayList<>();;
 	public Object deleteProduct;
 
-	public ProductService() {
-		products = new ArrayList<>();
-	}
+	//public ProductService() {
+	//	products = new ArrayList<>();
+	//}
 
 	// Create a new product with the Id automatically generated
 	public Product createProduct(String description, String category, double price, double cost) 
