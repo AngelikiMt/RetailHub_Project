@@ -8,6 +8,7 @@ public class TransactionService {
     private final ProductDAO productDAO = new ProductDAO();
     private final StockDAO stockDAO = new StockDAO();
     private final ClientDAO clientDAO = new ClientDAO();
+    private final StoreDAO storeDAO = new StoreDAO();
 
     public boolean isEligibleForDiscount(Client client) {
         return client.getClientSumTotal() > 400;
@@ -21,7 +22,11 @@ public class TransactionService {
             throw new IllegalArgumentException("Mismatched product and quantity list sizes.");
         }
 
-        if (!Store.isActive()) {
+        Store store = storeDAO.getStoreById(storeId);
+        if (store == null) {
+            throw new IllegalArgumentException("Store not found: " + storeId);
+        }
+        if (!store.isActive()) {
             throw new IllegalStateException("Store is not active.");
         }
 
@@ -58,6 +63,13 @@ public class TransactionService {
             List<Long> productIds, List<Integer> quantities, int storeId,
             long clientId, String paymentMethod) {
 
+        if (productIds == null || productIds.isEmpty() || quantities == null || quantities.isEmpty()) {
+            throw new IllegalArgumentException("Product IDs and quantities cannot be empty for a transaction.");
+        }
+        if (paymentMethod == null || paymentMethod.trim().isEmpty()) {
+             throw new IllegalArgumentException("Payment method cannot be empty.");
+        }
+        
         ShowTotalResult totalResult = calculateTotal(productIds, quantities, storeId, clientId);
         double finalTotal = totalResult.getSumTotal() - totalResult.getDiscount();
 

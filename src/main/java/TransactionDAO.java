@@ -16,22 +16,35 @@ public class TransactionDAO {
     
     /* Adds a transaction with the includes info into the database (tables transaction and includes)*/
     public void insertTransaction(Transaction transaction, List<Includes> includesList) {
-        String insertTransactionSQL = "INSERT INTO transactions (transactionId, clientId, storeId, dateTime, paymentMethod, sumTotal, discount) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String insertTransactionSQL = "INSERT INTO transactions (clientId, storeId, dateTime, paymentMethod, sumTotal, discount) VALUES (?, ?, ?, ?, ?, ?)";
         String insertIncludesSQL = "INSERT INTO includes (transactionId, productId, soldQuantity) VALUES (?, ?, ?)";
 
         try (Connection conn = DatabaseConnector.getConnection()) {
             conn.setAutoCommit(false);
             try (PreparedStatement stmtTransaction = conn.prepareStatement(insertTransactionSQL);
             PreparedStatement stmtIncludes = conn.prepareStatement(insertIncludesSQL)) {
-                stmtTransaction.setLong(1, transaction.getTransactionId());
-                stmtTransaction.setLong(2, transaction.getClientId());
-                stmtTransaction.setLong(3, transaction.getStoreId());
-                stmtTransaction.setTimestamp(4, Timestamp.valueOf(transaction.getDateTime()));
-                stmtTransaction.setString(5, transaction.getPaymentMethod());
-                stmtTransaction.setDouble(6, transaction.getSumTotal());
-                stmtTransaction.setDouble(7, transaction.getDiscount());
+                stmtTransaction.setLong(1, transaction.getClientId());
+                stmtTransaction.setLong(2, transaction.getStoreId());
+                stmtTransaction.setTimestamp(3, Timestamp.valueOf(transaction.getDateTime()));
+                stmtTransaction.setString(4, transaction.getPaymentMethod());
+                stmtTransaction.setDouble(5, transaction.getSumTotal());
+                stmtTransaction.setDouble(6, transaction.getDiscount());
                 
-                stmtTransaction.executeUpdate();
+                int affectedRows = stmtTransaction.executeUpdate();
+
+                // Retrieve the auto-generated transactionId
+                if (affectedRows == 0) {
+                    throw new SQLException("Creating transaction failed, no rows affected.");
+                }
+
+                try (ResultSet generatedKeys = stmtTransaction.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        long id = generatedKeys.getLong(1);
+                        transaction.setTransactionId(id); // Set the generated ID back to the Transaction object
+                    } else {
+                        throw new SQLException("Creating transaction failed, no ID obtained.");
+                    }
+                }
 
                 for (Includes inc : includesList) {
                     stmtIncludes.setLong(1, inc.getTransactionId());
@@ -46,10 +59,12 @@ public class TransactionDAO {
             } catch (SQLException e) {
                 conn.rollback();
                 System.out.println("Transaction rollback due to error: " + e.getMessage());
+                throw new RuntimeException("Failed to insert transaction: " + e.getMessage(), e); // Re-throw
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
+            throw new RuntimeException("Database connection error: " + e.getMessage(), e); // Handles connection issues
         }
     }
 
@@ -71,11 +86,11 @@ public class TransactionDAO {
                 double sumTotal = rs.getDouble("sumTotal");
                 double discount = rs.getDouble("discount");
 
-                Transaction transaction = new Transaction(clientId, storeId, sumTotal, discount, paymentMethod);
-                transactions.add(transaction);
+                transactions.add(new Transaction(transactionId, clientId, storeId, dateTime, paymentMethod, sumTotal, discount));
             }
         } catch (SQLException e) {
             e.printStackTrace();
+            throw new RuntimeException("Failed to retrieve all transactions: " + e.getMessage(), e);
         }
         return transactions;
     }
@@ -98,6 +113,7 @@ public class TransactionDAO {
             }
         } catch (SQLException e) {
             e.printStackTrace();
+            throw new RuntimeException("Failed to retrieve all includes: " + e.getMessage(), e);
         }
         return includesList;
     }

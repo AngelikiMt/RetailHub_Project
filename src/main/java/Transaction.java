@@ -1,25 +1,33 @@
 import java.time.LocalDateTime;
 
 public class Transaction {
-
-    private static long counter = 0;
-
     private long transactionId;
     private long clientId;
-    private long storeId;
+    private int storeId;
     private LocalDateTime dateTime;
     private String paymentMethod;
     private double sumTotal;
     private double discount;
 
-    public Transaction(long clientId, long storeId, double sumTotal, double discount, String paymentMethod) {
-        this.transactionId = ++counter;
+    public Transaction(long clientId, int storeId, double sumTotal, double discount, String paymentMethod) {
         this.clientId = clientId;
         this.storeId = storeId;
         this.dateTime = LocalDateTime.now();
         this.paymentMethod = paymentMethod;
         this.sumTotal = sumTotal;
         this.discount = discount;
+    }
+
+     // Constructor for loading transactions FROM THE DATABASE (ID and DateTime are already known)
+    public Transaction(long transactionId, long clientId, int storeId, LocalDateTime dateTime,
+                       String paymentMethod, double sumTotal, double doubleDiscount) {
+        this.transactionId = transactionId;
+        this.clientId = clientId;
+        this.storeId = storeId;
+        this.dateTime = dateTime;
+        this.paymentMethod = paymentMethod;
+        this.sumTotal = sumTotal;
+        this.discount = doubleDiscount;
     }
 
     public long getTransactionId() {
@@ -30,7 +38,7 @@ public class Transaction {
         return clientId;
     }
 
-    public long getStoreId() {
+    public int getStoreId() {
         return storeId;
     }
 
@@ -48,6 +56,11 @@ public class Transaction {
 
     public double getDiscount() {
         return discount;
+    }
+
+    // Setter for transactionId, crucial for the DAO to set the generated ID
+    public void setTransactionId(long transactionId) {
+        this.transactionId = transactionId;
     }
 
     @Override
