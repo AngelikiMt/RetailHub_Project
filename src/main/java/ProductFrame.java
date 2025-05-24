@@ -125,7 +125,8 @@ public class ProductFrame extends JFrame {
                 var p = productService.findProductById(id);
                 if (p != null) {
                     boolean newState = !p.getActive();
-                    productService.deactivateProduct(id, newState);
+                    productService.setProductActiveStatus(id, newState);  // ✅ αυτή υπάρχει
+
                     refreshAll();
                     toggleBtn.setText(newState ? "Deactivated" : "Activated");
                     Timer timer = new Timer(1500, evt -> toggleBtn.setText("Active/Deactivate"));
@@ -146,7 +147,7 @@ public class ProductFrame extends JFrame {
                 long id = Long.parseLong(idField.getText());
                 var p = productService.findProductById(id);
                 if (p != null)
-                    JOptionPane.showMessageDialog(this, ProductService.getProductAsJson(p));
+                    JOptionPane.showMessageDialog(this, ProductService.getProductAsJson(p.getProductId()));
                 else
                     JOptionPane.showMessageDialog(this, "Product not found");
             } catch (Exception ex) {
