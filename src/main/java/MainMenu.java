@@ -55,14 +55,14 @@ public class MainMenu extends JFrame {
         // === ΔΡΑΣΕΙΣ ===
 //        clientBtn.addActionListener(e -> new ClientFrame());
         productBtn.addActionListener(e -> new ProductFrame());
-//        storeBtn.addActionListener(e -> {
-//            String pin = JOptionPane.showInputDialog(this, "Enter PIN:");
-//            if (ADMIN_PIN.equals(pin)) {
-//                new StoreFrame();
-//            } else {
-//                JOptionPane.showMessageDialog(this, "Invalid PIN.");
-//            }
-//        });
+        storeBtn.addActionListener(e -> {
+            String pin = JOptionPane.showInputDialog(this, "Enter PIN:");
+            if (ADMIN_PIN.equals(pin)) {
+                new StoreFrame();
+            } else {
+                JOptionPane.showMessageDialog(this, "Invalid PIN.");
+            }
+        });
 //        stockBtn.addActionListener(e -> new StockFrame());
 //        transactionBtn.addActionListener(e -> new TransactionFrame());
         exitBtn.addActionListener(e -> {
