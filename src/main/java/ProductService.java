@@ -22,32 +22,28 @@ public class ProductService {
 	}
 
 	// Update Product
-    public static Product updateProduct(Product product, String description, String category, Double price, Double cost) {
-        // Validation logic
+    public static Product updateProduct(long productId, String description, String category, Double price, Double cost) {
+        Product product = productDAO.getProductById(productId);
+        if (product == null) {
+            throw new IllegalArgumentException("Product not found.");
+        }
+
         List<String> errors = productValidation(description, category, price, cost);
         if (!errors.isEmpty()) {
             throw new IllegalArgumentException(String.join(", ", errors));
         }
 
-        try {
-            // Update product attributes
-            product.setDescription(description);
-            product.setCategory(category);
-            product.setPrice(price);
-            product.setCost(cost);
+        product.setDescription(description);
+        product.setCategory(category);
+        product.setPrice(price);
+        product.setCost(cost);
 
-            // Persist changes to the database
-            productDAO.updateProduct(product);
-
-            return product; // Return the updated product on success
-        } catch (Exception e) {
-            // Log the error for debugging purposes
-            System.err.println("Failed to update product: " + e.getMessage()); // Or use a proper logging framework
-            throw new RuntimeException("Failed to update product: " + e.getMessage(), e);
-        }
+        productDAO.updateProduct(product);
+        return product;
     }
 
-	// Delete
+
+    // Delete
 	public boolean deleteProduct(long productId) {
 		return productDAO.deleteProduct(productId);
 	}
