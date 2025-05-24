@@ -33,7 +33,8 @@ public class StoreService {
     }
 
     // Create store
-    public static Store createStore(String storeName, String address, String country, String phone) throws IllegalArgumentException, NoSuchFieldException, IllegalAccessException {
+    public static Store createStore(String storeName, String address, String country, String phone)
+    {
         List<String> errors = new ArrayList<>();
 
         validate("storeName", storeName, errors);
