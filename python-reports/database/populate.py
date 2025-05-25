@@ -2,10 +2,18 @@ from faker import Faker
 import random
 from db_utils import create_connection
 
+# ----- simulation sizes -----
+N_CLIENTS            = 300
+N_STORES             = 30
+N_PRODUCTS           = 100
+PRODUCTS_PER_STORE   = 20
+N_TRANSACTIONS       = 2000
+MAX_PRODUCTS_IN_TRX  = 3      
+
 fake = Faker()
 conn = create_connection()
 
-def create_clients(n=100):
+def create_clients(n=N_CLIENTS):
     with conn.cursor() as cursor:
         for _ in range(n):
             cursor.execute("""
@@ -15,22 +23,22 @@ def create_clients(n=100):
                 fake.first_name(),
                 fake.last_name(),
                 fake.date_of_birth(minimum_age=18, maximum_age=75),
-                fake.unique.phone_number(),
+                fake.unique.numerify(text="##########"),
                 fake.unique.email(),
-                random.choice(['male', 'female', 'other', 'prefer_not_to_say']),
+                random.choice(['male', 'female', 'other']),
                 random.choice([1, 0])
             ))
     conn.commit()
     print("✅ Clients inserted")
 
-def create_stores(n=5):
+def create_stores(n=N_STORES):
     with conn.cursor() as cursor:
         for _ in range(n):
             cursor.execute("""
                 INSERT INTO Store (phone, address, country, storeName)
                 VALUES (%s, %s, %s, %s)
             """, (
-                fake.unique.phone_number(),
+                fake.unique.numerify(text="##########"),
                 fake.address(),
                 fake.country(),
                 fake.company()
@@ -38,7 +46,7 @@ def create_stores(n=5):
     conn.commit()
     print("✅ Stores inserted")
 
-def create_products(n=30):
+def create_products(n=N_PRODUCTS):
     with conn.cursor() as cursor:
         for _ in range(n):
             cursor.execute("""
@@ -53,33 +61,31 @@ def create_products(n=30):
     conn.commit()
     print("✅ Products inserted")
 
-def create_stock_entries():
+def create_stock_entries(n=PRODUCTS_PER_STORE):
     with conn.cursor() as cursor:
-        # Fetch all store and product IDs
         cursor.execute("SELECT storeId FROM Store")
         store_ids = [row['storeId'] for row in cursor.fetchall()]
 
         cursor.execute("SELECT productId FROM products")
         product_ids = [row['productId'] for row in cursor.fetchall()]
 
-        used_pairs = set()
-
         for store_id in store_ids:
-            for _ in range(10):  # 10 products per store
-                product_id = random.choice(product_ids)
-                if (store_id, product_id) not in used_pairs:
-                    used_pairs.add((store_id, product_id))
-                    cursor.execute("""
-                        INSERT INTO stock (storeId, productId, stockQuantity)
-                        VALUES (%s, %s, %s)
-                    """, (store_id, product_id, random.randint(5, 100)))
+            chosen_products = random.sample(product_ids, k=min(n, len(product_ids)))
+            stock_rows = [(store_id, pid, random.randint(5, 100)) for pid in chosen_products]
+            cursor.executemany(
+                "INSERT INTO stock (storeId, productId, stockQuantity) VALUES (%s, %s, %s)",
+                stock_rows
+            )
     conn.commit()
     print("✅ Stock entries inserted")
 
 
+
 from datetime import datetime, timedelta
 
-def create_transactions(n=300):
+from datetime import datetime, timedelta
+
+def create_transactions(n=N_TRANSACTIONS):
     with conn.cursor() as cursor:
         # Fetch clients and stores
         cursor.execute("SELECT clientId FROM Client WHERE activeStatus = 1")
@@ -97,6 +103,9 @@ def create_transactions(n=300):
             key = (row['storeId'], row['productId'])
             stock_lookup[key] = row['stockQuantity']
 
+        # Track client spending since last discount
+        client_spent = {cid: 0 for cid in clients}
+
         for _ in range(n):
             client_id = random.choice(clients)
             store_id = random.choice(stores)
@@ -109,11 +118,15 @@ def create_transactions(n=300):
                 continue
 
             total = 0
-            discount = random.choice([0, 5, 10, 15])
             includes_entries = []
 
             for sp in selected_products:
-                quantity = random.randint(1, 3)
+                max_qty = stock_lookup[sp]
+                if max_qty <= 0:
+                    continue
+
+                quantity = random.randint(1, min(3, max_qty))
+
                 cursor.execute("SELECT price FROM products WHERE productId = %s", (sp[1],))
                 price = cursor.fetchone()['price']
                 total += price * quantity
@@ -124,11 +137,24 @@ def create_transactions(n=300):
                 cursor.execute("UPDATE stock SET stockQuantity = %s WHERE storeId = %s AND productId = %s",
                                (stock_lookup[sp], sp[0], sp[1]))
 
+            if not includes_entries:
+                continue
+
+            # Check for discount eligibility
+            discount = 0
+            if client_spent[client_id] >= 400:
+                discount = 20
+                client_spent[client_id] = 0  # reset after giving discount
+            else:
+                client_spent[client_id] += total
+
+            final_total = round(total * (1 - discount / 100), 2)
+
             # Insert transaction
             cursor.execute("""
                 INSERT INTO transaction (clientId, storeId, dateTime, paymentMethod, sumTotal, discount)
                 VALUES (%s, %s, %s, %s, %s, %s)
-            """, (client_id, store_id, date, payment_method, round(total, 2), discount))
+            """, (client_id, store_id, date, payment_method, final_total, discount))
             transaction_id = cursor.lastrowid
 
             # Insert includes
@@ -140,6 +166,7 @@ def create_transactions(n=300):
 
     conn.commit()
     print("✅ Transactions and includes inserted")
+
 
 
 def update_client_totals():
