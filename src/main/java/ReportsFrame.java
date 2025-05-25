@@ -9,7 +9,7 @@ public class ReportsFrame extends JFrame {
     private JTextArea outputArea;
 
     public ReportsFrame() {
-        setTitle("Generate Report");
+        setTitle("RetailHub Reports");
         setSize(500, 400);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -23,7 +23,7 @@ public class ReportsFrame extends JFrame {
         JTextField productIdField = new JTextField();
 
         JLabel reportTypeLabel = new JLabel("Report Type:");
-        String[] reportOptions = {"sales_by_product"};
+        String[] reportOptions = {"sales_by_product", "profit_by_product"};
         JComboBox<String> reportTypeCombo = new JComboBox<>(reportOptions);
 
         JButton generateBtn = new JButton("Generate Report");
@@ -63,7 +63,7 @@ public class ReportsFrame extends JFrame {
                 // Εκτέλεση και εμφάνιση αποτελέσματος
                 // Αν θέλεις μπορείς να τρέξεις σε νέο thread για να μην παγώνει το UI
                 new Thread(() -> {
-                    String result = ReportService.getSalesByProductResults(productId, reportType);
+                    String result = ReportService.getByProductResults(productId, reportType);
                     SwingUtilities.invokeLater(() -> outputArea.setText(result));
                 }).start();
 

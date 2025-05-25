@@ -1,8 +1,8 @@
 #report_router.py
 
 import json
-from reports.sales_by_productsales_by_product import get_sales_by_product
-from reports.profit_by_productprofit_by_product import get_profit_by_product
+from reports.sales_by_product import get_sales_by_product
+from reports.profit_by_product import get_profit_by_product
 
 
 INPUT_PATH  = "io/input.json"
@@ -21,7 +21,7 @@ def save_output(data: dict) -> None:
 
 def main() -> None:
     try:
-        data        = load_input()
+        data = load_input()
         report_type = data.get("report_type")
 
         if report_type == "sales_by_product":

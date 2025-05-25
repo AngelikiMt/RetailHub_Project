@@ -5,7 +5,7 @@ import java.util.Map;
 
 public class ReportService {
 
-    public static String getSalesByProductResults(long productId, String reportName) {
+    public static String getByProductResults(long productId, String reportName) {
         ObjectMapper mapper = new ObjectMapper();
 
         try {
