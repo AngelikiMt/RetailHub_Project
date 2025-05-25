@@ -1,7 +1,9 @@
 #report_router.py
 
 import json
-from reports.sales_by_product import get_sales_by_product
+from reports.sales_by_productsales_by_product import get_sales_by_product
+from reports.profit_by_productprofit_by_product import get_profit_by_product
+
 
 INPUT_PATH  = "io/input.json"
 OUTPUT_PATH = "io/output.json"
@@ -23,14 +25,21 @@ def main() -> None:
         report_type = data.get("report_type")
 
         if report_type == "sales_by_product":
-            product_id = int(data["product_id"])         # πάντοτε int
-            result     = get_sales_by_product(product_id)
-            save_output(result)
+            pid = int(data["product_id"])
+            result = get_sales_by_product(pid)
+
+        elif report_type == "profit_by_product":
+            pid = int(data["product_id"])
+            result = get_profit_by_product(pid)
+
         else:
-            save_output({"error": f"Unsupported report_type: {report_type}"})
+            result = {"error": f"Unsupported report_type: {report_type}"}
+
+        save_output(result)
 
     except Exception as e:
         save_output({"error": str(e)})
+
 
 
 if __name__ == "__main__":
