@@ -10,15 +10,15 @@ def fetch_clients():
             cursor.execute("SELECT * FROM Client")  # Capital 'C'
             rows = cursor.fetchall()
 
-            print("📋 Retrieved clients:")
+            print("Retrieved clients:")
             for row in rows:
-                print(f"🧑 {row['firstName']} {row['lastName']} ({row['email']}) - Active: {row['activeStatus']}")
+                print(f" {row['firstName']} {row['lastName']} ({row['email']}) - Active: {row['activeStatus']}")
 
     except Exception as e:
-        print(f"❌ Query error: {e}")
+        print(f" Query error: {e}")
     finally:
         conn.close()
-        print("🔌 Connection closed.")
+        print(" Connection closed.")
 
 if __name__ == "__main__":
     fetch_clients()

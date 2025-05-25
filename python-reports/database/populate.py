@@ -29,7 +29,7 @@ def create_clients(n=N_CLIENTS):
                 random.choice([1, 0])
             ))
     conn.commit()
-    print("✅ Clients inserted")
+    print("Clients inserted")
 
 def create_stores(n=N_STORES):
     with conn.cursor() as cursor:
@@ -44,7 +44,7 @@ def create_stores(n=N_STORES):
                 fake.company()
             ))
     conn.commit()
-    print("✅ Stores inserted")
+    print("Stores inserted")
 
 def create_products(n=N_PRODUCTS):
     with conn.cursor() as cursor:
@@ -59,7 +59,7 @@ def create_products(n=N_PRODUCTS):
                 random.choice(['clothing', 'electronics', 'beauty'])
             ))
     conn.commit()
-    print("✅ Products inserted")
+    print("Products inserted")
 
 def create_stock_entries(n=PRODUCTS_PER_STORE):
     with conn.cursor() as cursor:
@@ -77,7 +77,7 @@ def create_stock_entries(n=PRODUCTS_PER_STORE):
                 stock_rows
             )
     conn.commit()
-    print("✅ Stock entries inserted")
+    print("Stock entries inserted")
 
 
 
@@ -165,7 +165,7 @@ def create_transactions(n=N_TRANSACTIONS):
                 """, (transaction_id, product_id, qty))
 
     conn.commit()
-    print("✅ Transactions and includes inserted")
+    print("Transactions and includes inserted")
 
 
 
@@ -187,7 +187,7 @@ def update_client_totals():
             """, (round(row['total'], 2), row['lastDate'], row['clientId']))
 
     conn.commit()
-    print("✅ Updated clientSumTotal and lastPurchaseDate")
+    print("Updated clientSumTotal and lastPurchaseDate")
 
 
 
@@ -200,7 +200,7 @@ def main():
     update_client_totals()
 
     conn.close()
-    print("🎉 Database population complete.")
+    print("Database population complete.")
 
 if __name__ == "__main__":
     main()

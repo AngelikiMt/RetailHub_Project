@@ -27,12 +27,13 @@ public class MainMenu extends JFrame {
         JButton storeBtn = new JButton("STORE (PIN)");
         JButton stockBtn = new JButton("STOCK");
         JButton transactionBtn = new JButton("TRANSACTION");
+        JButton reportBtn = new JButton("REPORTS (PIN)");
         JButton exitBtn = new JButton("EXIT");
 
         Font buttonFont = new Font("Arial", Font.BOLD, 20);
         Dimension buttonSize = new Dimension(200, 50);
 
-        JButton[] buttons = {clientBtn, productBtn, storeBtn, stockBtn, transactionBtn, exitBtn};
+        JButton[] buttons = {clientBtn, productBtn, storeBtn, stockBtn, transactionBtn,reportBtn, exitBtn};
         for (JButton btn : buttons) {
             btn.setFont(buttonFont);
             btn.setPreferredSize(buttonSize);
@@ -64,7 +65,15 @@ public class MainMenu extends JFrame {
             }
         });
 //        stockBtn.addActionListener(e -> new StockFrame());
-//        transactionBtn.addActionListener(e -> new TransactionFrame());
+//       transactionBtn.addActionListener(e -> new TransactionFrame());
+         reportBtn.addActionListener(e -> {
+            String pin = JOptionPane.showInputDialog(this, "Enter REPORTS PIN:");
+            if (ADMIN_PIN.equals(pin)) {
+                new ReportsFrame(); 
+            } else {
+                JOptionPane.showMessageDialog(this, "Invalid REPORTS PIN.");
+            }
+        });
         exitBtn.addActionListener(e -> {
             dispose();
             new LoginFrame();
