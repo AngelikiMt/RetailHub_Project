@@ -2,10 +2,18 @@ from faker import Faker
 import random
 from db_utils import create_connection
 
+# ----- simulation sizes -----
+N_CLIENTS            = 300
+N_STORES             = 30
+N_PRODUCTS           = 100
+PRODUCTS_PER_STORE   = 20
+N_TRANSACTIONS       = 2000
+MAX_PRODUCTS_IN_TRX  = 3      
+
 fake = Faker()
 conn = create_connection()
 
-def create_clients(n=100):
+def create_clients(n=N_CLIENTS):
     with conn.cursor() as cursor:
         for _ in range(n):
             cursor.execute("""
@@ -23,7 +31,7 @@ def create_clients(n=100):
     conn.commit()
     print("✅ Clients inserted")
 
-def create_stores(n=5):
+def create_stores(n=N_STORES):
     with conn.cursor() as cursor:
         for _ in range(n):
             cursor.execute("""
@@ -38,7 +46,7 @@ def create_stores(n=5):
     conn.commit()
     print("✅ Stores inserted")
 
-def create_products(n=30):
+def create_products(n=N_PRODUCTS):
     with conn.cursor() as cursor:
         for _ in range(n):
             cursor.execute("""
@@ -53,35 +61,31 @@ def create_products(n=30):
     conn.commit()
     print("✅ Products inserted")
 
-def create_stock_entries():
+def create_stock_entries(n=PRODUCTS_PER_STORE):
     with conn.cursor() as cursor:
-        # Fetch all store and product IDs
         cursor.execute("SELECT storeId FROM Store")
         store_ids = [row['storeId'] for row in cursor.fetchall()]
 
         cursor.execute("SELECT productId FROM products")
         product_ids = [row['productId'] for row in cursor.fetchall()]
 
-        used_pairs = set()
-
         for store_id in store_ids:
-            for _ in range(10):  # 10 products per store
-                product_id = random.choice(product_ids)
-                if (store_id, product_id) not in used_pairs:
-                    used_pairs.add((store_id, product_id))
-                    cursor.execute("""
-                        INSERT INTO stock (storeId, productId, stockQuantity)
-                        VALUES (%s, %s, %s)
-                    """, (store_id, product_id, random.randint(5, 100)))
+            chosen_products = random.sample(product_ids, k=min(n, len(product_ids)))
+            stock_rows = [(store_id, pid, random.randint(5, 100)) for pid in chosen_products]
+            cursor.executemany(
+                "INSERT INTO stock (storeId, productId, stockQuantity) VALUES (%s, %s, %s)",
+                stock_rows
+            )
     conn.commit()
     print("✅ Stock entries inserted")
 
 
-from datetime import datetime, timedelta
 
 from datetime import datetime, timedelta
 
-def create_transactions(n=300):
+from datetime import datetime, timedelta
+
+def create_transactions(n=N_TRANSACTIONS):
     with conn.cursor() as cursor:
         # Fetch clients and stores
         cursor.execute("SELECT clientId FROM Client WHERE activeStatus = 1")
