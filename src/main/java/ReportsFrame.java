@@ -23,7 +23,7 @@ public class ReportsFrame extends JFrame {
         JTextField productIdField = new JTextField();
 
         JLabel reportTypeLabel = new JLabel("Report Type:");
-        String[] reportOptions = {"sales_by_product", "profit_by_product"};
+        String[] reportOptions = {"sales_by_product", "profit_by_product","most_profitable_products"};
         JComboBox<String> reportTypeCombo = new JComboBox<>(reportOptions);
 
         JButton generateBtn = new JButton("Generate Report");
@@ -63,7 +63,7 @@ public class ReportsFrame extends JFrame {
                 // Εκτέλεση και εμφάνιση αποτελέσματος
                 // Αν θέλεις μπορείς να τρέξεις σε νέο thread για να μην παγώνει το UI
                 new Thread(() -> {
-                    String result = ReportService.getByProductResults(productId, reportType);
+                    String result = ReportService.getProductResults(productId, reportType);
                     SwingUtilities.invokeLater(() -> outputArea.setText(result));
                 }).start();
 

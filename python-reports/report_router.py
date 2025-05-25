@@ -3,6 +3,8 @@
 import json
 from reports.sales_by_product import get_sales_by_product
 from reports.profit_by_product import get_profit_by_product
+from reports.most_profitable_products import get_most_profitable_products
+
 
 
 INPUT_PATH  = "io/input.json"
@@ -18,6 +20,8 @@ def save_output(data: dict) -> None:
     with open(OUTPUT_PATH, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=4, ensure_ascii=False)
 
+        
+
 
 def main() -> None:
     try:
@@ -31,6 +35,9 @@ def main() -> None:
         elif report_type == "profit_by_product":
             pid = int(data["product_id"])
             result = get_profit_by_product(pid)
+            
+        elif report_type == "most_profitable_products":
+            result = get_most_profitable_products()
 
         else:
             result = {"error": f"Unsupported report_type: {report_type}"}

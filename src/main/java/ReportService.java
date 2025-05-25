@@ -5,7 +5,7 @@ import java.util.Map;
 
 public class ReportService {
 
-    public static String getByProductResults(long productId, String reportName) {
+    public static String getProductResults(long productId, String reportName) {
         ObjectMapper mapper = new ObjectMapper();
 
         try {
@@ -42,7 +42,32 @@ public class ReportService {
             if (outputFile.exists()) {
                 Map<?, ?> outputData = mapper.readValue(outputFile, Map.class);
                 output.append("\nΑποτελέσματα:\n");
-                outputData.forEach((k, v) -> output.append(k).append(": ").append(v).append("\n"));
+                if ("most_profitable_products".equals(reportName)) {
+                    Object topProductsObj = outputData.get("top_profitable_products");
+                    if (topProductsObj instanceof java.util.List<?> topList) {
+                        int index = 1;
+                        for (Object item : topList) {
+                            if (item instanceof Map<?, ?> product) {
+                                output.append("📦 Προϊόν #").append(String.valueOf(index++)).append("\n");
+                                output.append("🆔 ID: ").append(product.get("productId").toString()).append("\n");
+                                output.append("📝 Περιγραφή: ").append(product.get("description").toString()).append("\n");
+                                output.append("📂 Κατηγορία: ").append(product.get("category").toString()).append("\n");
+                                output.append("📊 Πωλήσεις: ").append(product.get("total_units").toString()).append("\n");
+                                output.append("💰 Έσοδα: ").append(product.get("total_revenue").toString()).append("\n");
+                                output.append("💸 Κόστος: ").append(product.get("total_cost").toString()).append("\n");
+                                output.append("📈 Κέρδος: ").append(product.get("total_profit").toString()).append("\n");
+                                output.append("📉 Περιθώριο: ").append(product.get("profit_margin").toString()).append("\n");
+                                output.append("--------------------------------------------------\n");
+                            }
+                        }
+                    } else {
+                        output.append("Δεν υπάρχουν αποτελέσματα.\n");
+                    }
+                } else {
+                    // Προεπιλεγμένη απεικόνιση για άλλα reports
+                    outputData.forEach((k, v) -> output.append(k).append(": ").append(v).append("\n"));
+                }
+
             } else {
                 output.append("\nΔεν βρέθηκε το output.json\n");
             }
