@@ -1,0 +1,179 @@
+from faker import Faker
+import random
+from db_utils import create_connection
+
+fake = Faker()
+conn = create_connection()
+
+def create_clients(n=100):
+    with conn.cursor() as cursor:
+        for _ in range(n):
+            cursor.execute("""
+                INSERT INTO Client (firstName, lastName, birthDate, phoneNumber, email, gender, activeStatus)
+                VALUES (%s, %s, %s, %s, %s, %s, %s)
+            """, (
+                fake.first_name(),
+                fake.last_name(),
+                fake.date_of_birth(minimum_age=18, maximum_age=75),
+                fake.unique.phone_number(),
+                fake.unique.email(),
+                random.choice(['male', 'female', 'other', 'prefer_not_to_say']),
+                random.choice([1, 0])
+            ))
+    conn.commit()
+    print("✅ Clients inserted")
+
+def create_stores(n=5):
+    with conn.cursor() as cursor:
+        for _ in range(n):
+            cursor.execute("""
+                INSERT INTO Store (phone, address, country, storeName)
+                VALUES (%s, %s, %s, %s)
+            """, (
+                fake.unique.phone_number(),
+                fake.address(),
+                fake.country(),
+                fake.company()
+            ))
+    conn.commit()
+    print("✅ Stores inserted")
+
+def create_products(n=30):
+    with conn.cursor() as cursor:
+        for _ in range(n):
+            cursor.execute("""
+                INSERT INTO products (description, price, cost, category)
+                VALUES (%s, %s, %s, %s)
+            """, (
+                fake.word(),
+                round(random.uniform(5, 200), 2),
+                round(random.uniform(2, 100), 2),
+                random.choice(['clothing', 'electronics', 'beauty'])
+            ))
+    conn.commit()
+    print("✅ Products inserted")
+
+def create_stock_entries():
+    with conn.cursor() as cursor:
+        # Fetch all store and product IDs
+        cursor.execute("SELECT storeId FROM Store")
+        store_ids = [row['storeId'] for row in cursor.fetchall()]
+
+        cursor.execute("SELECT productId FROM products")
+        product_ids = [row['productId'] for row in cursor.fetchall()]
+
+        used_pairs = set()
+
+        for store_id in store_ids:
+            for _ in range(10):  # 10 products per store
+                product_id = random.choice(product_ids)
+                if (store_id, product_id) not in used_pairs:
+                    used_pairs.add((store_id, product_id))
+                    cursor.execute("""
+                        INSERT INTO stock (storeId, productId, stockQuantity)
+                        VALUES (%s, %s, %s)
+                    """, (store_id, product_id, random.randint(5, 100)))
+    conn.commit()
+    print("✅ Stock entries inserted")
+
+
+from datetime import datetime, timedelta
+
+def create_transactions(n=300):
+    with conn.cursor() as cursor:
+        # Fetch clients and stores
+        cursor.execute("SELECT clientId FROM Client WHERE activeStatus = 1")
+        clients = [row['clientId'] for row in cursor.fetchall()]
+
+        cursor.execute("SELECT storeId FROM Store")
+        stores = [row['storeId'] for row in cursor.fetchall()]
+
+        # Fetch stock data
+        cursor.execute("SELECT storeId, productId, stockQuantity FROM stock WHERE stockQuantity > 0")
+        stock_data = cursor.fetchall()
+
+        stock_lookup = {}
+        for row in stock_data:
+            key = (row['storeId'], row['productId'])
+            stock_lookup[key] = row['stockQuantity']
+
+        for _ in range(n):
+            client_id = random.choice(clients)
+            store_id = random.choice(stores)
+            date = fake.date_time_between(start_date='-1y', end_date='now')
+            payment_method = random.choice(['cash', 'card', 'paypal'])
+            product_choices = [key for key in stock_lookup if key[0] == store_id]
+            selected_products = random.sample(product_choices, k=min(3, len(product_choices)))
+
+            if not selected_products:
+                continue
+
+            total = 0
+            discount = random.choice([0, 5, 10, 15])
+            includes_entries = []
+
+            for sp in selected_products:
+                quantity = random.randint(1, 3)
+                cursor.execute("SELECT price FROM products WHERE productId = %s", (sp[1],))
+                price = cursor.fetchone()['price']
+                total += price * quantity
+                includes_entries.append((sp[1], quantity))
+
+                # Reduce stock
+                stock_lookup[sp] -= quantity
+                cursor.execute("UPDATE stock SET stockQuantity = %s WHERE storeId = %s AND productId = %s",
+                               (stock_lookup[sp], sp[0], sp[1]))
+
+            # Insert transaction
+            cursor.execute("""
+                INSERT INTO transaction (clientId, storeId, dateTime, paymentMethod, sumTotal, discount)
+                VALUES (%s, %s, %s, %s, %s, %s)
+            """, (client_id, store_id, date, payment_method, round(total, 2), discount))
+            transaction_id = cursor.lastrowid
+
+            # Insert includes
+            for product_id, qty in includes_entries:
+                cursor.execute("""
+                    INSERT INTO includes (transactionId, productId, soldQuantity)
+                    VALUES (%s, %s, %s)
+                """, (transaction_id, product_id, qty))
+
+    conn.commit()
+    print("✅ Transactions and includes inserted")
+
+
+def update_client_totals():
+    with conn.cursor() as cursor:
+        cursor.execute("""
+            SELECT clientId, SUM(sumTotal) AS total, MAX(dateTime) AS lastDate
+            FROM transaction
+            GROUP BY clientId
+        """)
+        client_summaries = cursor.fetchall()
+
+        for row in client_summaries:
+            cursor.execute("""
+                UPDATE Client
+                SET clientSumTotal = %s,
+                    lastPurchaseDate = %s
+                WHERE clientId = %s
+            """, (round(row['total'], 2), row['lastDate'], row['clientId']))
+
+    conn.commit()
+    print("✅ Updated clientSumTotal and lastPurchaseDate")
+
+
+
+def main():
+    create_clients()
+    create_stores()
+    create_products()
+    create_stock_entries()
+    create_transactions()
+    update_client_totals()
+
+    conn.close()
+    print("🎉 Database population complete.")
+
+if __name__ == "__main__":
+    main()

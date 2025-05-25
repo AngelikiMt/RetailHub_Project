@@ -1,0 +1,12 @@
+{
+    "product_id": 5,
+    "description": "avoid",
+    "total_units_sold": 38,
+    "total_revenue": 7462.06,
+    "sales_per_store": [
+        {
+            "store": "USCGC Fuentes\nFPO AE 81430",
+            "units": 38
+        }
+    ]
+}
