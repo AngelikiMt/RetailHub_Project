@@ -1,17 +1,10 @@
 import pandas as pd
 from database.db_utils import create_connection
 
-def get_most_profitable_products(limit=10) -> dict:
+def get_most_profitable_products(limit=10):
     """
-    Επιστρέφει τα top προϊόντα με το υψηλότερο περιθώριο κέρδους.
-        Περιλαμβάνει:
-        - περιγραφή προϊόντος
-        -κατηγορία προιόντος
-        - μονάδες που πουλήθηκαν
-        - έσοδα
-        - κόστος
-        - καθαρό κέρδος
-        - περιθώριο κέρδους
+    Επιστρέφει τα top 10 προϊόντα με το υψηλότερο περιθώριο κέρδους.
+
     """
     query = """
     SELECT

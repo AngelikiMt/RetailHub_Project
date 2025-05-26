@@ -12,6 +12,7 @@ public class ReportsFrame extends JFrame {
         setTitle("RetailHub Reports");
         setSize(500, 400);
         setLocationRelativeTo(null);
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLayout(new BorderLayout(10, 10));
 
@@ -51,17 +52,18 @@ public class ReportsFrame extends JFrame {
             String productIdText = productIdField.getText();
             String reportType = (String) reportTypeCombo.getSelectedItem();
 
-            if (productIdText.isEmpty()) {
+            if (!"most_profitable_products".equals(reportType) && productIdText.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Please enter a Product ID.");
                 return;
             }
 
             try {
-                long productId = Long.parseLong(productIdText);
+                long productId = ("most_profitable_products".equals(reportType) || productIdText.isEmpty())
+                        ? 0L
+                        : Long.parseLong(productIdText);
+
                 outputArea.setText("Running report...\n");
 
-                // Εκτέλεση και εμφάνιση αποτελέσματος
-                // Αν θέλεις μπορείς να τρέξεις σε νέο thread για να μην παγώνει το UI
                 new Thread(() -> {
                     String result = ReportService.getProductResults(productId, reportType);
                     SwingUtilities.invokeLater(() -> outputArea.setText(result));
@@ -71,8 +73,7 @@ public class ReportsFrame extends JFrame {
                 JOptionPane.showMessageDialog(this, "Invalid Product ID.");
             }
         });
-
-        setVisible(true);
+         setVisible(true);
     }
 }
 
