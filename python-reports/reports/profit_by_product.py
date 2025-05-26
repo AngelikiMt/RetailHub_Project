@@ -47,6 +47,7 @@ def get_profit_by_product(product_id: int) -> dict:
         profit_margin = round(total_profit / total_revenue, 4) if total_revenue else None
 
         return {
+            "report_type":    "profit_by_product", 
             "product_id":     product_id,
             "description":    df.at[0, "description"],
             "total_units":    total_units,

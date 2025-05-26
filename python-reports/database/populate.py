@@ -26,7 +26,7 @@ def create_clients(n=N_CLIENTS):
                 fake.unique.numerify(text="##########"),
                 fake.unique.email(),
                 random.choice(['male', 'female', 'other']),
-                random.choice([1, 0])
+                1 if random.random() > 0.05 else 0
             ))
     conn.commit()
     print("Clients inserted")
@@ -39,7 +39,7 @@ def create_stores(n=N_STORES):
                 VALUES (%s, %s, %s, %s)
             """, (
                 fake.unique.numerify(text="##########"),
-                fake.address(),
+                fake.address().replace("\n", ", "),
                 fake.country(),
                 fake.company()
             ))
@@ -109,7 +109,7 @@ def create_transactions(n=N_TRANSACTIONS):
         for _ in range(n):
             client_id = random.choice(clients)
             store_id = random.choice(stores)
-            date = fake.date_time_between(start_date='-1y', end_date='now')
+            date = fake.date_time_between(start_date='-3y', end_date='now')
             payment_method = random.choice(['cash', 'card', 'paypal'])
             product_choices = [key for key in stock_lookup if key[0] == store_id]
             selected_products = random.sample(product_choices, k=min(3, len(product_choices)))

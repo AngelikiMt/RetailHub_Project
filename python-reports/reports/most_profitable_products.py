@@ -1,17 +1,9 @@
 import pandas as pd
 from database.db_utils import create_connection
 
-def get_most_profitable_products(limit=10):
+def get_most_profitable_products(limit=10) -> dict:
     """
     Επιστρέφει τα top προϊόντα με το υψηλότερο περιθώριο κέρδους.
-    Περιλαμβάνει:
-    - περιγραφή προϊόντος
-    -κατηγορία προιόντος 
-    - μονάδες που πουλήθηκαν
-    - έσοδα
-    - κόστος
-    - καθαρό κέρδος
-    - περιθώριο κέρδους
     """
     query = """
     SELECT
@@ -34,14 +26,30 @@ def get_most_profitable_products(limit=10):
         conn.close()
 
         df = pd.DataFrame(rows)
+        if df.empty:
+            return {"top_products": []}
+
         df["total_units"]    = pd.to_numeric(df["total_units"])
         df["total_revenue"]  = pd.to_numeric(df["total_revenue"])
         df["total_cost"]     = pd.to_numeric(df["total_cost"])
         df["total_profit"]   = df["total_revenue"] - df["total_cost"]
-        df["profit_margin"]  = df["total_profit"] / df["total_revenue"]
+
+        df["profit_margin"] = df.apply(
+            lambda row: row["total_profit"] / row["total_revenue"]
+            if row["total_revenue"] else None,
+            axis=1
+        )
+
+        df["total_revenue"] = df["total_revenue"].round(2)
+        df["total_cost"]    = df["total_cost"].round(2)
+        df["total_profit"]  = df["total_profit"].round(2)
+        df["profit_margin"] = df["profit_margin"].round(4)
+        df["total_units"]   = df["total_units"].astype(int)
+
         df = df.sort_values(by="profit_margin", ascending=False)
 
         return {
+            "report": "most_profitable_products",
             "top_profitable_products": df.head(limit).to_dict(orient="records")
         }
 
