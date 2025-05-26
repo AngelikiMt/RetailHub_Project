@@ -34,34 +34,35 @@ public class ReportService {
 
             int exitCode = process.waitFor();
             if (exitCode != 0) {
-                output.append("\nΣφάλμα στην εκτέλεση του Python script (exit code: ").append(exitCode).append(")\n");
+                output.append("\nError in the Python script (exit code: ").append(exitCode).append(")\n");
             }
 
             // 3. Ανάγνωση output.json
             File outputFile = new File("python-reports/io/output.json");
             if (outputFile.exists()) {
                 Map<?, ?> outputData = mapper.readValue(outputFile, Map.class);
-                output.append("\nΑποτελέσματα:\n");
+                output.append("\nResults:\n");
+                
                 if ("most_profitable_products".equals(reportName)) {
                     Object topProductsObj = outputData.get("top_profitable_products");
                     if (topProductsObj instanceof java.util.List<?> topList) {
                         int index = 1;
                         for (Object item : topList) {
                             if (item instanceof Map<?, ?> product) {
-                                output.append("📦 Προϊόν #").append(String.valueOf(index++)).append("\n");
-                                output.append("🆔 ID: ").append(product.get("productId").toString()).append("\n");
-                                output.append("📝 Περιγραφή: ").append(product.get("description").toString()).append("\n");
-                                output.append("📂 Κατηγορία: ").append(product.get("category").toString()).append("\n");
-                                output.append("📊 Πωλήσεις: ").append(product.get("total_units").toString()).append("\n");
-                                output.append("💰 Έσοδα: ").append(product.get("total_revenue").toString()).append("\n");
-                                output.append("💸 Κόστος: ").append(product.get("total_cost").toString()).append("\n");
-                                output.append("📈 Κέρδος: ").append(product.get("total_profit").toString()).append("\n");
-                                output.append("📉 Περιθώριο: ").append(product.get("profit_margin").toString()).append("\n");
+                                output.append(" Product #").append(String.valueOf(index++)).append("\n");
+                                output.append(" ID: ").append(product.get("productId").toString()).append("\n");
+                                output.append(" Description: ").append(product.get("description").toString()).append("\n");
+                                output.append(" Category: ").append(product.get("category").toString()).append("\n");
+                                output.append(" Sales: ").append(product.get("total_units").toString()).append("\n");
+                                output.append(" Revenue: ").append(product.get("total_revenue").toString()).append("\n");
+                                output.append(" Cost: ").append(product.get("total_cost").toString()).append("\n");
+                                output.append(" Profit: ").append(product.get("total_profit").toString()).append("\n");
+                                output.append(" Margin: ").append(product.get("profit_margin").toString()).append("\n");
                                 output.append("--------------------------------------------------\n");
                             }
                         }
                     } else {
-                        output.append("Δεν υπάρχουν αποτελέσματα.\n");
+                        output.append("No result found.\n");
                     }
                 } else {
                     // Προεπιλεγμένη απεικόνιση για άλλα reports
@@ -69,7 +70,7 @@ public class ReportService {
                 }
 
             } else {
-                output.append("\nΔεν βρέθηκε το output.json\n");
+                output.append("\nError: \"output.json not found\n");
             }
 
             return output.toString();
