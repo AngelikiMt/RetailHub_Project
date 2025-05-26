@@ -604,7 +604,7 @@
 //							}
 //						break;
 //
-//						//Τερματίζει το μενού συναλλαγών και επιστρέφει στον χρήστη
+//						// Closes the trading menu and returns to the user
 //						case "0":
 //							running = false;
 //							System.out.println("Exiting the transaction menu.");

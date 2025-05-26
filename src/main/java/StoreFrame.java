@@ -1,6 +1,23 @@
+/* Creates the graphical user interface (UI) for managing store operations */
 
-import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
+import java.awt.Image;
+import java.awt.Insets;
+
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
 
 
 public class StoreFrame extends JFrame {
@@ -18,7 +35,7 @@ public class StoreFrame extends JFrame {
         setContentPane(backgroundPanel); // Set background as main content pane
 
         // Sidebar panel with vertical button layout
-        JPanel sidePanel = new JPanel(new GridLayout(6, 1, 10, 10));
+        JPanel sidePanel = new JPanel(new GridLayout(7, 1, 10, 10));
         sidePanel.setOpaque(false);
         sidePanel.setPreferredSize(new Dimension(250, 0));
 
@@ -29,9 +46,10 @@ public class StoreFrame extends JFrame {
         JButton showStoreBtn = new JButton("Show Store");
         JButton showAllBtn = new JButton("Show All Stores");
         JButton jsonBtn = new JButton("Get Store as JSON");
+        JButton exitBtn = new JButton("Back to Main Menu");
 
         // Add buttons to the sidebar panel
-        for (JButton btn : new JButton[]{createBtn, updateBtn, deactivateBtn, showStoreBtn, showAllBtn, jsonBtn}) {
+        for (JButton btn : new JButton[]{createBtn, updateBtn, deactivateBtn, showStoreBtn, showAllBtn, jsonBtn, exitBtn}) {
             btn.setFont(new Font("Arial", Font.BOLD, 16));
             sidePanel.add(btn);
         }
@@ -52,10 +70,10 @@ public class StoreFrame extends JFrame {
         showStoreBtn.addActionListener(e -> showSpecificStorePanel());
         showAllBtn.addActionListener(e -> showAllStoresPanel());
         jsonBtn.addActionListener(e -> showStoreAsJsonPanel());
+        exitBtn.addActionListener(e -> dispose()); // Close window
 
         setVisible(true);
     }
-
 
     //========== Create Store Panel========
     private void showCreatePanel() {
@@ -67,10 +85,11 @@ public class StoreFrame extends JFrame {
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
         // Input fields
-        JTextField name = new JTextField();
-        JTextField address = new JTextField();
-        JTextField country = new JTextField();
-        JTextField phone = new JTextField();
+        JTextField name = new JTextField(20);
+        JTextField address = new JTextField(20);
+        JTextField city = new JTextField(20);
+        JTextField country = new JTextField(20);
+        JTextField phone = new JTextField(20);
         JButton submit = new JButton("Create");
         JTextArea output = new JTextArea(5, 30);
         output.setEditable(false);
@@ -81,8 +100,10 @@ public class StoreFrame extends JFrame {
         gbc.gridx = 1; contentPanel.add(name, gbc);
         gbc.gridx = 0; gbc.gridy = ++y; contentPanel.add(new JLabel("Address:"), gbc);
         gbc.gridx = 1; contentPanel.add(address, gbc);
-        gbc.gridx = 0; gbc.gridy = ++y; contentPanel.add(new JLabel("Country:"), gbc);
-        gbc.gridx = 1; contentPanel.add(country, gbc);
+        gbc.gridx = 0; gbc.gridy = ++y; contentPanel.add(new JLabel("City:"), gbc); // City label
+        gbc.gridx = 1; contentPanel.add(city, gbc); // City text field
+        gbc.gridx = 0; gbc.gridy = ++y; contentPanel.add(new JLabel("Country:"), gbc); // Country label
+        gbc.gridx = 1; contentPanel.add(country, gbc); // Country text field
         gbc.gridx = 0; gbc.gridy = ++y; contentPanel.add(new JLabel("Phone:"), gbc);
         gbc.gridx = 1; contentPanel.add(phone, gbc);
         gbc.gridx = 1; gbc.gridy = ++y; contentPanel.add(submit, gbc);
@@ -92,7 +113,7 @@ public class StoreFrame extends JFrame {
         submit.addActionListener(e -> {
             try {
                 Store store = StoreService.createStore(
-                        name.getText(), address.getText(), country.getText(), phone.getText());
+                        name.getText(), address.getText(), city.getText(),country.getText(), phone.getText());
                 output.setText("Store Created:\n" + store);
             } catch (IllegalArgumentException ex) {
                 output.setText(ex.getMessage());
@@ -102,7 +123,6 @@ public class StoreFrame extends JFrame {
         contentPanel.revalidate();
         contentPanel.repaint();
     }
-
     
     // ====Update Store Panel=======
     private void showUpdatePanel() {
@@ -115,6 +135,7 @@ public class StoreFrame extends JFrame {
         JTextField idField = new JTextField();
         JTextField nameField = new JTextField();
         JTextField addressField = new JTextField();
+        JTextField cityField = new JTextField();
         JTextField countryField = new JTextField();
         JTextField phoneField = new JTextField();
         JButton submit = new JButton("Update");
@@ -124,14 +145,22 @@ public class StoreFrame extends JFrame {
         int y = 0;
         gbc.gridx = 0; gbc.gridy = y; contentPanel.add(new JLabel("Store ID:"), gbc);
         gbc.gridx = 1; contentPanel.add(idField, gbc);
+
         gbc.gridx = 0; gbc.gridy = ++y; contentPanel.add(new JLabel("New Name:"), gbc);
         gbc.gridx = 1; contentPanel.add(nameField, gbc);
+
         gbc.gridx = 0; gbc.gridy = ++y; contentPanel.add(new JLabel("New Address:"), gbc);
         gbc.gridx = 1; contentPanel.add(addressField, gbc);
+
+        gbc.gridx = 0; gbc.gridy = ++y; gbc.gridwidth = 1; contentPanel.add(new JLabel("New City:"), gbc);
+        gbc.gridx = 1; gbc.gridwidth = 2; contentPanel.add(cityField, gbc);
+        
         gbc.gridx = 0; gbc.gridy = ++y; contentPanel.add(new JLabel("New Country:"), gbc);
         gbc.gridx = 1; contentPanel.add(countryField, gbc);
+
         gbc.gridx = 0; gbc.gridy = ++y; contentPanel.add(new JLabel("New Phone:"), gbc);
         gbc.gridx = 1; contentPanel.add(phoneField, gbc);
+
         gbc.gridx = 1; gbc.gridy = ++y; contentPanel.add(submit, gbc);
         gbc.gridx = 0; gbc.gridy = ++y; gbc.gridwidth = 2; contentPanel.add(new JScrollPane(output), gbc);
 
@@ -144,7 +173,7 @@ public class StoreFrame extends JFrame {
                     return;
                 }
                 StoreService.updateStore(id,
-                        nameField.getText(), addressField.getText(), countryField.getText(), phoneField.getText());
+                        nameField.getText(), addressField.getText(), cityField.getText(), countryField.getText(), phoneField.getText());
                 output.setText("Store updated:\n" + StoreService.getStoreById(id));
             } catch (Exception ex) {
                 output.setText("Error: " + ex.getMessage());
@@ -154,7 +183,6 @@ public class StoreFrame extends JFrame {
         contentPanel.revalidate();
         contentPanel.repaint();
     }
-
 
     //======= Deactivate Store Panel========
     private void showDeactivatePanel() {
@@ -177,9 +205,11 @@ public class StoreFrame extends JFrame {
         submit.addActionListener(e -> {
             try {
                 int id = Integer.parseInt(idField.getText());
+                var s = StoreService.getStoreById(id);
                 if (StoreService.validateId(id)) {
-                    StoreService.getStoreById(id).setActive(false);
-                    output.setText("Store with ID " + id + " deactivated.");
+                    boolean newStatus = !s.isActive();
+                    StoreService.setStoreActiveStatus(id, newStatus);
+                    output.setText("Store with ID " + id + " deactivated/activated.");
                 } else {
                     output.setText("Invalid Store ID.");
                 }
@@ -191,7 +221,6 @@ public class StoreFrame extends JFrame {
         contentPanel.revalidate();
         contentPanel.repaint();
     }
-
 
     // ==========Show Specific Store Panel======
     private void showSpecificStorePanel() {
@@ -228,7 +257,6 @@ public class StoreFrame extends JFrame {
         contentPanel.repaint();
     }
 
-
     //===== Show All Stores Panel=======
     private void showAllStoresPanel() {
         contentPanel.removeAll();
@@ -239,7 +267,6 @@ public class StoreFrame extends JFrame {
         contentPanel.revalidate();
         contentPanel.repaint();
     }
-
 
     //====== Show Store as JSON Panel=====
     private void showStoreAsJsonPanel() {
@@ -276,7 +303,6 @@ public class StoreFrame extends JFrame {
         contentPanel.revalidate();
         contentPanel.repaint();
     }
-
     
     // Custom JPanel with background image
     static class BackgroundPanel extends JPanel {

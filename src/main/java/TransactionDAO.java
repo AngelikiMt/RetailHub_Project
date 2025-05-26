@@ -8,9 +8,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.time.LocalDateTime;
 
 public class TransactionDAO {
 
@@ -22,7 +22,7 @@ public class TransactionDAO {
         try (Connection conn = DatabaseConnector.getConnection()) {
             conn.setAutoCommit(false);
             try (
-                    // ✅ Add RETURN_GENERATED_KEYS here
+                    // Add RETURN_GENERATED_KEYS here
                     PreparedStatement stmtTransaction = conn.prepareStatement(insertTransactionSQL, PreparedStatement.RETURN_GENERATED_KEYS);
                     PreparedStatement stmtIncludes = conn.prepareStatement(insertIncludesSQL)
             ) {

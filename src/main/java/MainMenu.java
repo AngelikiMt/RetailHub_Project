@@ -1,5 +1,16 @@
-import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.GridLayout;
+import java.awt.Image;
+
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 
 public class MainMenu extends JFrame {
     private static final String ADMIN_PIN = "12345";
@@ -9,7 +20,7 @@ public class MainMenu extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setExtendedState(JFrame.MAXIMIZED_BOTH); // Fullscreen
 
-        // === PANEL ΜΕ ΦΟΝΤΟ ===
+        // === PANEL WITH BACKGROUND ===
         JPanel backgroundPanel = new JPanel() {
             Image bg = new ImageIcon(getClass().getResource("RetailHub.png")).getImage();
 
@@ -21,7 +32,7 @@ public class MainMenu extends JFrame {
         };
         backgroundPanel.setLayout(new BorderLayout());
 
-        // === ΚΟΥΜΠΙΑ ===
+        // === BUTTONS ===
         JButton clientBtn = new JButton("CLIENT");
         JButton productBtn = new JButton("PRODUCT");
         JButton storeBtn = new JButton("STORE (PIN)");
@@ -38,21 +49,21 @@ public class MainMenu extends JFrame {
             btn.setPreferredSize(buttonSize);
         }
 
-        // === PANEL ΜΕ 3 ΣΤΗΛΕΣ × 2 ΓΡΑΜΜΕΣ ===
+        // === PANEL WITH 3 COLUMNS × 2 LINES ===
         JPanel buttonGrid = new JPanel(new GridLayout(2, 3, 30, 30));
-        buttonGrid.setOpaque(false); // διαφανές για να φαίνεται το background
+        buttonGrid.setOpaque(false); // Transparent so the background is visible
         for (JButton btn : buttons) {
             buttonGrid.add(btn);
         }
 
-        // === ΚΕΝΤΡΑΡΙΣΜΑ ΚΟΥΜΠΙΩΝ ΚΑΤΩ ===
+        // === CENTERING BUTTONS BOTTOM ===
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 40));
         bottomPanel.setOpaque(false);
         bottomPanel.add(buttonGrid);
 
         backgroundPanel.add(bottomPanel, BorderLayout.SOUTH);
 
-        // === ΔΡΑΣΕΙΣ ===
+        // === ACTIONS ===
 //        clientBtn.addActionListener(e -> new ClientFrame());
         productBtn.addActionListener(e -> new ProductFrame());
         storeBtn.addActionListener(e -> {
@@ -63,7 +74,7 @@ public class MainMenu extends JFrame {
                 JOptionPane.showMessageDialog(this, "Invalid PIN.");
             }
         });
-//        stockBtn.addActionListener(e -> new StockFrame());
+        stockBtn.addActionListener(e -> new StockFrame());
 //        transactionBtn.addActionListener(e -> new TransactionFrame());
         exitBtn.addActionListener(e -> {
             dispose();
@@ -73,8 +84,6 @@ public class MainMenu extends JFrame {
         setContentPane(backgroundPanel);
         setVisible(true);
     }
-
-
 }
 
 

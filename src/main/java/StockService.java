@@ -1,4 +1,6 @@
-import java.util.*;
+/* A business logic layer, orchestrating operations between UI (StockFrame.java) and DB layer (StockDAO.java) */
+
+import java.util.List;
 
 public class StockService {
     private static final int THRESHOLD = 3;
@@ -7,21 +9,21 @@ public class StockService {
     private static final StoreDAO storeDAO = new StoreDAO();
     private static final StockDAO stockDAO = new StockDAO();
 
-    // Add a new stock to the database
+    // Add a new stock to the database. 
     public static void addStock(int storeId, long productId, int stockQuantity) {
         if (storeId <= 0 || productId <= 0 || stockQuantity < 0) {
             System.out.println("Invalid input. Store ID, Product ID must be positive and quantity non-negative.");
             return;
         }
 
-        // Validate store
+        // Validates if the store is active or exists
         Store store = storeDAO.getStoreById(storeId);
         if (store == null || !store.isActive()) {
             System.out.println("Store ID " + storeId + " is invalid or inactive.");
             return;
         }
 
-        // Validate product
+        // Validates if the product is active or exists
         Product product = productDAO.getProductById(productId);
         if (product == null || !product.getActive()) {
             System.out.println("Product ID " + productId + " is invalid or inactive.");
@@ -40,7 +42,7 @@ public class StockService {
         stockDAO.insertStock(stock);
     }
 
-    // Get stock by product and store
+    // Get stock by productID and storeID. Returns a Stock object
     public static Stock getStock(long productId, int storeId) {
         return stockDAO.getStock(storeId, productId);
     }
@@ -101,13 +103,9 @@ public class StockService {
     // Search for a product in other stores (except one)
     public static List<Stock> searchProductInOtherStores(long productId, int excludedStoreId) {
         List<Stock> result = stockDAO.searchProductInOtherStores(productId, excludedStoreId);
-        if (result.isEmpty()) {
-            System.out.println("Product not available in other stores.");
-        } else {
-            for (Stock s : result) {
-                System.out.println("Product available in Store ID: " + s.getStoreId() +
-                    " | Quantity: " + s.getStockQuantity());
-            }
+        for (Stock s : result) {
+            System.out.println("Product available in Store ID: " + s.getStoreId() +
+                " | Quantity: " + s.getStockQuantity());
         }
         return result;
     }

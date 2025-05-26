@@ -114,7 +114,7 @@ public class StockDAO {
     /* Searches for a product in other stores except of the excluded one. Returns a list with stocks of the specific product. */
     public List<Stock> searchProductInOtherStores(long productId, int excludedStoreId) {
         List<Stock> result = new ArrayList<>();
-        String sql = "SELECT * FROM stock WHERE productId = ? AND storeId =? AND activeFlag = TRUE AND stockQuantity > 0";
+        String sql = "SELECT * FROM stock WHERE productId = ? AND storeId !=? AND activeFlag = TRUE AND stockQuantity > 0";
 
         try (Connection conn = DatabaseConnector.getConnection();
         PreparedStatement stmt = conn.prepareStatement(sql)) {

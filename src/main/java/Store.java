@@ -2,25 +2,28 @@ public class Store {
 	private int storeId; // Will be set by the DAO after DB insertion
 	private String phone;
 	private String address;
+	private String city;
 	private String country;
 	private String storeName;
-	private static boolean active;
+	private boolean active;
 
 
-	public Store (String storeName, String address, String country, String phone) {
+	public Store (String storeName, String address, String city, String country, String phone) {
 		this.phone = phone;
 		this.address = address;
 		this.country = country;
+		this.city = city;
 		this.storeName = storeName;
 		this.active = true;
 	}
 
 	// Constructor for loading stores FROM THE DATABASE (ID is already known)
     // This is used by mapResultSetToStore
-    public Store(int storeId, String storeName, String address, String country, String phone, boolean active) {
+    public Store(int storeId, String storeName, String address, String city, String country, String phone, boolean active) {
         this.storeId = storeId;
         this.storeName = storeName;
         this.address = address;
+		this.city = city;
         this.country = country;
         this.phone = phone;
         this.active = active;
@@ -39,6 +42,10 @@ public class Store {
 		return address;
 	}
 
+	public String getCity() {
+		return city;
+	}
+
 	public String getCountry() {
 		return country;
 	}
@@ -48,7 +55,7 @@ public class Store {
 	}
 
 	// Is
-	public static boolean isActive () {
+	public boolean isActive () {
 		return active;
 	}
 
@@ -66,6 +73,10 @@ public class Store {
 		this.address=address;
 	}
 
+	public void setCity (String city) {
+		this.city=city;
+	}
+
 	public void setCountry (String country) {
 		this.country=country;
 	}
@@ -80,7 +91,7 @@ public class Store {
 
 	@Override
 	public String toString(){
-		return "Store ID: " + storeId + "\n" + "Store Name: " + storeName + "\n" + "Address: " + address + "\n"
+		return "Store ID: " + storeId + "\n" + "Store Name: " + storeName + "\n" + "Address: " + address + "\n" + "City: " + city + "\n"
 			+ "Country: " + country + "\n" + "Phone: " + phone + "\n" + "Active: " + active + "\n";
 	}
 }

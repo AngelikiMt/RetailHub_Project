@@ -125,7 +125,7 @@ public class ProductFrame extends JFrame {
                 var p = productService.findProductById(id);
                 if (p != null) {
                     boolean newState = !p.getActive();
-                    productService.setProductActiveStatus(id, newState);  // ✅ αυτή υπάρχει
+                    productService.setProductActiveStatus(id, newState);
 
                     refreshAll();
                     toggleBtn.setText(newState ? "Deactivated" : "Activated");
