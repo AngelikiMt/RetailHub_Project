@@ -7,11 +7,11 @@ from reports.most_profitable_products import get_most_profitable_products
 from reports.sales_by_store import get_sales_by_store
 from reports.profit_by_store import get_profit_by_store
 from reports.client_behavior import get_client_behavior
-from reports.category_performance import get_category_performance
-from reports.stock_vs_sales import get_stock_vs_sales
-from reports.monthly_sales_trends import get_monthly_sales_trends
-from reports.store_ranking import get_store_ranking
-from reports.gpt_insights import get_gpt_insights
+# from reports.category_performance import get_category_performance
+# from reports.stock_vs_sales import get_stock_vs_sales
+# from reports.monthly_sales_trends import get_monthly_sales_trends
+# from reports.store_ranking import get_store_ranking
+# from reports.gpt_insights import get_gpt_insights
 
 
 
