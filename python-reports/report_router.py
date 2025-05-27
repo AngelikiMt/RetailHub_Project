@@ -20,7 +20,6 @@ from reports.client_behavior import get_client_behavior
 
 
 
-
 INPUT_PATH  = "io/input.json"
 OUTPUT_PATH = "io/output.json"
 
@@ -50,11 +49,11 @@ def main() -> None:
             pid = int(data["product_id"])
             result = get_profit_by_product(pid)
             
-        elif report_type == "sales_by_store_id":
+        elif report_type == "sales_by_store":
             store_id = int(data["store_id"])
             result = get_sales_by_store(store_id)
 
-        elif report_type == "profit_by_store_id":
+        elif report_type == "profit_by_store":
             store_id = int(data["store_id"])
             result = get_profit_by_store(store_id)
 
