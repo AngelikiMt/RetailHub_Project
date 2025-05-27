@@ -79,8 +79,10 @@ public class ProductService {
         }
         if (!("clothing".equalsIgnoreCase(category) ||
               "beauty".equalsIgnoreCase(category) ||
-              "electronics".equalsIgnoreCase(category))) {
-            errors.add("'" + category + "' is not a valid category. Choose: clothing, beauty, or electronics.");
+              "electronics".equalsIgnoreCase(category) ||
+              "home goods".equalsIgnoreCase(category) ||
+              "kitchen appliances".equalsIgnoreCase(category))) {
+            errors.add("'" + category + "' is not a valid category. Choose: clothing, beauty, electronics, home goods or kitchen appliances.");
         }
         if (price == null || price < 0 || cost == null || cost < 0) {
             errors.add("Price and cost must be non-negative values."); 

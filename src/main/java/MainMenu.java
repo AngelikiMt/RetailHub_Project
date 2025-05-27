@@ -64,7 +64,7 @@ public class MainMenu extends JFrame {
         backgroundPanel.add(bottomPanel, BorderLayout.SOUTH);
 
         // === ACTIONS ===
-//        clientBtn.addActionListener(e -> new ClientFrame());
+        clientBtn.addActionListener(e -> new ClientFrame());
         productBtn.addActionListener(e -> new ProductFrame());
         storeBtn.addActionListener(e -> {
             String pin = JOptionPane.showInputDialog(this, "Enter PIN:");
