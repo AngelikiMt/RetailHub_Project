@@ -227,10 +227,19 @@ public class ReportService {
         if (categoriesObj instanceof List<?> categoryList) {
             for (Object item : categoryList) {
                 if (item instanceof Map<?, ?> category) {
-                    sb.append("- Category: ").append(category.get("category_name")).append("\n");
-                    sb.append("  Total Revenue: ").append(category.get("total_revenue")).append("\n");
-                    sb.append("  Total Profit: ").append(category.get("total_profit")).append("\n");
-                    sb.append("  Units Sold: ").append(category.get("units_sold")).append("\n");
+                    String categoryName = (String) category.get("category");
+                    int units = ((Number) category.get("units")).intValue();
+                    double revenue = ((Number) category.get("revenue")).doubleValue();
+                    double cost = ((Number) category.get("cost")).doubleValue();
+                    double profit = ((Number) category.get("profit")).doubleValue();
+                    double margin = ((Number) category.get("margin")).doubleValue();
+
+                    sb.append("- Category: ").append(categoryName).append("\n");
+                    sb.append("  Units Sold: ").append(units).append("\n");
+                    sb.append("  Total Revenue: ").append(String.format("%.2f", revenue)).append("\n");
+                    sb.append("  Total Cost: ").append(String.format("%.2f", cost)).append("\n");
+                    sb.append("  Total Profit: ").append(String.format("%.2f", profit)).append("\n");
+                    sb.append("  Profit Margin: ").append(String.format("%.4f", margin)).append("\n");
                     sb.append("----------------------------------------\n");
                 }
             }
@@ -238,6 +247,7 @@ public class ReportService {
 
         return sb.toString();
     }
+
 //============================================ monthly sales =======================================
     private static String formatMonthlySalesTrends(Map<?, ?> data) {
         StringBuilder sb = new StringBuilder();
@@ -249,8 +259,8 @@ public class ReportService {
             for (Object item : monthList) {
                 if (item instanceof Map<?, ?> month) {
                     sb.append("- Month: ").append(month.get("month")).append("\n");
-                    sb.append("  Units Sold: ").append(month.get("total_units_sold")).append("\n");
-                    sb.append("  Total Revenue: ").append(month.get("total_revenue")).append("\n");
+                    sb.append("  Units Sold: ").append(month.get("units")).append("\n");
+                    sb.append("  Total Revenue: ").append(month.get("revenue")).append("\n");
                     sb.append("----------------------------------------\n");
                 }
             }
