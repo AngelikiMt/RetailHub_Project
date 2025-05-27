@@ -49,15 +49,15 @@ public class ReportService {
                         int index = 1;
                         for (Object item : topList) {
                             if (item instanceof Map<?, ?> product) {
-                                output.append("📦 Προϊόν #").append(String.valueOf(index++)).append("\n");
-                                output.append("🆔 ID: ").append(product.get("productId").toString()).append("\n");
-                                output.append("📝 Περιγραφή: ").append(product.get("description").toString()).append("\n");
-                                output.append("📂 Κατηγορία: ").append(product.get("category").toString()).append("\n");
-                                output.append("📊 Πωλήσεις: ").append(product.get("total_units").toString()).append("\n");
-                                output.append("💰 Έσοδα: ").append(product.get("total_revenue").toString()).append("\n");
-                                output.append("💸 Κόστος: ").append(product.get("total_cost").toString()).append("\n");
-                                output.append("📈 Κέρδος: ").append(product.get("total_profit").toString()).append("\n");
-                                output.append("📉 Περιθώριο: ").append(product.get("profit_margin").toString()).append("\n");
+                                output.append(" Product #").append(String.valueOf(index++)).append("\n");
+                                output.append(" ID: ").append(product.get("productId").toString()).append("\n");
+                                output.append(" Description: ").append(product.get("description").toString()).append("\n");
+                                output.append(" Category: ").append(product.get("category").toString()).append("\n");
+                                output.append(" Sales: ").append(product.get("total_units").toString()).append("\n");
+                                output.append(" Revenue: ").append(product.get("total_revenue").toString()).append("\n");
+                                output.append(" Cost: ").append(product.get("total_cost").toString()).append("\n");
+                                output.append(" Profit: ").append(product.get("total_profit").toString()).append("\n");
+                                output.append(" Margin: ").append(product.get("profit_margin").toString()).append("\n");
                                 output.append("--------------------------------------------------\n");
                             }
                         }
