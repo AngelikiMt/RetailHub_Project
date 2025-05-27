@@ -7,6 +7,8 @@ public class ClientService {
     private static final ClientDAO clientDAO = new ClientDAO();
     private static int count = 0;
 
+    public static ClientDAO getClientDAO() { return clientDAO; }
+
     private static void validateName(String name, List<String> errors, String fieldName) {
         if (name == null || name.trim().isEmpty()) {
             errors.add(fieldName + " cannot be empty.");
@@ -68,7 +70,7 @@ public class ClientService {
     public static Client createClient(String firstName, String lastName, LocalDate birthDate,
                                       String phoneNumber, String email, String gender, boolean activeStatus) {
 
-        List<Client> clients = clientDAO.getAllClients();
+        List<Client> clients = clientDAO.getAllClients(); //EINA KALO NA DHMIOURGEITAI MESA STO CREATE ?
         List<String> errors = new ArrayList<>();
 
         validateName(firstName, errors, "Name");
