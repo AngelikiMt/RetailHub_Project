@@ -25,7 +25,7 @@ import javax.swing.table.DefaultTableModel;
 
 public class ProductFrame extends JFrame {
     private JPanel backgroundPanel;
-    private JPanel currentContentPanel; // To hold the active sub-panel
+    private JPanel currentContentPanel; // Holds the active sub-panel
     private ProductService productService;
 
     public ProductFrame() {
@@ -89,7 +89,7 @@ public class ProductFrame extends JFrame {
         centerPanel.setOpaque(false);
         centerPanel.add(buttonGrid);
 
-        backgroundPanel.add(centerPanel, BorderLayout.CENTER); // Add to the center
+        backgroundPanel.add(centerPanel, BorderLayout.SOUTH); // Add to the center
         currentContentPanel = centerPanel;
         backgroundPanel.revalidate();
         backgroundPanel.repaint();
@@ -106,11 +106,12 @@ public class ProductFrame extends JFrame {
         });
     }
 
+    // Method to switch between content panels
     private void showPanel(JPanel panel) {
         if (currentContentPanel != null) {
             backgroundPanel.remove(currentContentPanel);
         }
-        backgroundPanel.add(panel, BorderLayout.CENTER);
+        backgroundPanel.add(panel, BorderLayout.SOUTH);
         currentContentPanel = panel;
         backgroundPanel.revalidate();
         backgroundPanel.repaint();
@@ -118,7 +119,7 @@ public class ProductFrame extends JFrame {
 
     // --- Sub-Panels for Product Operations ---
 
-    // Base Panel for common elements like 'Back' button
+    // Abstract Base Panel for common elements like 'Back' button
     private abstract class ProductOperationPanel extends JPanel {
         protected JTextField idField; // Common for update, delete, toggle, json
         protected ProductService productService;
@@ -163,7 +164,7 @@ public class ProductFrame extends JFrame {
             super();
             JPanel formPanel = new JPanel(new GridLayout(5, 2, 10, 10));
             formPanel.setOpaque(false);
-            formPanel.setBorder(BorderFactory.createEmptyBorder(50, 200, 50, 200)); // Padding
+            formPanel.setBorder(BorderFactory.createEmptyBorder(50, 200, 50, 200));
 
             descField = new JTextField(20);
             categoryBox = new JComboBox<>(new String[]{"clothing", "beauty", "electronics", "home goods", "kitchen appliances"});
@@ -304,20 +305,26 @@ public class ProductFrame extends JFrame {
                 }
                 long id = Long.parseLong(idField.getText());
 
-                String desc = descField.getText();
-                String category = categoryBox.getSelectedItem().toString().toLowerCase();
-                String priceText = priceField.getText();
-                String costText = costField.getText();
+                Product product = productService.findProductById(id); // Fetching product using id
+                if (product == null) {
+                    showError("Product not found with ID: " +id);
+                    return;
+                }
 
-                double price = priceText.isEmpty() ? -1 : Double.parseDouble(priceText);
-                double cost = costText.isEmpty() ? -1 : Double.parseDouble(costText);
+                String descInput = descField.getText().trim();
+                String categoryInput = ((String)categoryBox.getSelectedItem()).trim().toLowerCase();
+                String priceTextInput = priceField.getText().trim();
+                String costTextInput = costField.getText().trim();
 
-                productService.updateProduct(id,
-                        desc.isEmpty() ? null : desc,
-                        category.isEmpty() ? null : category,
-                        price,
-                        cost
-                );
+                // If the input field is empty, use the existing product's value.
+                // Otherwise, parse and use the new input.
+                String newDesc = descInput.isEmpty() ? product.getDescription() : descInput;
+                String newCategory = categoryInput.isEmpty() ? product.getCategory() : categoryInput;
+
+                double newPrice = priceTextInput.isEmpty() ? product.getPrice() : Double.parseDouble(priceTextInput);
+                double newCost = costTextInput.isEmpty() ? product.getCost() : Double.parseDouble(costTextInput);
+
+                productService.updateProduct(id, newDesc, newCategory, newPrice, newCost);
                 showSuccess("Product ID " + id + " updated successfully.");
                 idField.setText("");
                 descField.setText("");
@@ -336,11 +343,11 @@ public class ProductFrame extends JFrame {
     private class DeleteProductPanel extends ProductOperationPanel {
         public DeleteProductPanel() {
             super();
-            JPanel formPanel = new JPanel(new GridLayout(2, 2, 10, 10));
+            JPanel formPanel = new JPanel(new GridLayout(2, 2, 10, 5));
             formPanel.setOpaque(false);
             formPanel.setBorder(BorderFactory.createEmptyBorder(100, 200, 100, 200));
 
-            idField = new JTextField(10);
+            idField = new JTextField(5);
             idField.setFont(new Font("Arial", Font.PLAIN, 16));
 
             JLabel idLabel = new JLabel("Product ID to Delete:");

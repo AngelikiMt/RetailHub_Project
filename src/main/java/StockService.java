@@ -1,5 +1,6 @@
 /* A business logic layer, orchestrating operations between UI (StockFrame.java) and DB layer (StockDAO.java) */
 
+import java.util.Collections;
 import java.util.List;
 
 public class StockService {
@@ -87,17 +88,18 @@ public class StockService {
     }
 
     // Display low stock products (below threshold)
-    public static void getLowStockProducts() {
+    public static List<Stock> getLowStockProducts() {
         List<Stock> lowStockList = stockDAO.getLowStockProducts(THRESHOLD);
         if (lowStockList.isEmpty()) {
             System.out.println("No product with low quantity.");
-            return;
+            return Collections.emptyList();
         }
 
         for (Stock s : lowStockList) {
             System.out.println("Low stock: Product ID " + s.getProductId() +
                 " in Store ID " + s.getStoreId() + " with Quantity " + s.getStockQuantity());
         }
+        return lowStockList;
     }
 
     // Search for a product in other stores (except one)
