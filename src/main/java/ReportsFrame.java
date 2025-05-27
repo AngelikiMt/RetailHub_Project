@@ -25,6 +25,8 @@ public class ReportsFrame extends JFrame {
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLayout(new BorderLayout(10, 10));
 
+        
+
         // --- Φόρμα εισαγωγής ---
         JPanel formPanel = new JPanel(new GridLayout(3, 2, 10, 10));
         formPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 10, 20));
@@ -44,11 +46,39 @@ public class ReportsFrame extends JFrame {
             new ReportItem("Sales by Product", "sales_by_product"),
             new ReportItem("Profit by Product", "profit_by_product"),
             new ReportItem("Most Profitable Products", "most_profitable_products"),
-            new ReportItem("Profit by Store ID", "profit_by_store_id"),
+            new ReportItem("Profit by Store ID", "profit_by_store"),
             new ReportItem("Sales by Store", "sales_by_store"),
-            new ReportItem("Client Behavior", "client_behavior")
+            new ReportItem("Client Behavior", "client_behavior"),
+            new ReportItem("Store Ranking", "store_ranking"),
+            new ReportItem("Stock vs Sales", "stock_vs_sales"),
+            new ReportItem("Monthly Sales Trends", "monthly_sales_trends"),
+            new ReportItem("Category Performance", "category_performance")
         };
+
         JComboBox<ReportItem> reportTypeCombo = new JComboBox<>(reportOptions);
+        reportTypeCombo.addActionListener(e -> {
+            productIdLabel.setVisible(false);
+            productIdField.setVisible(false);
+            storeIdLabel.setVisible(false);
+            storeIdField.setVisible(false);
+            clientIdLabel.setVisible(false);
+            clientIdField.setVisible(false);
+
+            String selected = ((ReportItem) reportTypeCombo.getSelectedItem()).getValue();
+
+            productIdLabel.setVisible(selected.equals("sales_by_product") || selected.equals("profit_by_product"));
+            productIdField.setVisible(selected.equals("sales_by_product") || selected.equals("profit_by_product"));
+
+            storeIdLabel.setVisible(selected.equals("sales_by_store") || selected.equals("profit_by_store"));
+            storeIdField.setVisible(selected.equals("sales_by_store") || selected.equals("profit_by_store"));
+
+            clientIdLabel.setVisible(selected.equals("client_behavior"));
+            clientIdField.setVisible(selected.equals("client_behavior"));
+
+            // Ενημέρωση layout
+            formPanel.revalidate();
+            formPanel.repaint();
+        });
 
 
         JButton generateBtn = new JButton("Generate Report");
@@ -91,7 +121,7 @@ public class ReportsFrame extends JFrame {
                         inputData.put("product_id", Long.parseLong(productIdText));
                         break;
 
-                    case "profit_by_store_id":
+                    case "profit_by_store":
                     case "sales_by_store":
                         if (storeIdText.isEmpty()) {
                             JOptionPane.showMessageDialog(this, "Please enter a Store ID.");
@@ -109,6 +139,10 @@ public class ReportsFrame extends JFrame {
                         break;
 
                     case "most_profitable_products":
+                    case "store_ranking":
+                    case "stock_vs_sales":
+                    case "monthly_sales_trends":
+                    case "category_performance":
                         // No ID required
                         break;
 

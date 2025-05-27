@@ -7,16 +7,11 @@ from reports.most_profitable_products import get_most_profitable_products
 from reports.sales_by_store import get_sales_by_store
 from reports.profit_by_store import get_profit_by_store
 from reports.client_behavior import get_client_behavior
-# from reports.category_performance import get_category_performance
-# from reports.stock_vs_sales import get_stock_vs_sales
-# from reports.monthly_sales_trends import get_monthly_sales_trends
-# from reports.store_ranking import get_store_ranking
+from reports.category_performance import get_category_performance
+from reports.stock_vs_sales import get_stock_vs_sales
+from reports.monthly_sales_trends import get_monthly_sales_trends
+from reports.store_ranking import get_store_ranking
 # from reports.gpt_insights import get_gpt_insights
-
-
-
-
-
 
 
 
@@ -64,20 +59,20 @@ def main() -> None:
             client_id = int(data["client_id"])
             result = get_client_behavior(client_id)
 
-#         elif report_type == "category_performance":
-#             result = get_category_performance()
-#
-#         elif report_type == "stock_vs_sales":
-#             result = get_stock_vs_sales()
-#
-#         elif report_type == "monthly_sales_trends":
-#             result = get_monthly_sales_trends()
-#
-#         elif report_type == "store_ranking":
-#             result = get_store_ranking()
-#
-#         elif report_type == "gpt_insights":
-#             result = get_gpt_insights()
+        elif report_type == "category_performance":
+            result = get_category_performance()
+
+        elif report_type == "stock_vs_sales":
+           result = get_stock_vs_sales()
+
+        elif report_type == "monthly_sales_trends":
+           result = get_monthly_sales_trends()
+
+        elif report_type == "store_ranking":
+           result = get_store_ranking()
+
+#       elif report_type == "gpt_insights":
+#            result = get_gpt_insights()
 
         else:
             result = {"error": f"Unsupported report_type: {report_type}"}

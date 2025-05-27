@@ -59,6 +59,10 @@ public class ReportService {
                     case "sales_by_product" -> output.append(formatSalesByProduct(outputData));
                     case "profit_by_product" -> output.append(formatProfitByProduct(outputData));
                     case "sales_by_store" -> output.append(formatSalesByStore(outputData));
+                    case "category_performance" -> output.append(formatCategoryPerformance(outputData));
+                    case "monthly_sales_trends" -> output.append(formatMonthlySalesTrends(outputData));
+                    case "stock_vs_sales" -> output.append(formatStockVsSales(outputData));
+                    case "store_rankink" -> output.append(formatStoreRanking(outputData));
                     default -> outputData.forEach((k, v) -> output.append(k).append(": ").append(v).append("\n"));
                 }
 
@@ -73,32 +77,31 @@ public class ReportService {
         }
     }
 
-    private static String formatMostProfitableProducts(Map<?, ?> data) {
-        StringBuilder sb = new StringBuilder();
-        Object topProductsObj = data.get("top_profitable_products");
 
-        if (topProductsObj instanceof List<?> topList) {
-            int index = 1;
-            for (Object item : topList) {
+// ========================== format for output.json =============================================  
+//============================ store =============================================== 
+
+    private static String formatSalesByStore(Map<?, ?> data) {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("Store: ").append(data.get("address")).append(" (ID: ").append(data.get("store_id")).append(")\n");
+        sb.append("Total Units Sold: ").append(data.get("total_units_sold")).append("\n");
+        sb.append("Total Revenue: ").append(data.get("total_revenue")).append("\n");
+
+        // Αν θέλεις να εμφανίσεις τα top_products (λίστα προϊόντων με πωλήσεις)
+        Object topProductsObj = data.get("top_products");
+        if (topProductsObj instanceof List<?> topProducts) {
+            sb.append("\nTop Products:\n");
+            for (Object item : topProducts) {
                 if (item instanceof Map<?, ?> product) {
-                    sb.append(" Product #").append(index++).append("\n");
-                    sb.append(" ID: ").append(product.get("productId")).append("\n");
-                    sb.append(" Description: ").append(product.get("description")).append("\n");
-                    sb.append(" Category: ").append(product.get("category")).append("\n");
-                    sb.append(" Sales: ").append(product.get("total_units")).append("\n");
-                    sb.append(" Revenue: ").append(product.get("total_revenue")).append("\n");
-                    sb.append(" Cost: ").append(product.get("total_cost")).append("\n");
-                    sb.append(" Profit: ").append(product.get("total_profit")).append("\n");
-                    sb.append(" Margin: ").append(product.get("profit_margin")).append("\n");
-                    sb.append("--------------------------------------------------\n");
+                    sb.append("- ").append(product.get("description")).append(" (Units Sold: ").append(product.get("units")).append(")\n");
                 }
             }
-        } else {
-            sb.append("No results found.\n");
         }
 
         return sb.toString();
     }
+
 
     private static String formatProfitByStore(Map<?, ?> data) {
         StringBuilder sb = new StringBuilder();
@@ -126,6 +129,7 @@ public class ReportService {
 
         return sb.toString();
     }
+//====================================== client =================================
 
     private static String formatClientBehavior(Map<?, ?> data) {
         // Έλεγχος για error πεδίο
@@ -150,7 +154,7 @@ public class ReportService {
         return sb.toString();
     }
 
-
+// =========================  product ==========================================
     private static String formatSalesByProduct(Map<?, ?> data) {
         StringBuilder sb = new StringBuilder();
 
@@ -186,28 +190,127 @@ public class ReportService {
     }
 
 
-    private static String formatSalesByStore(Map<?, ?> data) {
+    private static String formatMostProfitableProducts(Map<?, ?> data) {
         StringBuilder sb = new StringBuilder();
+        Object topProductsObj = data.get("top_profitable_products");
 
-        sb.append("Store: ").append(data.get("address")).append(" (ID: ").append(data.get("store_id")).append(")\n");
-        sb.append("Total Units Sold: ").append(data.get("total_units_sold")).append("\n");
-        sb.append("Total Revenue: ").append(data.get("total_revenue")).append("\n");
-
-        // Αν θέλεις να εμφανίσεις τα top_products (λίστα προϊόντων με πωλήσεις)
-        Object topProductsObj = data.get("top_products");
-        if (topProductsObj instanceof List<?> topProducts) {
-            sb.append("\nTop Products:\n");
-            for (Object item : topProducts) {
+        if (topProductsObj instanceof List<?> topList) {
+            int index = 1;
+            for (Object item : topList) {
                 if (item instanceof Map<?, ?> product) {
-                    sb.append("- ").append(product.get("description")).append(" (Units Sold: ").append(product.get("units")).append(")\n");
+                    sb.append(" Product #").append(index++).append("\n");
+                    sb.append(" ID: ").append(product.get("productId")).append("\n");
+                    sb.append(" Description: ").append(product.get("description")).append("\n");
+                    sb.append(" Category: ").append(product.get("category")).append("\n");
+                    sb.append(" Sales: ").append(product.get("total_units")).append("\n");
+                    sb.append(" Revenue: ").append(product.get("total_revenue")).append("\n");
+                    sb.append(" Cost: ").append(product.get("total_cost")).append("\n");
+                    sb.append(" Profit: ").append(product.get("total_profit")).append("\n");
+                    sb.append(" Margin: ").append(product.get("profit_margin")).append("\n");
+                    sb.append("--------------------------------------------------\n");
+                }
+            }
+        } else {
+            sb.append("No results found.\n");
+        }
+
+        return sb.toString();
+    }
+
+//========================= category ===========================================
+
+    private static String formatCategoryPerformance(Map<?, ?> data) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("=== Category Performance ===\n");
+
+        Object categoriesObj = data.get("categories");
+        if (categoriesObj instanceof List<?> categoryList) {
+            for (Object item : categoryList) {
+                if (item instanceof Map<?, ?> category) {
+                    sb.append("- Category: ").append(category.get("category_name")).append("\n");
+                    sb.append("  Total Revenue: ").append(category.get("total_revenue")).append("\n");
+                    sb.append("  Total Profit: ").append(category.get("total_profit")).append("\n");
+                    sb.append("  Units Sold: ").append(category.get("units_sold")).append("\n");
+                    sb.append("----------------------------------------\n");
                 }
             }
         }
 
         return sb.toString();
     }
+//============================================ monthly sales =======================================
+    private static String formatMonthlySalesTrends(Map<?, ?> data) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("=== Monthly Sales Trends ===\n");
+        sb.append(data.get("note")).append("\n\n");
+
+        Object statsObj = data.get("monthly_stats");
+        if (statsObj instanceof List<?> monthList) {
+            for (Object item : monthList) {
+                if (item instanceof Map<?, ?> month) {
+                    sb.append("- Month: ").append(month.get("month")).append("\n");
+                    sb.append("  Units Sold: ").append(month.get("total_units_sold")).append("\n");
+                    sb.append("  Total Revenue: ").append(month.get("total_revenue")).append("\n");
+                    sb.append("----------------------------------------\n");
+                }
+            }
+        }
+
+        return sb.toString();
+    }
+//========================================= Stock (unsold ratio) ===================================
+    private static String formatStockVsSales(Map<?, ?> data) {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("Top ").append(data.get("top_n")).append(" Products with Highest Unsold Stock Percentage\n");
+        sb.append("Note: ").append(data.get("note")).append("\n\n");
+
+        Object analysisObj = data.get("store_product_analysis");
+        if (analysisObj instanceof List<?> productList) {
+            for (Object item : productList) {
+                if (item instanceof Map<?, ?> product) {
+                    sb.append("- ").append(product.get("description")).append(" (ID: ")
+                    .append(product.get("product_id")).append(")\n");
+                    sb.append("  Total Stock: ").append(product.get("total_stock")).append("\n");
+                    sb.append("  Units Sold: ").append(product.get("units_sold")).append("\n");
+                    sb.append("  Remaining: ").append(product.get("remaining")).append("\n");
+                    sb.append("  Unsold Ratio: ").append((Double)product.get("unsold_ratio") * 100).append("%\n");
+                    sb.append("  Store: ").append(product.get("store")).append("\n");
+                    sb.append("---------------------------------------\n");
+                }
+            }
+        }
+
+        return sb.toString();
+    }
+//============================================ store ranking =====================================
+    private static String formatStoreRanking(Map<?, ?> data) {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("Store Ranking by Profitability:\n");
+        sb.append("====================================\n");
+
+        Object storesObj = data.get("stores");
+        if (storesObj instanceof List<?> storeList) {
+            for (Object item : storeList) {
+                if (item instanceof Map<?, ?> store) {
+                    sb.append("- Store: ").append(store.get("address")).append(" (ID: ").append(store.get("storeId")).append(")\n");
+                    sb.append("  Total Revenue: ").append(store.get("total_revenue")).append("\n");
+                    sb.append("  Total Cost: ").append(store.get("total_cost")).append("\n");
+                    sb.append("  Total Profit: ").append(store.get("total_profit")).append("\n");
+                    sb.append("  Profit Margin: ").append(store.get("profit_margin")).append("\n");
+                    sb.append("------------------------------------\n");
+                }
+            }
+        } else {
+            sb.append("No store ranking data available.\n");
+        }
+
+        return sb.toString();
+    }
 
 
+    
     public static String getAdvancedReportResults(String reportType, long productId, long storeId, long clientId) {
         Map<String, Object> inputData = new HashMap<>();
         inputData.put("report_type", reportType);
@@ -228,6 +331,10 @@ public class ReportService {
                 break;
 
             case "most profitable products":
+            case "store_ranking":
+            case "stock_vs_sales":
+            case "monthly_sales_trends":
+            case "category_performance":
                 // No extra input needed
                 break;
 
