@@ -1,4 +1,4 @@
-/* Acts as a service layer, providing business logic, validations for Store operations and sits between the UI (StoreFrame.java) and the Database layer (StoreDAO.java) */
+//Acts as a service layer, providing business logic, validations for Store operations and sits between the UI (StoreFrame.java) and the Database layer (StoreDAO.java) */
 
 import java.util.ArrayList;
 import java.util.List;

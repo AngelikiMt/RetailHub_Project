@@ -3,7 +3,6 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -11,16 +10,10 @@ public class ClientFrame extends JFrame {
     private final JPanel contentPanel;
     private final JTable clientTable;
     private final DefaultTableModel tableModel;
-
-     List <Client> clients = ClientService.getClientDAO().getAllClients();
-   // private final static List<Client> clients = new ArrayList<>();
-
-    // public static List <Client> getClientsList(){
-    //     return clients;
-    // }
-
-
+    
+ 
      public ClientFrame() {
+        
         // Basic window settings
         setTitle("Client Menu");
         setExtendedState(JFrame.MAXIMIZED_BOTH); // Fullscreen
@@ -53,6 +46,7 @@ public class ClientFrame extends JFrame {
             leftMenu.add(buttons[i]);
         }
         background.add(leftMenu, BorderLayout.WEST);
+
 
         // Table to display clients
         JPanel topPanel = new JPanel(new BorderLayout());
@@ -155,8 +149,8 @@ public class ClientFrame extends JFrame {
     private void menuUpdateClient() {
         String input = JOptionPane.showInputDialog(this, "Enter Email or Phone:");
         Client client = null;
-        for (int i = 0; i < clients.size(); i++) {
-            Client c = clients.get(i);
+        for (int i = 0; i < ClientService.getClientDAO().getAllClients().size(); i++) {
+            Client c = ClientService.getClientDAO().getAllClients().get(i);
             if (input.equals(c.getEmail()) || input.equals(c.getPhoneNumber())) {
                 client = c;
                 break;
@@ -243,8 +237,8 @@ public class ClientFrame extends JFrame {
     private void menuShowClient() {
         String input = JOptionPane.showInputDialog(this, "Enter Email or Phone:");
         Client client = null;
-        for (int i = 0; i < clients.size(); i++) {
-            Client c = clients.get(i);
+        for (int i = 0; i < ClientService.getClientDAO().getAllClients().size(); i++) {
+            Client c = ClientService.getClientDAO().getAllClients().get(i);
             if (input.equals(c.getEmail()) || input.equals(c.getPhoneNumber())) {
                 client = c;
                 break;
@@ -267,8 +261,8 @@ public class ClientFrame extends JFrame {
     private void menuDeleteClient() {
         String input = JOptionPane.showInputDialog(this, "Enter Email or Phone:");
         Client client = null;
-        for (int i = 0; i < clients.size(); i++) {
-            Client c = clients.get(i);
+        for (int i = 0; i < ClientService.getClientDAO().getAllClients().size(); i++) {
+            Client c = ClientService.getClientDAO().getAllClients().get(i);
             if (input.equals(c.getEmail()) || input.equals(c.getPhoneNumber())) {
                 client = c;
                 break;
@@ -302,8 +296,8 @@ public class ClientFrame extends JFrame {
 
     private void menuGetJson() {
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < clients.size(); i++) {
-            sb.append(ClientService.getClientAsJson(clients.get(i))).append("\n\n");
+        for (int i = 0; i < ClientService.getClientDAO().getAllClients().size(); i++) {
+            sb.append(ClientService.getClientAsJson(ClientService.getClientDAO().getAllClients().get(i))).append("\n\n");
         }
 
         JTextArea area = new JTextArea(sb.toString(), 20, 40);
@@ -316,8 +310,9 @@ public class ClientFrame extends JFrame {
     // Updates the table with current client list
     private void refreshTable() {
         tableModel.setRowCount(0); //clear
-        for (int i = 0; i < clients.size(); i++) {
-            Client c = clients.get(i);
+        //List <Client> clients = ClientService.getClientDAO().getAllClients();
+        for (int i = 0; i < ClientService.getClientDAO().getAllClients().size(); i++) {
+            Client c = ClientService.getClientDAO().getAllClients().get(i);
             tableModel.addRow(new Object[]{
                     c.getClientId(), c.getFirstName(), c.getLastName(), c.getEmail(),
                     c.getPhoneNumber(), c.getGender(), c.getBirthDate(),
@@ -331,7 +326,7 @@ public class ClientFrame extends JFrame {
         private final Image image;
 
         public BackgroundPanel(String path) {
-            this.image = new ImageIcon(path).getImage();
+            this.image = new ImageIcon(getClass().getResource("/" + path)).getImage();
         }
 
         @Override

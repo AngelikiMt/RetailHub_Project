@@ -133,12 +133,18 @@ public class ClientDAO {
     }
 
     public boolean anonymizeClient(long clientId) {
-        String sql = "UPDATE client SET activeStatus = false, email = NULL, phoneNumber = NULL, birthDate = NULL, firstName = NULL, lastName = NULL WHERE clientId = ?";
+    
+        String sql = "UPDATE client SET activeStatus = false, email = ?, phoneNumber = ?, birthDate = NULL, firstName = 'deleted', lastName = 'deleted' WHERE clientId = ?";
+
+        String anonymizedEmail = "deleted_" + clientId + "@example.com";
+        String anonymizedPhone = "000000" + clientId;
 
         try (Connection conn = DatabaseConnector.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            stmt.setLong(1, clientId);
+            stmt.setString(1, anonymizedEmail);
+            stmt.setString(2, anonymizedPhone);    
+            stmt.setLong(3, clientId);
             return stmt.executeUpdate() > 0;
 
         } catch (SQLException e) {

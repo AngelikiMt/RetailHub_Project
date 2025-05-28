@@ -91,8 +91,13 @@ public class LoginFrame extends JFrame {
         loginPanel.add(loginBtn, gbc);
 
         // === Placing loginPanel in the center ===
-        backgroundPanel.add(loginPanel, new GridBagConstraints());
-
+        GridBagConstraints panelGbc = new GridBagConstraints();
+        panelGbc.gridx = 0;
+        panelGbc.gridy = 0;
+        panelGbc.weighty = 1.0;
+        panelGbc.anchor = GridBagConstraints.PAGE_END;
+        panelGbc.insets = new Insets(0, 0, 30, 0);
+        backgroundPanel.add(loginPanel, panelGbc);
         setContentPane(backgroundPanel);
         setVisible(true);
     }
