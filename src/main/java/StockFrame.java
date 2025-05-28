@@ -479,75 +479,75 @@ public class StockFrame extends JFrame {
         }
     }
 
-    // Search Other Stores Panel
+    // Searchs Other Stores Panel
     private class SearchOtherStoresPanel extends StockOperationPanel {
         private JTextField productIdField, excludedStoreIdField;
         private JTable table;
         private DefaultTableModel model;
 
         public SearchOtherStoresPanel() {
-            super();
-            setLayout(new BorderLayout()); // Set layout for this panel
-            JPanel formPanel = new JPanel(new GridLayout(3, 2, 10, 10));
-            formPanel.setOpaque(false);
-            formPanel.setBorder(BorderFactory.createEmptyBorder(20, 200, 10, 200));
+            // The main content area of this panel
+        JPanel mainContentPanel = new JPanel(new BorderLayout());
+        mainContentPanel.setOpaque(false); // Keep it transparent
 
-            productIdField = new JTextField(10);
-            excludedStoreIdField = new JTextField(10);
+        JPanel formPanel = new JPanel(new GridLayout(3, 2, 10, 10));
+        formPanel.setOpaque(false);
+        formPanel.setBorder(BorderFactory.createEmptyBorder(20, 200, 10, 200));
 
-            Font labelFont = new Font("Arial", Font.PLAIN, 16);
-            Font fieldFont = new Font("Arial", Font.PLAIN, 16);
+        productIdField = new JTextField(10);
+        excludedStoreIdField = new JTextField(10);
 
-            JLabel productIdLabel = new JLabel("Product ID:");
-            productIdLabel.setFont(labelFont);
-            JLabel excludedStoreIdLabel = new JLabel("Excluded Store ID:");
-            excludedStoreIdLabel.setFont(labelFont);
+        Font labelFont = new Font("Arial", Font.PLAIN, 16);
+        Font fieldFont = new Font("Arial", Font.PLAIN, 16);
 
-            productIdField.setFont(fieldFont);
-            excludedStoreIdField.setFont(fieldFont);
+        JLabel productIdLabel = new JLabel("Product ID:");
+        productIdLabel.setFont(labelFont);
+        JLabel excludedStoreIdLabel = new JLabel("Excluded Store ID:");
+        excludedStoreIdLabel.setFont(labelFont);
 
-            formPanel.add(productIdLabel);
-            formPanel.add(productIdField);
-            formPanel.add(excludedStoreIdLabel);
-            formPanel.add(excludedStoreIdField);
+        productIdField.setFont(fieldFont);
+        excludedStoreIdField.setFont(fieldFont);
 
-            JButton searchBtn = new JButton("Search Other Stores");
-            searchBtn.setFont(new Font("Arial", Font.BOLD, 18));
-            searchBtn.setPreferredSize(new Dimension(220, 50));
-            searchBtn.addActionListener(e -> searchOtherStores());
+        formPanel.add(productIdLabel);
+        formPanel.add(productIdField);
+        formPanel.add(excludedStoreIdLabel);
+        formPanel.add(excludedStoreIdField);
 
-            JPanel buttonHolder = new JPanel(new FlowLayout(FlowLayout.CENTER));
-            buttonHolder.setOpaque(false);
-            buttonHolder.add(searchBtn);
-            formPanel.add(new JLabel());
-            formPanel.add(buttonHolder);
+        JButton searchBtn = new JButton("Search Other Stores");
+        searchBtn.setFont(new Font("Arial", Font.BOLD, 18));
+        searchBtn.setPreferredSize(new Dimension(220, 50));
+        searchBtn.addActionListener(e -> searchOtherStores());
 
-            // Table to display results
-            model = new DefaultTableModel(new String[]{"Store ID", "Quantity"}, 0) {
-                @Override
-                public boolean isCellEditable(int row, int column) {
-                    return false; // Makes table non-editable
-                }
-            };
-            table = new JTable(model);
-            table.setFont(new Font("Arial", Font.PLAIN, 14));
-            table.getTableHeader().setFont(new Font("Arial", Font.BOLD, 16));
-            table.setRowHeight(25);
-            JScrollPane scrollPane = new JScrollPane(table);
-            scrollPane.setBorder(BorderFactory.createEmptyBorder(0, 50, 50, 50));
+        JPanel buttonHolder = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        buttonHolder.setOpaque(false);
+        buttonHolder.add(searchBtn);
+        formPanel.add(new JLabel()); // Empty cell for layout
+        formPanel.add(buttonHolder);
 
-            JPanel contentLayoutPanel = new JPanel(new BorderLayout());
-            contentLayoutPanel.setOpaque(false);
-            contentLayoutPanel.add(formPanel, BorderLayout.NORTH);
-            contentLayoutPanel.add(scrollPane, BorderLayout.CENTER);
+        // Table to display results
+        model = new DefaultTableModel(new String[]{"Store ID", "Quantity"}, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false; // Makes table non-editable
+            }
+        };
+        table = new JTable(model);
+        table.setFont(new Font("Arial", Font.PLAIN, 14));
+        table.getTableHeader().setFont(new Font("Arial", Font.BOLD, 16));
+        table.setRowHeight(25);
+        JScrollPane scrollPane = new JScrollPane(table);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder(0, 50, 50, 50));
 
-            // Add the main content to the frame (this panel's parent)
-            add(contentLayoutPanel, BorderLayout.CENTER);
-            // The back button is already added via super() to BorderLayout.NORTH
+        // Adds formPanel and scrollPane to the main content panel
+        mainContentPanel.add(formPanel, BorderLayout.NORTH);
+        mainContentPanel.add(scrollPane, BorderLayout.CENTER);
+
+        // Adds the mainContentPanel to the SearchOtherStoresPanel to the CENTER, as the superclass already added controlPanel to NORTH.
+        add(mainContentPanel, BorderLayout.CENTER);
         }
 
         private void searchOtherStores() {
-            model.setRowCount(0); // Clear previous results
+            model.setRowCount(0); // Clears previous results
             try {
                 long productId = Long.parseLong(productIdField.getText());
                 int excludedStoreId = Integer.parseInt(excludedStoreIdField.getText());

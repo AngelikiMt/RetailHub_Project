@@ -72,7 +72,7 @@ public class StoreService {
         if (store != null && store.isActive()) {
             if (!newName.isEmpty()) store.setStoreName(newName);
             if (!newAddress.isEmpty()) store.setAddress(newAddress);
-            if (!newCity.isEmpty()) store.setAddress(newCity);
+            if (!newCity.isEmpty()) store.setCity(newCity);
             if (!newCountry.isEmpty()) store.setCountry(newCountry);
             if (!newPhone.isEmpty()) store.setPhone(newPhone);
 

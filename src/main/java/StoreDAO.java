@@ -12,7 +12,7 @@ public class StoreDAO {
 
     // Create a new store
     public boolean createStore(Store store) {
-        String sql = "INSERT INTO store (storeName, address, city, country, phone, active) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO store (storeName, address, city, country, phone, active) VALUES (?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = DatabaseConnector.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
