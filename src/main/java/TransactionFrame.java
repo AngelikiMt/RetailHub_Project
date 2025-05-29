@@ -11,6 +11,7 @@ public class TransactionFrame extends JFrame {
 
         super();
         this.setTitle("Transactions");
+        this.setExtendedState(JFrame.MAXIMIZED_BOTH);
         this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
         contentPanel = new JPanel(new BorderLayout());
@@ -47,8 +48,8 @@ public class TransactionFrame extends JFrame {
 
         this.add(menuPanel, BorderLayout.WEST);
 
-        this.pack();
-        this.setSize(800, 600); 
+        //this.pack();
+       // this.setSize(800, 600); 
         this.setLocationRelativeTo(null);
         this.setVisible(true);
 
@@ -60,11 +61,7 @@ public class TransactionFrame extends JFrame {
                 GridBagConstraints gbc = new GridBagConstraints();
                 gbc.insets = new Insets(5, 5, 5, 5);  // padding around components
                 gbc.anchor = GridBagConstraints.WEST;
-
-                //JTextField input = new JTextField();
-                //JTextField stid = new JTextField();
-                //JTextField pid = new JTextField();
-                //JTextField qty = new JTextField();
+                
                 JButton addProductBtn = new JButton("Add product");
                 JButton submitTransactionBtn = new JButton("Submit transaction");
 
@@ -105,15 +102,6 @@ public class TransactionFrame extends JFrame {
                 gbc.gridwidth = 2;
                 form.add(submitTransactionBtn, gbc);
 
-               
-
-                /*form.add(new JLabel("Client's email or phone:")); form.add(input);
-                form.add(new JLabel(" Store id")); form.add(stid);
-                form.add(new JLabel ("product id"));form.add(pid);
-                form.add(new JLabel ("product quantity"));form.add(qty);
-                form.add(addProductBtn);
-                form.add(submitTransactionBtn); */
-
                 contentPanel.removeAll();              // Clear previous content
                 contentPanel.add(form, BorderLayout.CENTER); // Add your form
                 contentPanel.revalidate();             // Refresh layout
@@ -121,9 +109,7 @@ public class TransactionFrame extends JFrame {
                   
                 List<Long> productIds = new ArrayList<>();
                 List<Integer> quantities = new ArrayList<>();
-                
-                //boolean more = true;
-               // while (more) {
+              
                //ADD PRODUCT BUTTON
                 addProductBtn.addActionListener(e1 -> {
                     try {
@@ -141,18 +127,14 @@ public class TransactionFrame extends JFrame {
 
                 submitTransactionBtn.addActionListener(e2 -> {
                     try {
-                        Client client = ClientService.authenticateClient( input.getText().trim());
-                        if (client == null) {
-                            JOptionPane.showMessageDialog(this, "Client not found.");
-                            return;
-                        }
+                        Long clientId = ClientService.authenticateClient1( input.getText().trim());
+                        //if (clientId == null) {
+                          //  JOptionPane.showMessageDialog(this, "Client not found.");
+                            //return;
+                        //}
 
                         int storeId = Integer.parseInt(stid.getText());
-
-                    // int option = JOptionPane.showConfirmDialog(this, "Add another product?", "Continue", JOptionPane.YES_NO_OPTION);
-                    // more = (option == JOptionPane.YES_OPTION);
-                    // }
-
+                       
                         String [] paymentMethods = {"card", "cash","credit"};
                         String selected = (String) JOptionPane.showInputDialog(
                             null,                 
@@ -162,20 +144,31 @@ public class TransactionFrame extends JFrame {
                             null,                        
                             paymentMethods,                                                    
                             paymentMethods[0]);                      
-                       // System.out.println("Selected: " + selected);  
                         
                         if (selected == null) return;
 
-                        String answer = JOptionPane.showInputDialog(this,"Do you want to procceed with the transaction? (YES/NO)");
-                        if (answer == null || !answer.equalsIgnoreCase("yes")) {
-                            JOptionPane.showMessageDialog(this, "Transaction cancelled.");
+                        Object[] options = {"OK", "Cancel"};
+                        Object[] message = {"Do you want to procceed with the transaction?",
+                        TransactionService.calculateTotal(productIds, quantities, storeId, clientId)};
+
+                        int result = JOptionPane.showOptionDialog(
+                        null,
+                        message,
+                        "Confirm transaction",
+                        JOptionPane.DEFAULT_OPTION,
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        options,
+                        options[0]
+                        );
+
+                        if (result != 0) {
+                            JOptionPane.showMessageDialog(this, "Transaction is cancelled.");
                             return;
                         }
-                        
-                        ProductService ps = ProductFrame.getProductService();
-                        
+                                  
                         Transaction t = TransactionService.createTransaction(
-                        productIds, quantities, storeId, client, selected,answer);
+                        productIds, quantities, storeId, clientId, selected);
                 
                         //TransactionService.getAllTransactions().add(t);
                         JOptionPane.showMessageDialog(this, "Transaction created:\n" + t);
@@ -186,15 +179,14 @@ public class TransactionFrame extends JFrame {
                     }
                     
                 });
+            
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
             }   
         });
-                
-        
+                        
 
         viewAllBtn.addActionListener(e -> {
-           // List<Transaction> txs = TransactionService.getAllTransactions();
             if (TransactionService.getAllTransactions().isEmpty()) {
                 JOptionPane.showMessageDialog(this, "No transactions found.");
             } else {
@@ -229,7 +221,7 @@ public class TransactionFrame extends JFrame {
      static class BackgroundPanel extends JPanel {
         private final Image image;
         public BackgroundPanel(String path) {
-            this.image = new ImageIcon(path).getImage();
+            this.image = new ImageIcon(getClass().getResource("/" + path)).getImage();
         }
         @Override
         protected void paintComponent(Graphics g) {

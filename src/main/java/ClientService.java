@@ -5,7 +5,7 @@ import java.util.List;
 
 public class ClientService {
     private static final ClientDAO clientDAO = new ClientDAO();
-    private static int count = 0;
+    //private static int count = 0;
 
     public static ClientDAO getClientDAO() { return clientDAO; }
 
@@ -181,6 +181,7 @@ public class ClientService {
         json.append("  \"activeStatus\": ").append(client.isActiveStatus()).append(",\n");
         json.append("  \"dateJoined\": ").append(client.getDateJoined()).append(",\n");
         json.append("  \"clientSumTotal\": ").append(client.getClientSumTotal()).append(",\n");
+        json.append("  \"clientCurrentTotal\": ").append(client.getClientCurrentTotal()).append(",\n");
         json.append("  \"lastPurchaseDate\": ").append(client.getLastPurchaseDate()).append("\n}");
 
         return json.toString();

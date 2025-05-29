@@ -5,16 +5,23 @@ import java.util.List;
 public class TransactionService {
 
     private final static TransactionDAO transactionDAO = new TransactionDAO();
-    private final ProductDAO productDAO = new ProductDAO();
-    private final StockDAO stockDAO = new StockDAO();
-    private final ClientDAO clientDAO = new ClientDAO();
-    private final StoreDAO storeDAO = new StoreDAO();
+    private final static ProductDAO productDAO = new ProductDAO();
+    private final static StockDAO stockDAO = new StockDAO();
+    private final static ClientDAO clientDAO = new ClientDAO();
+    private final static StoreDAO storeDAO = new StoreDAO();
 
-    public boolean isEligibleForDiscount(Client client) {
-        return client.getClientSumTotal() > 400;
+    // public static boolean isEligibleForDiscount(Client client) {
+    //     return client.getClientCurrentTotal() > 400;
+    // }
+    public static double calculateDiscount(double clientCurrentTotal, double sumTotal) {
+    if (clientCurrentTotal + sumTotal >= 400) {
+        return sumTotal * 0.20;
+    }
+    return 0;
     }
 
-    public ShowTotalResult calculateTotal(
+
+    public static ShowTotalResult calculateTotal(
             List<Long> productIds, List<Integer> quantities,
             int storeId, long clientId) {
 
@@ -54,12 +61,13 @@ public class TransactionService {
             sumTotal += product.getPrice() * quantity;
         }
 
-        double discount = isEligibleForDiscount(client) ? sumTotal * 0.2 : 0;
-
+        //double discount = isEligibleForDiscount(client) ? sumTotal * 0.2 : 0;
+        double discount = calculateDiscount(client.getClientCurrentTotal(), sumTotal);
+        
         return new ShowTotalResult(clientId, sumTotal, discount);
     }
 
-    public Transaction createTransaction(
+    public static Transaction createTransaction(
             List<Long> productIds, List<Integer> quantities, int storeId,
             long clientId, String paymentMethod) {
 
@@ -71,16 +79,30 @@ public class TransactionService {
         }
         
         ShowTotalResult totalResult = calculateTotal(productIds, quantities, storeId, clientId);
-        double finalTotal = totalResult.getSumTotal() - totalResult.getDiscount();
+        double sumTotal = totalResult.getSumTotal();
+        double discount = totalResult.getDiscount();
+        double finalTotal = sumTotal - discount;
+        
+       // double finalTotal = totalResult.getSumTotal() - totalResult.getDiscount();
 
-        // Update stock
+
+        // Update client info
+        Client client = clientDAO.getClientById(clientId);
+        double currentTotal = client.getClientCurrentTotal();
+
+        if (currentTotal + sumTotal >= 400) {
+            currentTotal = (currentTotal + sumTotal + discount) - 400; // αφαιρείς 400 και κρατάς το υπόλοιπο
+        } else {
+            currentTotal += sumTotal;
+        }
+
+         // Update stock
         for (int i = 0; i < productIds.size(); i++) {
             stockDAO.reduceStock(storeId, productIds.get(i), quantities.get(i));
         }
 
-        // Update client info
-        Client client = clientDAO.getClientById(clientId);
         client.setClientSumTotal(client.getClientSumTotal() + finalTotal);
+        client.setClientCurrentTotal(currentTotal); 
         client.setLastPurchaseDate(LocalDate.now());
         clientDAO.updateClient(client);
 

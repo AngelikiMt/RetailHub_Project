@@ -75,7 +75,7 @@ public class MainMenu extends JFrame {
             }
         });
         stockBtn.addActionListener(e -> new StockFrame());
-//        transactionBtn.addActionListener(e -> new TransactionFrame());
+        transactionBtn.addActionListener(e -> new TransactionFrame());
         exitBtn.addActionListener(e -> {
             dispose();
             new LoginFrame();

@@ -14,6 +14,7 @@ public class Client {
     private boolean activeStatus;
     private LocalDate dateJoined;
     private double clientSumTotal;
+    private double clientCurrentTotal;
     private LocalDate lastPurchaseDate;
 
 
@@ -44,6 +45,7 @@ public class Client {
         System.out.println("Avtive: " + (activeStatus ? "Yes" : "No"));
         System.out.println("Registration dates: " + dateJoined);
         System.out.println("Total purchases: " + clientSumTotal + "€");
+        System.out.println("Current purchases for discount: " + clientCurrentTotal + "€");
         System.out.println("Last purchases: " + lastPurchaseDate);
     }
 
@@ -120,6 +122,13 @@ public class Client {
         this.clientSumTotal = clientSumTotal;
     }
 
+    public double getClientCurrentTotal() {
+        return clientCurrentTotal;
+    }
+
+    public void setClientCurrentTotal(double clientCurrentTotal) {
+        this.clientCurrentTotal = clientCurrentTotal;
+    }
     public LocalDate getLastPurchaseDate() {
         return lastPurchaseDate;
     }
@@ -131,7 +140,7 @@ public class Client {
     @Override
     public String toString() {
      return "Client ID: "+ clientId + "\n" + "First Name: " + firstName + "\n" + "Last Name: " + lastName + "\n" + "Birthdate: " + birthDate + "\n" + "Phone Number: " + phoneNumber + "\n" + "Emai: " + email + "\n" + "Gender: " + gender + "\n" + "Active Status: " +
-     activeStatus + "\n" + "Date Joined: " + dateJoined + "\n" + "Client Sum Total: " + clientSumTotal + "\n" + "Last Purchase Date: " +  lastPurchaseDate + "\n";
+     activeStatus + "\n" + "Date Joined: " + dateJoined + "\n" + "Client Sum Total: " + clientSumTotal + "\n" + "Client Current Total: " + clientCurrentTotal + "\n" + "Last Purchase Date: " +  lastPurchaseDate + "\n";
     
     }
 }

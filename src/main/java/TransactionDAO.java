@@ -74,7 +74,7 @@ public class TransactionDAO {
     /* Retrieves all transactions and returns them as a list */
     public List<Transaction> getAllTransactions() {
         List<Transaction> transactions = new ArrayList<>();
-        String sql = "SELECT * FROM transactions";
+        String sql = "SELECT * FROM transaction";
 
         try (Connection conn = DatabaseConnector.getConnection();
         PreparedStatement stmt = conn.prepareStatement(sql)) {
