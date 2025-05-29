@@ -15,7 +15,7 @@ def get_gpt_insights() -> dict:
         "store_ranking.json"
     ]
 
-    # 🔄 Φόρτωμα όλων των reports σε dict
+    # Φόρτωμα όλων των reports σε dict
     report_data = {}
     for filename in REPORTS_TO_LOAD:
         path = os.path.join("io", filename)
@@ -26,25 +26,24 @@ def get_gpt_insights() -> dict:
                 except json.JSONDecodeError:
                     report_data[filename.replace(".json", "")] = {"error": "invalid JSON"}
 
-    # 🧠 Prompt για GPT
     full_prompt = (
-    "Ακολουθούν δεδομένα από το σύστημα RetailHub.\n"
-    "Παρακαλώ γράψε καθαρή ανάλυση και προτάσεις με απλό κείμενο.\n"
-    "Απέφυγε bullets, σύμβολα, markdown ή ειδικούς χαρακτήρες.\n"
-    "Χώρισε τις παραγράφους μόνο με Enter και κράτα το ύφος κατανοητό για παρουσίαση σε GUI εφαρμογή.\n\n"
-)
+    "The following data comes from the RetailHub system.\n"
+    "Please write a clear analysis and recommendations in plain text.\n"
+    "Avoid using bullets, symbols, markdown, or special characters.\n"
+    "Separate paragraphs only with line breaks and keep the tone simple and suitable for a GUI application.\n\n"
+    )
 
 
     for key, value in report_data.items():
         full_prompt += f"\n[{key.upper()}]\n{json.dumps(value, indent=2, ensure_ascii=False)}\n"
 
-    # 🤖 Κλήση GPT
+    # Κλήση GPT
     load_dotenv()
     client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
     response = client.chat.completions.create(
         model="gpt-4o",
         messages=[
-            {"role": "system", "content": "Είσαι ένας data analyst που εξηγεί τι δείχνουν τα KPIs και προτείνει ενέργειες."},
+            {"role": "system", "content": "You are a data analyst responsible for interpreting KPIs and providing actionable recommendations."},
             {"role": "user", "content": full_prompt}
         ],
         max_tokens=500
@@ -54,6 +53,6 @@ def get_gpt_insights() -> dict:
 
     return {
         "report": "gpt_insights",
-        "summary": "Ανάλυση βασισμένη στα πιο πρόσφατα KPIs της RetailHub.",
+        "summary": "An analysis based on RetailHub's most recent KPIs.",
         "suggestions": gpt_reply
     }

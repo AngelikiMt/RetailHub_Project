@@ -11,7 +11,7 @@ from reports.category_performance import get_category_performance
 from reports.stock_vs_sales import get_stock_vs_sales
 from reports.monthly_sales_trends import get_monthly_sales_trends
 from reports.store_ranking import get_store_ranking
-# from reports.gpt_insights import get_gpt_insights
+from reports.gpt_insights import get_gpt_insights
 
 
 
@@ -71,8 +71,8 @@ def main() -> None:
         elif report_type == "store_ranking":
            result = get_store_ranking()
 
-#       elif report_type == "gpt_insights":
-#            result = get_gpt_insights()
+        elif report_type == "gpt_insights":
+            result = get_gpt_insights()
 
         else:
             result = {"error": f"Unsupported report_type: {report_type}"}

@@ -17,7 +17,7 @@ public class ReportsFrame extends JFrame {
     private JTextArea outputArea;
 
     public ReportsFrame() {
-
+        //οργανωση παραθυρου
         setTitle("RetailHub Reports");
         setSize(800, 600);
         setLocationRelativeTo(null);
@@ -40,7 +40,7 @@ public class ReportsFrame extends JFrame {
         JLabel storeIdLabel = new JLabel("Store ID:");
         JTextField storeIdField = new JTextField();
 
-        
+        //εμφανιση επιλογης με διαφορετικο τροπο
         JLabel reportTypeLabel = new JLabel("Report Type:");
         ReportItem[] reportOptions = {
             new ReportItem("Sales by Product", "sales_by_product"),
@@ -52,9 +52,10 @@ public class ReportsFrame extends JFrame {
             new ReportItem("Store Ranking", "store_ranking"),
             new ReportItem("Stock vs Sales", "stock_vs_sales"),
             new ReportItem("Monthly Sales Trends", "monthly_sales_trends"),
-            new ReportItem("Category Performance", "category_performance")
+            new ReportItem("Category Performance", "category_performance"),
+            new ReportItem("GPT Suggestions", "gpt_insights")
         };
-
+        //εμφανιση κουμπιου id οπου ειναι απαρραιτητο
         JComboBox<ReportItem> reportTypeCombo = new JComboBox<>(reportOptions);
         reportTypeCombo.addActionListener(e -> {
             productIdLabel.setVisible(false);
@@ -80,7 +81,7 @@ public class ReportsFrame extends JFrame {
             formPanel.repaint();
         });
 
-
+        //Δημιουργια κουμπιων 
         JButton generateBtn = new JButton("Generate Report");
         JButton exportPdfBtn = new JButton("Export to PDF");
 
@@ -143,6 +144,7 @@ public class ReportsFrame extends JFrame {
                     case "stock_vs_sales":
                     case "monthly_sales_trends":
                     case "category_performance":
+                    case "gpt_insights":
                         // No ID required
                         break;
 
@@ -172,6 +174,9 @@ public class ReportsFrame extends JFrame {
         outputArea = new JTextArea();
         outputArea.setEditable(false);
         outputArea.setFont(new java.awt.Font("Monospaced", java.awt.Font.PLAIN, 14));
+        outputArea.setLineWrap(true); // Ενεργοποίηση αναδίπλωσης γραμμής
+        outputArea.setWrapStyleWord(true); // Αναδίπλωση σε λέξεις αντί για χαρακτήρες
+
         JScrollPane scrollPane = new JScrollPane(outputArea);
         scrollPane.setBorder(BorderFactory.createTitledBorder("Report Output"));
 
@@ -179,7 +184,7 @@ public class ReportsFrame extends JFrame {
 
         setVisible(true);
     }
-
+//=============== εκτυπωση ως pdf===================================
     private void exportTextAsPDF(String content) {
         if (content == null || content.trim().isEmpty()) {
             JOptionPane.showMessageDialog(this, "No report content to export.");

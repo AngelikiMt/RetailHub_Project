@@ -54,7 +54,7 @@ public class ReportService {
 
                 switch (reportName) {
                     case "most_profitable_products" -> output.append(formatMostProfitableProducts(outputData));
-                    case "profit_by_store_id" -> output.append(formatProfitByStore(outputData));
+                    case "profit_by_store" -> output.append(formatProfitByStore(outputData));
                     case "client_behavior" -> output.append(formatClientBehavior(outputData));
                     case "sales_by_product" -> output.append(formatSalesByProduct(outputData));
                     case "profit_by_product" -> output.append(formatProfitByProduct(outputData));
@@ -62,7 +62,8 @@ public class ReportService {
                     case "category_performance" -> output.append(formatCategoryPerformance(outputData));
                     case "monthly_sales_trends" -> output.append(formatMonthlySalesTrends(outputData));
                     case "stock_vs_sales" -> output.append(formatStockVsSales(outputData));
-                    case "store_rankink" -> output.append(formatStoreRanking(outputData));
+                    case "store_ranking" -> output.append(formatStoreRanking(outputData));
+                    case "gpt_insights" -> output.append((formatGptInsights(outputData)));
                     default -> outputData.forEach((k, v) -> output.append(k).append(": ").append(v).append("\n"));
                 }
 
@@ -298,18 +299,22 @@ public class ReportService {
         StringBuilder sb = new StringBuilder();
 
         sb.append("Store Ranking by Profitability:\n");
-        sb.append("====================================\n");
+        sb.append("====================================\n\n");
 
         Object storesObj = data.get("stores");
         if (storesObj instanceof List<?> storeList) {
             for (Object item : storeList) {
                 if (item instanceof Map<?, ?> store) {
-                    sb.append("- Store: ").append(store.get("address")).append(" (ID: ").append(store.get("storeId")).append(")\n");
-                    sb.append("  Total Revenue: ").append(store.get("total_revenue")).append("\n");
-                    sb.append("  Total Cost: ").append(store.get("total_cost")).append("\n");
-                    sb.append("  Total Profit: ").append(store.get("total_profit")).append("\n");
-                    sb.append("  Profit Margin: ").append(store.get("profit_margin")).append("\n");
-                    sb.append("------------------------------------\n");
+                    String address = String.valueOf(store.get("address")).replace("\\n", "\n");
+
+                    sb.append("+------------------------------+\n");
+                    sb.append("Store ID: ").append(store.get("storeId")).append("\n");
+                    sb.append("Address:\n").append(address).append("\n\n");
+                    sb.append(String.format("| %-16s | %-9.2f |\n", "Total Profit", store.get("total_profit")));
+                    sb.append(String.format("| %-16s | %-9.2f |\n", "Total Revenue", store.get("total_revenue")));
+                    sb.append(String.format("| %-16s | %-9.2f |\n", "Total Cost", store.get("total_cost")));
+                    sb.append(String.format("| %-16s | %-9.4f |\n", "Profit Margin", store.get("profit_margin")));
+                    sb.append("+------------------------------+\n\n");
                 }
             }
         } else {
@@ -320,31 +325,55 @@ public class ReportService {
     }
 
 
-    
+
+ //===================================== GPT insights ===========================================
+
+    private static String formatGptInsights(Map<?, ?> data) {
+        StringBuilder sb = new StringBuilder();
+
+        Object summaryObj = data.get("summary");
+        String summary = (summaryObj instanceof String) ? (String) summaryObj : "No summary available";
+        sb.append(summary).append("\n\n");
+
+        Object suggestions = data.get("suggestions");
+        if (suggestions != null) {
+            sb.append(suggestions.toString());
+        } else {
+            sb.append("No suggestions available.");
+        }
+
+        return sb.toString();
+    }
+
+ 
+
+
+    // υποχτεωρτικα πεδια για id σε συγκεκριμενες αναφορες 
     public static String getAdvancedReportResults(String reportType, long productId, long storeId, long clientId) {
         Map<String, Object> inputData = new HashMap<>();
         inputData.put("report_type", reportType);
 
         switch (reportType) {
-            case "sales by product":
-            case "profit by product":
+            case "sales_by_product":
+            case "profit_by_product":
                 inputData.put("product_id", productId);
                 break;
 
-            case "sales by store":
-            case "profit by store id":
+            case "sales_by_store":
+            case "profit_by_store":
                 inputData.put("store_id", storeId);
                 break;
 
-            case "client behavior":
+            case "client_behavior":
                 inputData.put("client_id", clientId);
                 break;
 
-            case "most profitable products":
+            case "most_profitable_products":
             case "store_ranking":
             case "stock_vs_sales":
             case "monthly_sales_trends":
             case "category_performance":
+            case "gpt_insights":
                 // No extra input needed
                 break;
 
