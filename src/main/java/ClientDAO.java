@@ -12,8 +12,8 @@ import java.util.List;
 public class ClientDAO {
 
     public boolean insertClient(Client client) {
-        String sql = "INSERT INTO client (firstName, lastName, birthDate, phoneNumber, email, gender, activeStatus, dateJoined, clientSumTotal, lastPurchaseDate) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO client (firstName, lastName, birthDate, phoneNumber, email, gender, activeStatus, dateJoined, clientSumTotal, clientCurrentTotal, lastPurchaseDate) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = DatabaseConnector.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -27,11 +27,12 @@ public class ClientDAO {
             stmt.setBoolean(7, client.isActiveStatus());
             stmt.setDate(8, Date.valueOf(client.getDateJoined()));
             stmt.setDouble(9, client.getClientSumTotal());
+            stmt.setDouble(10, client.getClientCurrentTotal());
 
             if (client.getLastPurchaseDate() != null) {
-                stmt.setDate(10, Date.valueOf(client.getLastPurchaseDate()));
+                stmt.setDate(11, Date.valueOf(client.getLastPurchaseDate()));
             } else {
-                stmt.setNull(10, Types.DATE);
+                stmt.setNull(11, Types.DATE);
             }
 
             int rows = stmt.executeUpdate();
@@ -45,6 +46,7 @@ public class ClientDAO {
             }
 
             return rows > 0;
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -111,7 +113,7 @@ public class ClientDAO {
     }
 
     public boolean updateClient(Client client) {
-        String sql = "UPDATE client SET firstName = ?, lastName = ?, phoneNumber = ?, email = ?, birthDate = ? WHERE clientId = ?";
+        String sql = "UPDATE client SET firstName = ?, lastName = ?, phoneNumber = ?, email = ?, birthDate = ?, clientSumTotal = ?, clientCurrentTotal = ?, lastPurchaseDate = ? WHERE clientId = ?";
 
         try (Connection conn = DatabaseConnector.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -121,7 +123,10 @@ public class ClientDAO {
             stmt.setString(3, client.getPhoneNumber());
             stmt.setString(4, client.getEmail());
             stmt.setDate(5, Date.valueOf(client.getBirthDate()));
-            stmt.setLong(6, client.getClientId());
+            stmt.setDouble(6, client.getClientSumTotal());
+            stmt.setDouble(7, client.getClientCurrentTotal());
+            stmt.setDate(8, Date.valueOf(client.getLastPurchaseDate()));
+            stmt.setLong(9, client.getClientId());
 
             return stmt.executeUpdate() > 0;
 
@@ -192,6 +197,7 @@ public class ClientDAO {
         }
 
         client.setClientSumTotal(rs.getDouble("clientSumTotal"));
+        client.setClientCurrentTotal(rs.getDouble("clientCurrentTotal"));
         Date lastPurchase = rs.getDate("lastPurchaseDate");
         if (lastPurchase != null) {
             client.setLastPurchaseDate(lastPurchase.toLocalDate());

@@ -57,10 +57,10 @@ public class StockDAO {
 
     /* Updates stock details using store's ID, product's ID and the quantity to be added. */
     public void updateStock(int storeId, long productId, int quantity) {
-        String sql = "UPDATE stock SET stockQuantity = ? WHERE storeId = ? AND productId = ?";
+        String sql = "UPDATE stock SET stockQuantity = stockQuantity + ? WHERE storeId = ? AND productId = ?";
 
         try (Connection conn = DatabaseConnector.getConnection(); 
-        PreparedStatement stmt = conn.prepareStatement(sql)) {
+            PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, quantity);
             stmt.setInt(2, storeId);
             stmt.setLong(3, productId);

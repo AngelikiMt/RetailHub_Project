@@ -48,7 +48,7 @@ public class TransactionService {
             long productId = productIds.get(i);
             int quantity = quantities.get(i);
 
-            Stock stock = stockDAO.getStock((int) productId, storeId);
+            Stock stock = stockDAO.getStock(storeId, productId);
             if (stock == null || stock.getStockQuantity() < quantity) {
                 throw new RuntimeException("Insufficient stock for product ID: " + productId);
             }
@@ -91,7 +91,7 @@ public class TransactionService {
         double currentTotal = client.getClientCurrentTotal();
 
         if (currentTotal + sumTotal >= 400) {
-            currentTotal = (currentTotal + sumTotal + discount) - 400; // αφαιρείς 400 και κρατάς το υπόλοιπο
+            currentTotal = (currentTotal + sumTotal) - 400; // αφαιρείς 400 και κρατάς το υπόλοιπο
         } else {
             currentTotal += sumTotal;
         }

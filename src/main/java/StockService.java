@@ -13,29 +13,29 @@ public class StockService {
     // Add a new stock to the database. 
     public static void addStock(int storeId, long productId, int stockQuantity) {
         if (storeId <= 0 || productId <= 0 || stockQuantity < 0) {
-            System.out.println("Invalid input. Store ID, Product ID must be positive and quantity non-negative.");
-            return;
+            throw new IllegalArgumentException("Invalid input. Store ID, Product ID must be positive and quantity non-negative.");
+            //return;
         }
 
         // Validates if the store is active or exists
         Store store = storeDAO.getStoreById(storeId);
         if (store == null || !store.isActive()) {
-            System.out.println("Store ID " + storeId + " is invalid or inactive.");
-            return;
+            throw new IllegalStateException("Store ID " + storeId + " is invalid or inactive.");
+            //return;
         }
 
         // Validates if the product is active or exists
         Product product = productDAO.getProductById(productId);
         if (product == null || !product.getActive()) {
-            System.out.println("Product ID " + productId + " is invalid or inactive.");
-            return;
+            throw new IllegalStateException("Product ID " + productId + " is invalid or inactive.");
+            //return;
         }
 
         // Check if stock already exists
         Stock existingStock = stockDAO.getStock(storeId, productId);
         if (existingStock != null) {
-            System.out.println("Stock already exists for this product in the given store.");
-            return;
+            throw new IllegalStateException("Stock already exists for this product in the given store.");
+            //return;
         }
 
         // Insert new stock

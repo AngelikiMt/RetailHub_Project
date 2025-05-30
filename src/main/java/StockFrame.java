@@ -24,14 +24,18 @@ import javax.swing.table.DefaultTableModel;
 public class StockFrame extends JFrame {
     private JPanel backgroundPanel;
     private JPanel currentContentPanel; // Holds the active sub-panel
-    private StockService stockService;
+    
+    //private static StockService stockService;
+    //public StockService getStockService() {
+    // return stockService;
+    //} 
 
     public StockFrame() {
         setTitle("Stock Management Menu");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // Closes the frame
         setExtendedState(JFrame.MAXIMIZED_BOTH); // Fullscreen
 
-        stockService = new StockService();
+        //stockService = new StockService();
 
         // === PANEL WITH BACKGROUND ===
         backgroundPanel = new JPanel() {
@@ -58,9 +62,9 @@ public class StockFrame extends JFrame {
         }
 
         // === BUTTONS ===
-        JButton addBtn = new JButton("Add Stock");
+        JButton addBtn = new JButton("Set Initial Stock");
         JButton getBtn = new JButton("Get Stock Quantity");
-        JButton updateBtn = new JButton("Update Stock");
+        JButton updateBtn = new JButton("Add Stock");
         JButton lowStockBtn = new JButton("View Low Stock");
         JButton jsonBtn = new JButton("Get Stock as JSON");
         JButton searchOtherStoresBtn = new JButton("Search Other Stores");
@@ -205,7 +209,7 @@ public class StockFrame extends JFrame {
                 long productId = Long.parseLong(productIdField.getText());
                 int quantity = Integer.parseInt(quantityField.getText());
 
-                stockService.addStock(storeId, productId, quantity);
+                StockService.addStock(storeId, productId, quantity);
                 showSuccess("Stock added successfully.");
                 productIdField.setText("");
                 storeIdField.setText("");
@@ -271,7 +275,7 @@ public class StockFrame extends JFrame {
                 long productId = Long.parseLong(productIdField.getText());
                 int storeId = Integer.parseInt(storeIdField.getText());
 
-                Stock stock = stockService.getStock(productId, storeId);
+                Stock stock = StockService.getStock(productId, storeId);
                 if (stock != null) {
                     resultLabel.setText("Quantity: " + stock.getStockQuantity());
                     showSuccess("Stock found.");
@@ -344,7 +348,7 @@ public class StockFrame extends JFrame {
                 int storeId = Integer.parseInt(storeIdField.getText());
                 int quantity = Integer.parseInt(quantityField.getText());
 
-                stockService.updateStock(productId, storeId, quantity);
+                StockService.updateStock(productId, storeId, quantity);
                 showSuccess("Stock updated successfully.");
                 productIdField.setText("");
                 storeIdField.setText("");
@@ -396,7 +400,7 @@ public class StockFrame extends JFrame {
 
         private void refreshLowStock() {
             model.setRowCount(0); // Clearing existing data
-            List<Stock> lowStocks = stockService.getLowStockProducts();
+            List<Stock> lowStocks = StockService.getLowStockProducts();
             if (lowStocks.isEmpty()) {
                 showError("No low stock products found.");
             } else {
@@ -462,7 +466,7 @@ public class StockFrame extends JFrame {
                     return;
                 }
                 long productId = Long.parseLong(productIdField.getText());
-                String json = stockService.getStockAsJson(productId);
+                String json = StockService.getStockAsJson(productId);
                 if (json != null && !json.contains("Stock not found")) {
                     jsonDisplayArea.setText(json);
                 } else {
@@ -552,7 +556,7 @@ public class StockFrame extends JFrame {
                 long productId = Long.parseLong(productIdField.getText());
                 int excludedStoreId = Integer.parseInt(excludedStoreIdField.getText());
 
-                List<Stock> stocks = stockService.searchProductInOtherStores(productId, excludedStoreId);
+                List<Stock> stocks = StockService.searchProductInOtherStores(productId, excludedStoreId);
 
                 if (stocks.isEmpty()) {
                     showSuccess("No stock found in other stores for Product ID " + productId + ".");
