@@ -1,15 +1,18 @@
 #report_router.py
-
+import pandas as pd
 import json
 from reports.sales_by_product import get_sales_by_product
 from reports.profit_by_product import get_profit_by_product
 from reports.most_profitable_products import get_most_profitable_products
+from reports.most_profitable_products import plot_most_profitable_products
 from reports.sales_by_store import get_sales_by_store
 from reports.profit_by_store import get_profit_by_store
 from reports.client_behavior import get_client_behavior
 from reports.category_performance import get_category_performance
 from reports.stock_vs_sales import get_stock_vs_sales
 from reports.monthly_sales_trends import get_monthly_sales_trends
+from reports.monthly_sales_trends import plot_monthly_sales
+
 from reports.store_ranking import get_store_ranking
 from reports.gpt_insights import get_gpt_insights
 
@@ -54,6 +57,9 @@ def main() -> None:
 
         elif report_type == "most_profitable_products":
             result = get_most_profitable_products()
+            if "top_profitable_products" in result:
+               df = pd.DataFrame(result["top_profitable_products"])
+               plot_most_profitable_products(df)
         
         elif report_type == "client_behavior":
             client_id = int(data["client_id"])
@@ -67,6 +73,9 @@ def main() -> None:
 
         elif report_type == "monthly_sales_trends":
            result = get_monthly_sales_trends()
+           if "monthly_stats" in result:
+            df = pd.DataFrame(result["monthly_stats"])
+            plot_monthly_sales(df)
 
         elif report_type == "store_ranking":
            result = get_store_ranking()

@@ -11,21 +11,18 @@ import com.lowagie.text.Paragraph;
 import com.lowagie.text.pdf.PdfWriter;
 import com.lowagie.text.FontFactory;
 
-
 public class ReportsFrame extends JFrame {
 
     private JTextArea outputArea;
+    private JLabel chartLabel;
 
     public ReportsFrame() {
-        //οργανωση παραθυρου
         setTitle("RetailHub Reports");
         setSize(800, 600);
         setLocationRelativeTo(null);
-        setExtendedState(JFrame.MAXIMIZED_BOTH); // Fullscreen
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLayout(new BorderLayout(10, 10));
-
-        
 
         // --- Φόρμα εισαγωγής ---
         JPanel formPanel = new JPanel(new GridLayout(3, 2, 10, 10));
@@ -40,7 +37,6 @@ public class ReportsFrame extends JFrame {
         JLabel storeIdLabel = new JLabel("Store ID:");
         JTextField storeIdField = new JTextField();
 
-        //εμφανιση επιλογης με διαφορετικο τροπο
         JLabel reportTypeLabel = new JLabel("Report Type:");
         ReportItem[] reportOptions = {
             new ReportItem("Sales by Product", "sales_by_product"),
@@ -55,7 +51,6 @@ public class ReportsFrame extends JFrame {
             new ReportItem("Category Performance", "category_performance"),
             new ReportItem("GPT Suggestions", "gpt_insights")
         };
-        //εμφανιση κουμπιου id οπου ειναι απαρραιτητο
         JComboBox<ReportItem> reportTypeCombo = new JComboBox<>(reportOptions);
         reportTypeCombo.addActionListener(e -> {
             productIdLabel.setVisible(false);
@@ -76,12 +71,16 @@ public class ReportsFrame extends JFrame {
             clientIdLabel.setVisible(selected.equals("client_behavior"));
             clientIdField.setVisible(selected.equals("client_behavior"));
 
-            // Ενημέρωση layout
             formPanel.revalidate();
             formPanel.repaint();
+//=============================================sos allagh gia grafima !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            // Καθαρισμός γραφήματος αν αλλάζει επιλογή σε αναφορά που δεν έχει γράφημα
+           if (!(selected.equals("monthly_sales_trends") || selected.equals("most_profitable_products"))) {
+             chartLabel.setIcon(null);
+            }
+
         });
 
-        //Δημιουργια κουμπιων 
         JButton generateBtn = new JButton("Generate Report");
         JButton exportPdfBtn = new JButton("Export to PDF");
 
@@ -97,9 +96,28 @@ public class ReportsFrame extends JFrame {
         formPanel.add(exportPdfBtn);
 
         add(formPanel, BorderLayout.NORTH);
+//======== πλαισιο κειμενου αναφορας ==========================
+        outputArea = new JTextArea();
+        outputArea.setEditable(false);
+        outputArea.setFont(new java.awt.Font("Monospaced", java.awt.Font.PLAIN, 14));
+        outputArea.setLineWrap(true);
+        outputArea.setWrapStyleWord(true);
+        JScrollPane textScrollPane = new JScrollPane(outputArea);
+        textScrollPane.setBorder(BorderFactory.createTitledBorder("Report Output"));
+// ================== πλαισιο γραφηματων αναφορας =====================
+        chartLabel = new JLabel();
+        chartLabel.setHorizontalAlignment(JLabel.CENTER);
+        chartLabel.setVerticalAlignment(JLabel.CENTER);
+        JScrollPane imageScrollPane = new JScrollPane(chartLabel);
+        imageScrollPane.setBorder(BorderFactory.createTitledBorder("Report Chart"));
 
-        // --- Περιοχή εμφάνισης αποτελεσμάτων ---
-       generateBtn.addActionListener(e -> {
+        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, textScrollPane, imageScrollPane);
+        splitPane.setDividerLocation(0.5);
+        splitPane.setResizeWeight(0.5);
+
+        add(splitPane, BorderLayout.CENTER);
+//=============== ενεργοποιηση λειτουργιας κουμπιου για εμφανιση καταλληλησ αναφορας ===================
+        generateBtn.addActionListener(e -> {
             ReportItem selectedItem = (ReportItem) reportTypeCombo.getSelectedItem();
             if (selectedItem == null) return;
 
@@ -159,32 +177,64 @@ public class ReportsFrame extends JFrame {
 
             outputArea.setText("Running report...\n");
 
-            new Thread(() -> {
-                String result = ReportService.getReportResults(inputData, reportType);
-                SwingUtilities.invokeLater(() -> outputArea.setText(result));
-            }).start();
+            if (reportType.equals("most_profitable_products")) { // !!!!!!!!!!!!!!!!!!!!!!sos allagh ======================
+                new Thread(() -> {
+                    String result = ReportService.getReportResults(inputData, reportType);
+                    SwingUtilities.invokeLater(() -> {
+                        outputArea.setText(result);
+
+                        //  η εικόνα αποθηκεύεται εδώ
+                        String chartPath = "python-reports/io/report_chart.png";
+                        loadChartImage(chartPath);
+                    });
+                }).start();
+            } else {
+                chartLabel.setIcon(null); // Καθαρισμός γραφήματος
+                new Thread(() -> {
+                    String result = ReportService.getReportResults(inputData, reportType);
+                    SwingUtilities.invokeLater(() -> outputArea.setText(result));
+                }).start();
+            }
         });
 
-
-
-        // --- Ενέργεια κουμπιού Export to PDF ---
         exportPdfBtn.addActionListener(e -> exportTextAsPDF(outputArea.getText()));
-
-        // --- Περιοχή εμφάνισης αποτελεσμάτων ---
-        outputArea = new JTextArea();
-        outputArea.setEditable(false);
-        outputArea.setFont(new java.awt.Font("Monospaced", java.awt.Font.PLAIN, 14));
-        outputArea.setLineWrap(true); // Ενεργοποίηση αναδίπλωσης γραμμής
-        outputArea.setWrapStyleWord(true); // Αναδίπλωση σε λέξεις αντί για χαρακτήρες
-
-        JScrollPane scrollPane = new JScrollPane(outputArea);
-        scrollPane.setBorder(BorderFactory.createTitledBorder("Report Output"));
-
-        add(scrollPane, BorderLayout.CENTER); // << ΕΔΩ προσθέτεις στο layout
 
         setVisible(true);
     }
-//=============== εκτυπωση ως pdf===================================
+//============================================= image ====================================================
+    private void loadChartImage(String imagePath) {
+        File imgFile = new File(imagePath);
+        if (imgFile.exists()) {
+            ImageIcon icon = new ImageIcon(imgFile.getAbsolutePath());
+
+            // Παίρνουμε το Image από το ImageIcon
+            Image img = icon.getImage();
+
+            // Παίρνουμε το μέγεθος του JLabel (chartLabel)
+            int labelWidth = chartLabel.getWidth();
+            int labelHeight = chartLabel.getHeight();
+
+            // Αν το μέγεθος είναι 0 (πριν το layout), βάζουμε default
+            if (labelWidth <= 0 || labelHeight <= 0) {
+                labelWidth = 400;
+                labelHeight = 300;
+            }
+
+            // Κάνουμε scale την εικόνα να ταιριάζει στο JLabel με ομαλή κλιμάκωση
+            Image scaledImage = img.getScaledInstance(labelWidth, labelHeight, Image.SCALE_SMOOTH);
+
+            // Δημιουργούμε νέο ImageIcon με το scaled image
+            ImageIcon scaledIcon = new ImageIcon(scaledImage);
+
+            // Ορίζουμε το icon στο JLabel
+            chartLabel.setIcon(scaledIcon);
+        } else {
+            chartLabel.setIcon(null);
+            JOptionPane.showMessageDialog(this, "Chart image not found:\n" + imgFile.getAbsolutePath());
+        }
+    }
+
+//================================== αποθηκευση pdf ===================================================
     private void exportTextAsPDF(String content) {
         if (content == null || content.trim().isEmpty()) {
             JOptionPane.showMessageDialog(this, "No report content to export.");
@@ -208,41 +258,59 @@ public class ReportsFrame extends JFrame {
                 PdfWriter.getInstance(document, new FileOutputStream(file));
                 document.open();
 
-                Font font = FontFactory.getFont(FontFactory.COURIER, 10);
-                document.add(new Paragraph(content, font));
+                // --- Τίτλος ---
+                com.lowagie.text.Font titleFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 16);
+                Paragraph title = new Paragraph("RetailHub Report\n\n", titleFont);
+                title.setAlignment(Paragraph.ALIGN_CENTER);
+                document.add(title);
+
+                // --- Περιεχόμενο κειμένου ---
+                com.lowagie.text.Font textFont = FontFactory.getFont(FontFactory.HELVETICA, 12);
+                Paragraph reportContent = new Paragraph(content + "\n\n", textFont);
+                document.add(reportContent);
+
+                // --- Προσθήκη εικόνας, αν υπάρχει ---
+                String chartPath = "python-reports/io/report_chart.png";
+                File imageFile = new File(chartPath);
+
+                if (imageFile.exists()) {
+                    com.lowagie.text.Image chartImage = com.lowagie.text.Image.getInstance(imageFile.getAbsolutePath());
+                    chartImage.scaleToFit(500, 400); // προσαρμογή μεγέθους
+                    chartImage.setAlignment(com.lowagie.text.Image.ALIGN_CENTER);
+                    document.add(chartImage);
+                }
 
                 document.close();
 
                 JOptionPane.showMessageDialog(this, "Exported successfully to " + file.getAbsolutePath());
             } catch (Exception ex) {
+                ex.printStackTrace();
                 JOptionPane.showMessageDialog(this, "Error exporting PDF: " + ex.getMessage());
             }
         }
     }
 
-        public class ReportItem {
-            private final String label;
-            private final String value;
 
-            public ReportItem(String label, String value) {
-                this.label = label;
-                this.value = value;
-            }
+    public class ReportItem {
+        private final String label;
+        private final String value;
 
-            public String getLabel() {
-                return label;
-            }
-
-            public String getValue() {
-                return value;
-            }
-
-            @Override
-            public String toString() {
-                return label; // Εμφανίζεται στο ComboBox
-            }
+        public ReportItem(String label, String value) {
+            this.label = label;
+            this.value = value;
         }
 
+        public String getLabel() {
+            return label;
+        }
 
+        public String getValue() {
+            return value;
+        }
+
+        @Override
+        public String toString() {
+            return label;
+        }
+    }
 }
-

@@ -7,7 +7,7 @@ import java.util.Map;
 
 public class ReportService {
 
-    public static String getProductResults(long productId, String reportName) {
+    /*public static String getProductResults(long productId, String reportName) {
         Map<String, Object> inputData = new HashMap<>();
         inputData.put("report_type", reportName);
 
@@ -17,9 +17,11 @@ public class ReportService {
         }
 
         return getReportResults(inputData, reportName);
-    }
+    }*/
 
     public static String getReportResults(Map<String, Object> inputData, String reportName) {
+
+        
         ObjectMapper mapper = new ObjectMapper();
 
         try {
@@ -76,26 +78,40 @@ public class ReportService {
         } catch (Exception e) {
             return "Exception: " + e.getMessage();
         }
+
+       
     }
 
 
-// ========================== format for output.json =============================================  
+// ========================== format for output.json ============================================= 
+ 
 //============================ store =============================================== 
 
     private static String formatSalesByStore(Map<?, ?> data) {
         StringBuilder sb = new StringBuilder();
 
-        sb.append("Store: ").append(data.get("address")).append(" (ID: ").append(data.get("store_id")).append(")\n");
-        sb.append("Total Units Sold: ").append(data.get("total_units_sold")).append("\n");
-        sb.append("Total Revenue: ").append(data.get("total_revenue")).append("\n");
+        sb.append("Store: ").append(data.get("address"))
+        .append(" (ID: ").append(data.get("store_id")).append(")\n");
+        sb.append("Total Units Sold : ").append(data.get("total_units_sold")).append("\n");
+        sb.append("Total Revenue    : ").append(data.get("total_revenue")).append("\n");
 
-        // Αν θέλεις να εμφανίσεις τα top_products (λίστα προϊόντων με πωλήσεις)
         Object topProductsObj = data.get("top_products");
-        if (topProductsObj instanceof List<?> topProducts) {
-            sb.append("\nTop Products:\n");
+        if (topProductsObj instanceof List<?> topProducts && !topProducts.isEmpty()) {
+            sb.append("\nTop Products:\n\n");
+
+            // Headers
+            String headerFormat = "%-30s %-12s\n";
+            String rowFormat =    "%-30s %-12s\n";
+
+            sb.append(String.format(headerFormat, "Description", "Units Sold"));
+            sb.append(String.format(headerFormat, "------------------------------", "------------"));
+
             for (Object item : topProducts) {
                 if (item instanceof Map<?, ?> product) {
-                    sb.append("- ").append(product.get("description")).append(" (Units Sold: ").append(product.get("units")).append(")\n");
+                    sb.append(String.format(rowFormat,
+                            String.valueOf(product.get("description")),
+                            String.valueOf(product.get("units"))
+                    ));
                 }
             }
         }
@@ -104,52 +120,70 @@ public class ReportService {
     }
 
 
-    private static String formatProfitByStore(Map<?, ?> data) {
+
+   private static String formatProfitByStore(Map<?, ?> data) {
         StringBuilder sb = new StringBuilder();
 
-        sb.append("Store: ").append(data.get("address")).append(" (ID: ").append(data.get("store_id")).append(")\n");
-        sb.append("Total Units Sold: ").append(data.get("total_units_sold")).append("\n");
-        sb.append("Total Revenue: ").append(data.get("total_revenue")).append("\n");
-        sb.append("Total Cost: ").append(data.get("total_cost")).append("\n");
-        sb.append("Total Profit: ").append(data.get("total_profit")).append("\n\n");
-        sb.append("=== Product Profit Breakdown ===\n");
+        sb.append("Store: ").append(data.get("address"))
+        .append(" (ID: ").append(data.get("store_id")).append(")\n");
+        sb.append("Total Units Sold : ").append(data.get("total_units_sold")).append("\n");
+        sb.append("Total Revenue    : ").append(data.get("total_revenue")).append("\n");
+        sb.append("Total Cost       : ").append(data.get("total_cost")).append("\n");
+        sb.append("Total Profit     : ").append(data.get("total_profit")).append("\n");
 
         Object analysisObj = data.get("product_profit_analysis");
-        if (analysisObj instanceof List<?> productList) {
+        if (analysisObj instanceof List<?> productList && !productList.isEmpty()) {
+            sb.append("\nProduct Profit Breakdown:\n\n");
+
+            String headerFormat = "%-30s %-6s %-10s %-10s %-10s\n";
+            String rowFormat =    "%-30s %-6s %-10s %-10s %-10s\n";
+
+            sb.append(String.format(headerFormat, "Description", "Units", "Revenue", "Cost", "Profit"));
+            sb.append(String.format(headerFormat, "------------------------------", "------", "----------", "----------", "----------"));
+
             for (Object item : productList) {
                 if (item instanceof Map<?, ?> product) {
-                    sb.append("- ").append(product.get("description")).append("\n");
-                    sb.append("  Units: ").append(product.get("units")).append("\n");
-                    sb.append("  Revenue: ").append(product.get("revenue")).append("\n");
-                    sb.append("  Cost: ").append(product.get("cost")).append("\n");
-                    sb.append("  Profit: ").append(product.get("profit")).append("\n");
-                    sb.append("---------------------------------------\n");
+                    sb.append(String.format(rowFormat,
+                            String.valueOf(product.get("description")),
+                            String.valueOf(product.get("units")),
+                            String.valueOf(product.get("revenue")),
+                            String.valueOf(product.get("cost")),
+                            String.valueOf(product.get("profit"))
+                    ));
                 }
             }
         }
 
         return sb.toString();
     }
-//====================================== client =================================
+
+//====================================== client ================================================================
 
     private static String formatClientBehavior(Map<?, ?> data) {
-        // Έλεγχος για error πεδίο
         if (data.containsKey("error")) {
             return "Error: " + data.get("error") + "\n";
         }
 
         StringBuilder sb = new StringBuilder();
-        sb.append("Client: ").append(data.get("full_name")).append(" (ID: ").append(data.get("client_id")).append(")\n");
-        sb.append("Total Transactions: ").append(data.get("total_transactions")).append("\n");
-        sb.append("Total Spent: ").append(data.get("total_spent")).append("\n");
-        sb.append("Has Received Discount: ").append(data.get("has_discount")).append("\n");
+        sb.append("Client Behavior Report\n");
+        sb.append("=======================\n\n");
+
+        sb.append(String.format("Client ID           : %s\n", data.get("client_id")));
+        sb.append(String.format("Full Name           : %s\n", data.get("full_name")));
+        sb.append(String.format("Total Transactions  : %s\n", data.get("total_transactions")));
+        sb.append(String.format("Total Spent         : %.2f\n", data.get("total_spent")));
+        sb.append(String.format("Has Discount        : %s\n\n", data.get("has_discount")));
+
         sb.append("Stores Visited:\n");
+        sb.append("------------------------\n");
 
         Object storesObj = data.get("stores_visited");
-        if (storesObj instanceof List<?> storeList) {
+        if (storesObj instanceof List<?> storeList && !storeList.isEmpty()) {
             for (Object store : storeList) {
-                sb.append("  • ").append(store).append("\n");
+                sb.append(String.format(" • %s\n", store));
             }
+        } else {
+            sb.append(" (No stores recorded)\n");
         }
 
         return sb.toString();
@@ -159,16 +193,24 @@ public class ReportService {
     private static String formatSalesByProduct(Map<?, ?> data) {
         StringBuilder sb = new StringBuilder();
 
-        sb.append("Product: ").append(data.get("description")).append(" (ID: ").append(data.get("product_id")).append(")\n");
-        sb.append("Total Units Sold: ").append(data.get("total_units_sold")).append("\n");
-        sb.append("Total Revenue: ").append(data.get("total_revenue")).append("\n");
+        sb.append("Product Sales Report\n");
+        sb.append("====================\n\n");
+
+        sb.append(String.format("Product ID   : %s\n", data.get("product_id")));
+        sb.append(String.format("Description  : %s\n", data.get("description")));
+        sb.append(String.format("Units Sold   : %s\n", data.get("total_units_sold")));
+        sb.append(String.format("Total Revenue: %.2f\n", data.get("total_revenue")));
 
         Object salesPerStoreObj = data.get("sales_per_store");
         if (salesPerStoreObj instanceof List<?> salesPerStoreList) {
-            sb.append("\nSales per Store:\n");
+            sb.append("\nSales per Store\n");
+            sb.append("----------------------------\n");
+            sb.append(String.format("%-25s %s\n", "Store", "Units Sold"));
+            sb.append(String.format("%-25s %s\n", "-------------------------", "----------"));
+
             for (Object item : salesPerStoreList) {
                 if (item instanceof Map<?, ?> store) {
-                    sb.append("- ").append(store.get("store")).append(": ").append(store.get("units")).append(" units\n");
+                    sb.append(String.format("%-25s %s\n", store.get("store"), store.get("units")));
                 }
             }
         }
@@ -180,35 +222,47 @@ public class ReportService {
     private static String formatProfitByProduct(Map<?, ?> data) {
         StringBuilder sb = new StringBuilder();
 
-        sb.append("Product: ").append(data.get("description")).append(" (ID: ").append(data.get("product_id")).append(")\n");
-        sb.append("Total Units Sold: ").append(data.get("total_units")).append("\n");
-        sb.append("Total Revenue: ").append(data.get("total_revenue")).append("\n");
-        sb.append("Total Cost: ").append(data.get("total_cost")).append("\n");
-        sb.append("Total Profit: ").append(data.get("total_profit")).append("\n");
-        sb.append("Profit Margin: ").append(data.get("profit_margin")).append("\n");
+        sb.append("Product Profit Report\n");
+        sb.append("=====================\n\n");
+
+        sb.append(String.format("Product ID    : %s\n", data.get("product_id")));
+        sb.append(String.format("Description   : %s\n", data.get("description")));
+        sb.append(String.format("Units Sold    : %s\n", data.get("total_units")));
+        sb.append(String.format("Total Revenue : %.2f\n", data.get("total_revenue")));
+        sb.append(String.format("Total Cost    : %.2f\n", data.get("total_cost")));
+        sb.append(String.format("Total Profit  : %.2f\n", data.get("total_profit")));
+        sb.append(String.format("Profit Margin : %.2f%%\n", data.get("profit_margin")));
 
         return sb.toString();
     }
 
 
-    private static String formatMostProfitableProducts(Map<?, ?> data) {
+   private static String formatMostProfitableProducts(Map<?, ?> data) {
         StringBuilder sb = new StringBuilder();
         Object topProductsObj = data.get("top_profitable_products");
 
-        if (topProductsObj instanceof List<?> topList) {
+        if (topProductsObj instanceof List<?> topList && !topList.isEmpty()) {
+            sb.append("Most Profitable Products\n");
+            sb.append("========================\n\n");
+
+            // Table header
+            sb.append(String.format("%-4s %-10s %-25s %-15s %-6s %-10s %-10s %-10s %-8s\n",
+                    "#", "ID", "Description", "Category", "Units", "Revenue", "Cost", "Profit", "Margin"));
+            sb.append(String.format("%s\n", "-".repeat(108)));
+
             int index = 1;
             for (Object item : topList) {
                 if (item instanceof Map<?, ?> product) {
-                    sb.append(" Product #").append(index++).append("\n");
-                    sb.append(" ID: ").append(product.get("productId")).append("\n");
-                    sb.append(" Description: ").append(product.get("description")).append("\n");
-                    sb.append(" Category: ").append(product.get("category")).append("\n");
-                    sb.append(" Sales: ").append(product.get("total_units")).append("\n");
-                    sb.append(" Revenue: ").append(product.get("total_revenue")).append("\n");
-                    sb.append(" Cost: ").append(product.get("total_cost")).append("\n");
-                    sb.append(" Profit: ").append(product.get("total_profit")).append("\n");
-                    sb.append(" Margin: ").append(product.get("profit_margin")).append("\n");
-                    sb.append("--------------------------------------------------\n");
+                    sb.append(String.format("%-4d %-10s %-25s %-15s %-6s %-10.2f %-10.2f %-10.2f %-7.2f%%\n",
+                            index++,
+                            product.get("productId"),
+                            product.get("description"),
+                            product.get("category"),
+                            product.get("total_units"),
+                            product.get("total_revenue"),
+                            product.get("total_cost"),
+                            product.get("total_profit"),
+                            product.get("profit_margin")));
                 }
             }
         } else {
@@ -218,14 +272,20 @@ public class ReportService {
         return sb.toString();
     }
 
+
 //========================= category ===========================================
 
     private static String formatCategoryPerformance(Map<?, ?> data) {
         StringBuilder sb = new StringBuilder();
-        sb.append("=== Category Performance ===\n");
+        sb.append("=== Category Performance ===\n\n");
 
         Object categoriesObj = data.get("categories");
-        if (categoriesObj instanceof List<?> categoryList) {
+        if (categoriesObj instanceof List<?> categoryList && !categoryList.isEmpty()) {
+            // Header πίνακα
+            sb.append(String.format("%-20s %10s %12s %12s %12s %12s\n",
+                    "Category", "Units Sold", "Revenue", "Cost", "Profit", "Margin (%)"));
+            sb.append(String.format("%s\n", "-".repeat(80)));
+
             for (Object item : categoryList) {
                 if (item instanceof Map<?, ?> category) {
                     String categoryName = (String) category.get("category");
@@ -235,86 +295,107 @@ public class ReportService {
                     double profit = ((Number) category.get("profit")).doubleValue();
                     double margin = ((Number) category.get("margin")).doubleValue();
 
-                    sb.append("- Category: ").append(categoryName).append("\n");
-                    sb.append("  Units Sold: ").append(units).append("\n");
-                    sb.append("  Total Revenue: ").append(String.format("%.2f", revenue)).append("\n");
-                    sb.append("  Total Cost: ").append(String.format("%.2f", cost)).append("\n");
-                    sb.append("  Total Profit: ").append(String.format("%.2f", profit)).append("\n");
-                    sb.append("  Profit Margin: ").append(String.format("%.4f", margin)).append("\n");
-                    sb.append("----------------------------------------\n");
+                    sb.append(String.format("%-20s %10d %12.2f %12.2f %12.2f %12.2f\n",
+                            categoryName, units, revenue, cost, profit, margin * 100));
                 }
             }
+        } else {
+            sb.append("No category data available.\n");
         }
 
         return sb.toString();
     }
 
 //============================================ monthly sales =======================================
-    private static String formatMonthlySalesTrends(Map<?, ?> data) {
+   private static String formatMonthlySalesTrends(Map<?, ?> data) {
         StringBuilder sb = new StringBuilder();
         sb.append("=== Monthly Sales Trends ===\n");
-        sb.append(data.get("note")).append("\n\n");
+
+        Object noteObj = data.get("note");
+        sb.append(noteObj != null ? noteObj.toString() : "").append("\n\n");
 
         Object statsObj = data.get("monthly_stats");
-        if (statsObj instanceof List<?> monthList) {
+        if (statsObj instanceof List<?> monthList && !monthList.isEmpty()) {
+            sb.append(String.format("%-10s %12s %15s\n", "Month", "Units Sold", "Total Revenue"));
+            sb.append(String.format("%s\n", "-".repeat(40)));
+
             for (Object item : monthList) {
                 if (item instanceof Map<?, ?> month) {
-                    sb.append("- Month: ").append(month.get("month")).append("\n");
-                    sb.append("  Units Sold: ").append(month.get("units")).append("\n");
-                    sb.append("  Total Revenue: ").append(month.get("revenue")).append("\n");
-                    sb.append("----------------------------------------\n");
+                    String monthName = (String) month.get("month");
+                    int units = ((Number) month.get("units")).intValue();
+                    double revenue = ((Number) month.get("revenue")).doubleValue();
+
+                    sb.append(String.format("%-10s %12d %15.2f\n", monthName, units, revenue));
                 }
             }
+        } else {
+            sb.append("No monthly sales data available.\n");
         }
 
         return sb.toString();
     }
+
+
 //========================================= Stock (unsold ratio) ===================================
-    private static String formatStockVsSales(Map<?, ?> data) {
+   private static String formatStockVsSales(Map<?, ?> data) {
         StringBuilder sb = new StringBuilder();
 
         sb.append("Top ").append(data.get("top_n")).append(" Products with Highest Unsold Stock Percentage\n");
         sb.append("Note: ").append(data.get("note")).append("\n\n");
 
         Object analysisObj = data.get("store_product_analysis");
-        if (analysisObj instanceof List<?> productList) {
+        if (analysisObj instanceof List<?> productList && !productList.isEmpty()) {
+            // Κεφαλίδες πίνακα
+            sb.append(String.format("%-25s %-8s %-12s %-10s %-14s %-20s\n",
+                    "Description", "ID", "Total Stock", "Units Sold", "Remaining", "Unsold Ratio (%)", "Store"));
+            sb.append(String.format("%s\n", "-".repeat(95)));
+
             for (Object item : productList) {
                 if (item instanceof Map<?, ?> product) {
-                    sb.append("- ").append(product.get("description")).append(" (ID: ")
-                    .append(product.get("product_id")).append(")\n");
-                    sb.append("  Total Stock: ").append(product.get("total_stock")).append("\n");
-                    sb.append("  Units Sold: ").append(product.get("units_sold")).append("\n");
-                    sb.append("  Remaining: ").append(product.get("remaining")).append("\n");
-                    sb.append("  Unsold Ratio: ").append((Double)product.get("unsold_ratio") * 100).append("%\n");
-                    sb.append("  Store: ").append(product.get("store")).append("\n");
-                    sb.append("---------------------------------------\n");
+                    String description = (String) product.get("description");
+                    String productId = String.valueOf(product.get("product_id"));
+                    int totalStock = ((Number) product.get("total_stock")).intValue();
+                    int unitsSold = ((Number) product.get("units_sold")).intValue();
+                    int remaining = ((Number) product.get("remaining")).intValue();
+                    double unsoldRatio = ((Number) product.get("unsold_ratio")).doubleValue() * 100;
+                    String store = String.valueOf(product.get("store"));
+
+                    sb.append(String.format("%-25s %-8s %-12d %-10d %-14d %-14.2f %-20s\n",
+                            description, productId, totalStock, unitsSold, remaining, unsoldRatio, store));
                 }
             }
+        } else {
+            sb.append("No product analysis data available.\n");
         }
 
         return sb.toString();
     }
+
 //============================================ store ranking =====================================
-    private static String formatStoreRanking(Map<?, ?> data) {
+   private static String formatStoreRanking(Map<?, ?> data) {
         StringBuilder sb = new StringBuilder();
 
         sb.append("Store Ranking by Profitability:\n");
         sb.append("====================================\n\n");
 
         Object storesObj = data.get("stores");
-        if (storesObj instanceof List<?> storeList) {
+        if (storesObj instanceof List<?> storeList && !storeList.isEmpty()) {
+            // Κεφαλίδες πίνακα
+            sb.append(String.format("%-8s | %-30s | %-12s | %-12s | %-12s | %-14s\n",
+                    "StoreID", "Address", "Total Profit", "Total Revenue", "Total Cost", "Profit Margin"));
+            sb.append(String.format("%s\n", "-".repeat(95)));
+
             for (Object item : storeList) {
                 if (item instanceof Map<?, ?> store) {
-                    String address = String.valueOf(store.get("address")).replace("\\n", "\n");
+                    String storeId = String.valueOf(store.get("storeId"));
+                    String address = String.valueOf(store.get("address")).replace("\n", ", ").replace("\r", "");
+                    double totalProfit = ((Number) store.get("total_profit")).doubleValue();
+                    double totalRevenue = ((Number) store.get("total_revenue")).doubleValue();
+                    double totalCost = ((Number) store.get("total_cost")).doubleValue();
+                    double profitMargin = ((Number) store.get("profit_margin")).doubleValue();
 
-                    sb.append("+------------------------------+\n");
-                    sb.append("Store ID: ").append(store.get("storeId")).append("\n");
-                    sb.append("Address:\n").append(address).append("\n\n");
-                    sb.append(String.format("| %-16s | %-9.2f |\n", "Total Profit", store.get("total_profit")));
-                    sb.append(String.format("| %-16s | %-9.2f |\n", "Total Revenue", store.get("total_revenue")));
-                    sb.append(String.format("| %-16s | %-9.2f |\n", "Total Cost", store.get("total_cost")));
-                    sb.append(String.format("| %-16s | %-9.4f |\n", "Profit Margin", store.get("profit_margin")));
-                    sb.append("+------------------------------+\n\n");
+                    sb.append(String.format("%-8s | %-30s | %12.2f | %12.2f | %12.2f | %14.4f\n",
+                            storeId, address, totalProfit, totalRevenue, totalCost, profitMargin));
                 }
             }
         } else {
@@ -323,6 +404,7 @@ public class ReportService {
 
         return sb.toString();
     }
+
 
 
 
@@ -345,10 +427,38 @@ public class ReportService {
         return sb.toString();
     }
 
- 
 
+// ============================================ chart image  =================================================
 
-    // υποχτεωρτικα πεδια για id σε συγκεκριμενες αναφορες 
+    /*public static String runMonthlySalesChartScript() {
+        try {
+            ProcessBuilder pb = new ProcessBuilder("python", "monthly_sales_trends.py");
+            pb.directory(new File("python-reports"));  // φάκελος όπου βρίσκεται το script
+            pb.redirectErrorStream(true);
+
+            Process process = pb.start();
+            //Ξεκινάει το process — τρέχει το Python script
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            StringBuilder output = new StringBuilder();
+            //διαβάσει το output του script
+            String line;
+            while ((line = reader.readLine()) != null) {
+                output.append(line).append("\n"); // για logging output
+            }
+
+            int exitCode = process.waitFor();
+            if (exitCode != 0) {
+                return "Python script failed with exit code " + exitCode + "\nOutput:\n" + output.toString();
+            }
+
+            return "Python script executed successfully.\nOutput:\n" + output.toString();
+
+        } catch (Exception e) {
+            return "Exception running Python script: " + e.getMessage();
+        }
+    }*/
+
+// υποχτεωρτικα πεδια για id σε συγκεκριμενες αναφορες 
     public static String getAdvancedReportResults(String reportType, long productId, long storeId, long clientId) {
         Map<String, Object> inputData = new HashMap<>();
         inputData.put("report_type", reportType);
@@ -383,6 +493,7 @@ public class ReportService {
 
         return getReportResults(inputData, reportType);
     }
+
 
 }
 
