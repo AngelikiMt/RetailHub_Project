@@ -15,6 +15,8 @@ from reports.monthly_sales_trends import plot_monthly_sales
 
 from reports.store_ranking import get_store_ranking
 from reports.gpt_insights import get_gpt_insights
+from reports.category_performance import get_category_performance
+from reports.category_performance import plot_category_performance
 
 
 
@@ -67,6 +69,10 @@ def main() -> None:
 
         elif report_type == "category_performance":
             result = get_category_performance()
+            if "categories" in result:
+                df = pd.DataFrame(result["categories"])
+                plot_category_performance(df)
+
 
         elif report_type == "stock_vs_sales":
            result = get_stock_vs_sales()

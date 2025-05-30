@@ -1,5 +1,6 @@
 import pandas as pd
 from database.db_utils import create_connection
+import matplotlib.pyplot as plt
 
 def get_category_performance() -> dict:
     """
@@ -56,3 +57,24 @@ def get_category_performance() -> dict:
 
     except Exception as e:
         return {"error": str(e)}
+
+
+
+
+def plot_category_performance(df: pd.DataFrame, path="io/report_chart.png"):
+    if df.empty:
+        print("No data to plot.")
+        return
+
+    df[["category", "revenue", "cost", "profit"]].set_index("category").plot(
+        kind="bar",
+        figsize=(10, 6),
+        title="Revenue, Cost, and Profit per Category"
+    )
+    plt.ylabel("€")
+    plt.xlabel("Product Category")
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    plt.savefig(path, dpi=150)
+    plt.close()
+    print(f"Chart saved as '{path}'")

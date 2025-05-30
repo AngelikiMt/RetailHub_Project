@@ -13,6 +13,7 @@
 /python-reports/venv/
 /venv/
 /.env/
+/python-reports/.env
 __pycache__/
 /*.py[cod]
 
