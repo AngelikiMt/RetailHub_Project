@@ -3,7 +3,7 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
+//import java.util.List;
 
 
 public class ClientFrame extends JFrame {
@@ -20,9 +20,13 @@ public class ClientFrame extends JFrame {
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
         // Background with image
-        BackgroundPanel background = new BackgroundPanel("RETAIL1.png");
-        background.setLayout(new BorderLayout());
-        setContentPane(background);
+        JPanel background = new JPanel();
+        background.setOpaque(false);
+        //BackgroundPanel background = new BackgroundPanel("RETAIL1.png");
+        //background.setLayout(new BorderLayout());
+        
+        this.add(background);
+        getContentPane().setBackground(Color.WHITE);
 
         // Left menu with action buttons
         JPanel leftMenu = new JPanel();
@@ -322,20 +326,20 @@ public class ClientFrame extends JFrame {
     }
 
     // Custom JPanel to paint background image
-    static class BackgroundPanel extends JPanel {
-        private final Image image;
+    // static class BackgroundPanel extends JPanel {
+    //     private final Image image;
 
-        public BackgroundPanel(String path) {
-            this.image = new ImageIcon(getClass().getResource("/" + path)).getImage();
-        }
+    //     public BackgroundPanel(String path) {
+    //         this.image = new ImageIcon(getClass().getResource("/" + path)).getImage();
+    //     }
 
-        @Override
-        protected void paintComponent(Graphics g) {
-            super.paintComponent(g);
-            if (image != null) {
-                g.drawImage(image, 0, 0, getWidth(), getHeight(), this);
-            }
-        }
-    }
+    //     @Override
+    //     protected void paintComponent(Graphics g) {
+    //         super.paintComponent(g);
+    //         if (image != null) {
+    //             g.drawImage(image, 0, 0, getWidth(), getHeight(), this);
+    //         }
+    //     }
+    // }
 }
 

@@ -1,4 +1,5 @@
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -21,16 +22,16 @@ public class MainMenu extends JFrame {
         setExtendedState(JFrame.MAXIMIZED_BOTH); // Fullscreen
 
         // === PANEL WITH BACKGROUND ===
-        JPanel backgroundPanel = new JPanel() {
-            Image bg = new ImageIcon(getClass().getResource("RetailHub.png")).getImage();
+        // JPanel backgroundPanel = new JPanel() {
+        //     Image bg = new ImageIcon(getClass().getResource("RetailHub.png")).getImage();
 
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                g.drawImage(bg, 0, 0, getWidth(), getHeight(), this);
-            }
-        };
-        backgroundPanel.setLayout(new BorderLayout());
+        //     @Override
+        //     protected void paintComponent(Graphics g) {
+        //         super.paintComponent(g);
+        //         g.drawImage(bg, 0, 0, getWidth(), getHeight(), this);
+        //     }
+        // };
+        //backgroundPanel.setLayout(new BorderLayout());
 
         // === BUTTONS ===
         JButton clientBtn = new JButton("CLIENT");
@@ -38,12 +39,13 @@ public class MainMenu extends JFrame {
         JButton storeBtn = new JButton("STORE (PIN)");
         JButton stockBtn = new JButton("STOCK");
         JButton transactionBtn = new JButton("TRANSACTION");
-        JButton exitBtn = new JButton("EXIT");
+        JButton reportsBtn = new JButton("Reports");
+        //JButton exitBtn = new JButton("EXIT");
 
         Font buttonFont = new Font("Arial", Font.BOLD, 20);
         Dimension buttonSize = new Dimension(200, 50);
 
-        JButton[] buttons = {clientBtn, productBtn, storeBtn, stockBtn, transactionBtn, exitBtn};
+        JButton[] buttons = {clientBtn, productBtn, storeBtn, stockBtn, transactionBtn, reportsBtn};
         for (JButton btn : buttons) {
             btn.setFont(buttonFont);
             btn.setPreferredSize(buttonSize);
@@ -61,7 +63,7 @@ public class MainMenu extends JFrame {
         bottomPanel.setOpaque(false);
         bottomPanel.add(buttonGrid);
 
-        backgroundPanel.add(bottomPanel, BorderLayout.SOUTH);
+        //backgroundPanel.add(bottomPanel, BorderLayout.SOUTH);
 
         // === ACTIONS ===
         clientBtn.addActionListener(e -> new ClientFrame());
@@ -76,12 +78,16 @@ public class MainMenu extends JFrame {
         });
         stockBtn.addActionListener(e -> new StockFrame());
         transactionBtn.addActionListener(e -> new TransactionFrame());
-        exitBtn.addActionListener(e -> {
-            dispose();
-            new LoginFrame();
-        });
+        //reportsBtn.addActionListener(e -> new ReportsFrame());
 
-        setContentPane(backgroundPanel);
+        //exitBtn.addActionListener(e -> {
+        //     dispose();
+        //     new LoginFrame();
+        // });
+
+        this.getContentPane().add(bottomPanel,BorderLayout.SOUTH);
+        getContentPane().setBackground(Color.WHITE);    
+        //setContentPane(backgroundPanel);
         setVisible(true);
     }
 }

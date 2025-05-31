@@ -1,3 +1,6 @@
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
@@ -5,6 +8,7 @@ import java.awt.GridBagLayout;
 import java.awt.Image;
 import java.awt.Insets;
 
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -14,6 +18,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
 public class LoginFrame extends JFrame {
@@ -23,23 +28,27 @@ public class LoginFrame extends JFrame {
     public LoginFrame() {
         setTitle("Login - Retail Hub");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setExtendedState(JFrame.MAXIMIZED_BOTH); // Fullscreen
-
-        // === Custom JPanel with background image ===
-        JPanel backgroundPanel = new JPanel() {
-            Image background = new ImageIcon(getClass().getResource("RetailHub.png")).getImage();
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                g.drawImage(background, 0, 0, getWidth(), getHeight(), this);
-            }
-        };
-        backgroundPanel.setLayout(new GridBagLayout()); // Centers the login panel
+        //setExtendedState(JFrame.MAXIMIZED_BOTH); // Fullscreen
+               
+        ImageIcon icon = new ImageIcon(getClass().getResource("loginicon_120.png"));
+        JLabel logoLabel = new JLabel(icon);
+        logoLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        
+        // // === Custom JPanel with background image ===
+        // JPanel backgroundPanel = new JPanel() {
+        //     Image background = new ImageIcon(getClass().getResource("loginicon.png")).getImage();
+        //     @Override
+        //     protected void paintComponent(Graphics g) {
+        //         super.paintComponent(g);
+        //         g.drawImage(background, 10, 10, getWidth(), getHeight(), this);
+        //     }
+        // };
+        // backgroundPanel.setLayout(new GridBagLayout()); // Centers the login panel
 
         // === Connection Panel ===
         JPanel loginPanel = new JPanel(new GridBagLayout());
         loginPanel.setOpaque(false); // Show the background behind it
-
+        
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
         gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -56,8 +65,17 @@ public class LoginFrame extends JFrame {
             passField.setEchoChar(showPass.isSelected() ? (char) 0 : '•');
         });
 
-        JButton loginBtn = new JButton("Login");
-        loginBtn.setFont(new Font("Arial", Font.BOLD, 16));
+        ImageIcon login = new ImageIcon(getClass().getResource("login.png"));
+        JButton loginBtn = new JButton(login);
+        //loginBtn.setForeground(new Color (102, 178, 255));
+
+        //loginBtn.setBorder(BorderFactory.createLineBorder(new Color(102, 178, 255)));
+        loginBtn.setBorderPainted(false);
+        loginBtn.setContentAreaFilled(false);
+        loginBtn.setFocusPainted(false);
+        loginBtn.setOpaque(false);
+        loginBtn.setPreferredSize(new Dimension(30,30));
+        //loginBtn.setFont(new Font("Arial", Font.BOLD, 13));
 
         loginBtn.addActionListener(e -> {
             String enteredUser = userField.getText();
@@ -90,15 +108,28 @@ public class LoginFrame extends JFrame {
         gbc.gridx = 1; gbc.gridy = 3;
         loginPanel.add(loginBtn, gbc);
 
+        JPanel mainPanel = new JPanel();
+        mainPanel.setOpaque(false);
+        mainPanel.setLayout(new GridBagLayout());
+
         // === Placing loginPanel in the center ===
         GridBagConstraints panelGbc = new GridBagConstraints();
-        panelGbc.gridx = 0;
-        panelGbc.gridy = 0;
-        panelGbc.weighty = 1.0;
-        panelGbc.anchor = GridBagConstraints.PAGE_END;
-        panelGbc.insets = new Insets(0, 0, 30, 0);
-        backgroundPanel.add(loginPanel, panelGbc);
-        setContentPane(backgroundPanel);
+        panelGbc.gridx = 0; panelGbc.gridy = 0;
+        mainPanel.add(logoLabel,panelGbc);
+
+        panelGbc.gridx = 0; panelGbc.gridy = 1;
+        mainPanel.add(loginPanel,panelGbc);
+
+        //panelGbc.weighty = 1.0;
+        //panelGbc.anchor = GridBagConstraints.PAGE_END;
+        //panelGbc.insets = new Insets(0, 0, 10, 0);
+        //backgroundPanel.add(loginPanel, panelGbc);
+        //setContentPane(backgroundPanel);
+        this.getContentPane().add(mainPanel);
+        getContentPane().setBackground(Color.WHITE);
+        pack();
+        this.setSize(350,350);
+        this.setLocationRelativeTo(null);
         setVisible(true);
     }
 }
