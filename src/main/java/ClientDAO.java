@@ -108,7 +108,6 @@ public class ClientDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
         return null;
     }
 
@@ -128,12 +127,17 @@ public class ClientDAO {
             stmt.setDate(8, Date.valueOf(client.getLastPurchaseDate()));
             stmt.setLong(9, client.getClientId());
 
+            LocalDate birthDate = client.getBirthDate();
+            if (birthDate != null) {
+                stmt.setDate(5, Date.valueOf(birthDate));
+            } else {
+                stmt.setNull(5, Types.DATE); // Set SQL NULL if birthDate is null
+            }
             return stmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
         return false;
     }
 
@@ -155,7 +159,6 @@ public class ClientDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
         return false;
     }
 
@@ -173,9 +176,41 @@ public class ClientDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
         return 0;
     }
+
+       // Retrieves store data and formats it into a simple JSON string
+    public String getClientAsJson(long clientId) {
+        StringBuilder json = new StringBuilder();
+        
+        String sql = "SELECT * FROM client WHERE clientId = ?";
+        try (Connection conn = DatabaseConnector.getConnection();
+        PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setLong(1, clientId);
+
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                json.append("{\n  \"clientId\": ").append(rs.getLong("clientId")).append(",\n");
+                json.append("  \"firstName\": ").append(rs.getString("firstName")).append(",\n");
+                json.append("  \"lastName\": ").append(rs.getString("lastName")).append(",\n");
+                json.append("  \"birthDate\": ").append(rs.getDate("birthDate")).append(",\n");
+                json.append("  \"phoneNumber\": ").append(rs.getString("phoneNumber")).append(",\n");
+                json.append("  \"email\": ").append(rs.getString("email")).append(",\n");
+                json.append("  \"gender\": ").append(rs.getString("gender")).append(",\n");
+                json.append("  \"activeStatus\": ").append(rs.getBoolean("activeStatus")).append(",\n");
+                json.append("  \"dateJoined\": ").append(rs.getDate("dateJoined")).append(",\n");
+                json.append("  \"clientSumTotal\": ").append(rs.getDouble("clientSumTotal")).append(",\n");
+                json.append("  \"clientCurrentTotal\": ").append(rs.getDouble("clientCurrentTotal")).append(",\n");
+                json.append("  \"lastPurchaseDate\": ").append(rs.getDate("lastPurchaseDate")).append("\n}");
+            } else {
+                return "{}"; // No store found
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return json.toString();
+    } 
 
     private Client map(ResultSet rs) throws SQLException {
         Client client = new Client(
@@ -187,7 +222,6 @@ public class ClientDAO {
                 rs.getString("gender"),
                 rs.getBoolean("activeStatus")
         );
-
         try {
             java.lang.reflect.Field field = Client.class.getDeclaredField("clientId");
             field.setAccessible(true);
@@ -202,7 +236,6 @@ public class ClientDAO {
         if (lastPurchase != null) {
             client.setLastPurchaseDate(lastPurchase.toLocalDate());
         }
-
         return client;
     }
 }
