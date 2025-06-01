@@ -70,7 +70,7 @@ public class ClientService {
     public static Client createClient(String firstName, String lastName, LocalDate birthDate,
                                       String phoneNumber, String email, String gender, boolean activeStatus) {
 
-        List<Client> clients = clientDAO.getAllClients(); //EINA KALO NA DHMIOURGEITAI MESA STO CREATE ?
+        List<Client> clients = clientDAO.getAllClients();
         List<String> errors = new ArrayList<>();
 
         validateName(firstName, errors, "Name");
@@ -167,23 +167,7 @@ public class ClientService {
     }
 
     // 6. Return client as JSON
-    public static String getClientAsJson(Client client) {
-        if (client == null) return "{}";
-
-        StringBuilder json = new StringBuilder();
-        json.append("{\n  \"clientId\": ").append(client.getClientId()).append(",\n");
-        json.append("  \"firstName\": ").append(client.getFirstName()).append(",\n");
-        json.append("  \"lastName\": ").append(client.getLastName()).append(",\n");
-        json.append("  \"birthDate\": ").append(client.getBirthDate()).append(",\n");
-        json.append("  \"phoneNumber\": ").append(client.getPhoneNumber()).append(",\n");
-        json.append("  \"email\": ").append(client.getEmail()).append(",\n");
-        json.append("  \"gender\": ").append(client.getGender()).append(",\n");
-        json.append("  \"activeStatus\": ").append(client.isActiveStatus()).append(",\n");
-        json.append("  \"dateJoined\": ").append(client.getDateJoined()).append(",\n");
-        json.append("  \"clientSumTotal\": ").append(client.getClientSumTotal()).append(",\n");
-        json.append("  \"clientCurrentTotal\": ").append(client.getClientCurrentTotal()).append(",\n");
-        json.append("  \"lastPurchaseDate\": ").append(client.getLastPurchaseDate()).append("\n}");
-
-        return json.toString();
+    public static String getClientAsJson(long clientId) {
+        return clientDAO.getClientAsJson(clientId);
     }
 }

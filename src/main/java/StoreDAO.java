@@ -138,14 +138,12 @@ public class StoreDAO {
                 json.append("  \"country\": ").append(rs.getString("country")).append(",\n");
                 json.append("  \"storeName\": ").append(rs.getString("storeName")).append(",\n");
                 json.append("  \"active\": ").append(rs.getBoolean("active")).append("\n}");
-
             } else {
                 return "{}"; // No store found
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
         return json.toString();
     }
 

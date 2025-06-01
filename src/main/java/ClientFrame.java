@@ -8,8 +8,10 @@ import java.awt.Font;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Image;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -28,16 +30,17 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
-//import java.util.List;
 
 public class ClientFrame extends JFrame {
     private final JPanel contentPanel;
-    private final JTable clientTable = new JTable();
     private final DefaultTableModel tableModel = new DefaultTableModel(new String[]{
         "ID", "First Name", "Last Name", "Email", "Phone", "Gender",
         "Birth Date", "Active", "Date Joined", "Last Purchase", "Sum"
     }, 0);
     Font customFont = new Font("MinionPro", Font.PLAIN, 25);
+    // Table model and table for "View All Clients" to be accessible for refresh
+    private DefaultTableModel clientTableModel;
+    private JTable clientTable;
 
     public ClientFrame() {
         setTitle("Client Menu");
@@ -61,7 +64,7 @@ public class ClientFrame extends JFrame {
 
         // Navigation items
         String[] navItems  = {
-            "Create", "Show", "Update", "Delete", "Delete Inactive", "Export JSON"};
+            "Create", "Show Client", "View All", "Update", "Delete", "Delete Inactive", "Export JSON"};
 
         JLabel logo = new JLabel("ClientMenu");
         logo.setFont(new Font("MinionPro", Font.BOLD, 25));
@@ -93,7 +96,8 @@ public class ClientFrame extends JFrame {
             // Adds action listeners based on button text
             switch (item) {
                 case "Create" -> navButton.addActionListener(e -> menuCreateClient());
-                case "Show" -> navButton.addActionListener(e -> menuShowClient());
+                case "Show Client" -> navButton.addActionListener(e -> menuShowClient());
+                case "View All" -> navButton.addActionListener(e -> menuViewAllClients());
                 case "Update" -> navButton.addActionListener(e -> menuUpdateClient());
                 case "Delete" -> navButton.addActionListener(e -> menuDeleteClient());
                 case "Delete Inactive" -> navButton.addActionListener(e -> menuDeleteInactiveClients());
@@ -102,11 +106,15 @@ public class ClientFrame extends JFrame {
         }
 
         JButton backButton = new JButton();
-        backButton.setIcon(new ImageIcon(getClass().getResource("left-arrow.png"))); 
+        try {
+            backButton.setIcon(new ImageIcon(getClass().getResource("left-arrow.png"))); 
+        } catch (Exception e) {
+            System.err.println("Could not find image");
+        }
         backButton.setPreferredSize(new Dimension(40, 30));
         backButton.setBorderPainted(false);
         backButton.setFocusPainted(false);
-        backButton.setOpaque(true);
+        backButton.setOpaque(false);
         backButton.setBackground(Color.WHITE);
         backButton.setContentAreaFilled(false);
         backButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
@@ -208,9 +216,6 @@ public class ClientFrame extends JFrame {
         bLabel.setFont(customFont);
         form.add(bLabel); form.add(birth);
 
-       // ImageIcon formIcon = new ImageIcon(getClass().getResource("add-group.png"));
-
-       // JLabel titleLabel = new JLabel("", formIcon, JLabel.LEFT);
         TitledBorder titled = BorderFactory.createTitledBorder(
         BorderFactory.createLineBorder(Color.GRAY, 2),"",
         TitledBorder.LEFT,
@@ -220,12 +225,6 @@ public class ClientFrame extends JFrame {
         );
 
         form.setBorder(BorderFactory.createCompoundBorder(titled,BorderFactory.createEmptyBorder(30, 30, 30, 30)));
-        // form.add(new JLabel("First Name:")); form.add(fname);
-        // form.add(new JLabel("Last Name:")); form.add(lname);
-        // form.add(new JLabel("Phone Number:")); form.add(phone);
-        // form.add(new JLabel("Email:")); form.add(email);
-        // form.add(new JLabel("Gender:")); form.add(genderBox);
-        // form.add(new JLabel("Birth Date (dd/MM/yyyy):")); form.add(birth);
 
         // Submit button
         JButton submit = new JButton("Submit");
@@ -302,6 +301,7 @@ public class ClientFrame extends JFrame {
         JTextField newLname = new JTextField(client.getLastName(), 15);
         JTextField newEmail = new JTextField(client.getEmail(), 15);
         JTextField newPhone = new JTextField(client.getPhoneNumber(), 15);
+        JTextField newDateOfBirth = new JTextField(client.getBirthDate().toString(), 15);
 
         JTextField[] fields = {newFname, newLname, newEmail, newPhone};
         for (JTextField field : fields) {
@@ -329,6 +329,10 @@ public class ClientFrame extends JFrame {
     JLabel pLabel = new JLabel("Phone Number:");
     pLabel.setFont(customFont);
     form.add(pLabel); form.add(newPhone);
+
+    JLabel dLabel = new JLabel("Date Of Birth:");
+    dLabel.setFont(customFont);
+    form.add(dLabel); form.add(newDateOfBirth);
 
     // Title with icon
     ImageIcon rawIcon = new ImageIcon(getClass().getResource("/refresh.png"));
@@ -388,6 +392,14 @@ public class ClientFrame extends JFrame {
     Client finalClient = client;
     submit.addActionListener(e -> {
         try {
+            LocalDate birthDate = finalClient.getBirthDate();
+            if (birthDate != null) {
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd"); // Or any desired format
+                newDateOfBirth.setText(dateFormat.toString());
+            } else {
+                newDateOfBirth.setText(""); // Clear if no birth date
+            }
+            newDateOfBirth.setEditable(false); // User cannot update this field
             ClientService.updateClient(
                 finalClient,
                 newFname.getText(),
@@ -425,8 +437,8 @@ public class ClientFrame extends JFrame {
         inputField.setFont(customFont);
         inputField.setPreferredSize(new Dimension(200, 30));
         inputField.setBorder(BorderFactory.createCompoundBorder(
-        inputField.getBorder(),
-        BorderFactory.createEmptyBorder(1, 10, 1, 10)));
+            inputField.getBorder(),
+            BorderFactory.createEmptyBorder(1, 10, 1, 10)));
 
         JButton search = new JButton("Search");
         search.setBackground(new Color(128, 0, 128));
@@ -434,7 +446,7 @@ public class ClientFrame extends JFrame {
         search.setFont(customFont);
 
         JPanel topPanel = new JPanel(new FlowLayout());
-        JLabel enterTextLabel = new JLabel("Enter Email or Phone:");
+        JLabel enterTextLabel = new JLabel("Enter Email or Phone Number:");
         enterTextLabel.setFont(customFont);
         topPanel.add(enterTextLabel);
         topPanel.add(inputField);
@@ -466,6 +478,63 @@ public class ClientFrame extends JFrame {
         contentPanel.repaint();
     }
 
+    private void menuViewAllClients() {
+        contentPanel.removeAll();
+        contentPanel.setLayout(new BorderLayout());
+
+        JPanel tableDisplayPanel = new JPanel(new BorderLayout());
+        tableDisplayPanel.setOpaque(false);
+        tableDisplayPanel.setBorder(BorderFactory.createEmptyBorder(50, 50, 50, 50)); // Padding
+
+        // Define table model with column headers
+        clientTableModel = new DefaultTableModel(new String[]{"ID", "Name", "Email", "Phone", "Active"}, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false; // Makes table non-editable
+            }
+        };
+        clientTable = new JTable(clientTableModel);
+        clientTable.setFont(new Font("MinionPro", Font.PLAIN, 18)); // Custom font for table data
+        clientTable.getTableHeader().setFont(new Font("MinionPro", Font.BOLD, 20)); // Custom font for header
+        clientTable.setRowHeight(30); // Larger row height for better readability
+
+        JScrollPane scrollPane = new JScrollPane(clientTable);
+        tableDisplayPanel.add(scrollPane, BorderLayout.CENTER);
+
+        JLabel titleLabel = new JLabel("");
+        titleLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
+        titleLabel.setForeground(Color.DARK_GRAY);
+
+        TitledBorder titled = BorderFactory.createTitledBorder(
+        BorderFactory.createLineBorder(Color.GRAY, 2),"",
+        TitledBorder.LEFT,
+        TitledBorder.TOP,
+        new Font("MinionPro", Font.BOLD, 20),
+        Color.DARK_GRAY
+        );
+
+        JPanel titledPanel = new JPanel(new BorderLayout());
+        titledPanel.setOpaque(false);
+        titledPanel.setBorder(BorderFactory.createCompoundBorder(
+            titled,
+            BorderFactory.createEmptyBorder(30, 30, 30, 30)
+        ));
+        titledPanel.add(titleLabel, BorderLayout.NORTH);
+
+        // Overall panel to combine the titled panel and the table
+        JPanel overallPanel = new JPanel(new BorderLayout());
+        overallPanel.setOpaque(false);
+        overallPanel.add(titledPanel, BorderLayout.NORTH);
+        overallPanel.add(tableDisplayPanel, BorderLayout.CENTER);
+
+        contentPanel.add(overallPanel, BorderLayout.CENTER); // Add to the main content panel
+
+        refreshTable(); // Populate table on display
+
+        contentPanel.revalidate();
+        contentPanel.repaint();
+    }
+
     private void menuDeleteClient() {
         contentPanel.removeAll();
         contentPanel.setLayout(new BorderLayout());
@@ -490,6 +559,8 @@ public class ClientFrame extends JFrame {
         JButton delete = new JButton("Delete");
         delete.setBackground(new Color(128, 0, 128));
         delete.setForeground(Color.WHITE);
+        delete.setFont(new Font("MinionPro", Font.BOLD, 20));
+        delete.setPreferredSize(new Dimension(200, 40));
 
         JPanel topPanel = new JPanel(new FlowLayout());
         JLabel enterTextLabel = new JLabel("Enter Email or Phone:");
@@ -549,6 +620,8 @@ public class ClientFrame extends JFrame {
         JButton confirm = new JButton("Confirm");
         confirm.setBackground(new Color(128, 0, 128));
         confirm.setForeground(Color.WHITE);
+        confirm.setFont(new Font("MinionPro", Font.BOLD, 20));
+        confirm.setPreferredSize(new Dimension(200, 40));
 
         JPanel centerPanel = new JPanel(new FlowLayout());
         JLabel enterTextLabel = new JLabel("Enter Admin PIN:");
@@ -576,7 +649,7 @@ public class ClientFrame extends JFrame {
     }
 
     private void menuGetJson() {
-        contentPanel.removeAll();
+        /*contentPanel.removeAll();
         contentPanel.setLayout(new BorderLayout());
 
         JPanel form = new JPanel(new BorderLayout());
@@ -604,22 +677,123 @@ public class ClientFrame extends JFrame {
 
         contentPanel.add(form, BorderLayout.CENTER);
         contentPanel.revalidate();
+        contentPanel.repaint();*/
+        contentPanel.removeAll();
+        contentPanel.setLayout(new BorderLayout());
+
+        JPanel form = new JPanel(new FlowLayout());
+        form.setOpaque(false);
+        form.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+        JTextField idField = new JTextField(15);
+        idField.setFont(customFont);
+        idField.setPreferredSize(new Dimension(200, 30));
+        idField.setBorder(BorderFactory.createCompoundBorder(
+            idField.getBorder(),
+            BorderFactory.createEmptyBorder(1, 10, 1, 10)
+        ));
+
+        JButton showJsonBtn = new JButton("Show JSON");
+        showJsonBtn.setBackground(new Color(128, 0, 128));
+        showJsonBtn.setForeground(Color.WHITE);
+        showJsonBtn.setFont(customFont);
+
+        JLabel enterTextLabel = new JLabel("Enter client ID:");
+        enterTextLabel.setFont(customFont);
+        form.add(enterTextLabel);
+        form.add(idField);
+        form.add(showJsonBtn);
+
+        JTextArea jsonDisplayArea = new JTextArea(15, 50);
+        jsonDisplayArea.setEditable(false);
+        jsonDisplayArea.setFont(new Font("Monospaced", Font.PLAIN, 18));
+        JScrollPane scrollPane = new JScrollPane(jsonDisplayArea);
+
+        JPanel topSection = new JPanel(new BorderLayout());
+        topSection.setOpaque(false);
+        topSection.add(form, BorderLayout.NORTH);
+
+        JLabel titleLabel = new JLabel("");
+        titleLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
+        titleLabel.setForeground(Color.DARK_GRAY);
+
+        TitledBorder titled = BorderFactory.createTitledBorder(
+            BorderFactory.createLineBorder(Color.GRAY, 1),
+            "", // no text
+            TitledBorder.LEFT,
+            TitledBorder.TOP
+        );
+
+        JPanel titledPanel = new JPanel(new BorderLayout());
+        titledPanel.setOpaque(false);
+        titledPanel.setBorder(BorderFactory.createCompoundBorder(
+            titled,
+            BorderFactory.createEmptyBorder(30, 30, 30, 30)
+        ));
+        titledPanel.add(titleLabel, BorderLayout.NORTH);
+        titledPanel.add(form, BorderLayout.CENTER);
+
+        JPanel wrapper = new JPanel(new BorderLayout(10, 10));
+        wrapper.setOpaque(false);
+        wrapper.setBorder(BorderFactory.createEmptyBorder(80, 80, 80, 80));
+        wrapper.add(titledPanel, BorderLayout.NORTH);
+        wrapper.add(scrollPane, BorderLayout.CENTER);
+
+        JPanel centerWrapper = new JPanel(new GridBagLayout());
+        centerWrapper.setOpaque(false);
+        centerWrapper.add(wrapper);
+
+        contentPanel.add(centerWrapper, BorderLayout.CENTER);
+
+        showJsonBtn.addActionListener(e -> {
+            try {
+                if (idField.getText().trim().isEmpty()) {
+                    jsonDisplayArea.setText("Please enter a client ID to view JSON.");
+                    return;
+                }
+                ClientService clientService = new ClientService();
+                long id = Long.parseLong(idField.getText());
+                String json = clientService.getClientAsJson(id);
+                if (json != null && !json.contains("Client not found")) {
+                    jsonDisplayArea.setText(json);
+                } else {
+                    jsonDisplayArea.setText("Client not found with ID: " + id);
+                }
+            } catch (NumberFormatException ex) {
+                jsonDisplayArea.setText("Invalid Client ID. Please enter a number.");
+            } catch (Exception ex) {
+                jsonDisplayArea.setText("An error occurred: " + ex.getMessage());
+            }
+        });
+
+        contentPanel.revalidate();
         contentPanel.repaint();
     }
 
-
      // Updates the table with current client list
      private void refreshTable() {
-         tableModel.setRowCount(0); //clear
-         //List <Client> clients = ClientService.getClientDAO().getAllClients();
-         for (int i = 0; i < ClientService.getClientDAO().getAllClients().size(); i++) {
-             Client c = ClientService.getClientDAO().getAllClients().get(i);
-             tableModel.addRow(new Object[]{
-                     c.getClientId(), c.getFirstName(), c.getLastName(), c.getEmail(),
-                 c.getPhoneNumber(), c.getGender(), c.getBirthDate(),
-                     c.isActiveStatus(), c.getDateJoined(), c.getLastPurchaseDate(), c.getClientSumTotal()
-             });
-         }
+         tableModel.setRowCount(0); // clear existing data
+
+         // Fetching all clients
+         List <Client> clients = ClientService.getClientDAO().getAllClients();
+         for (Client client : clients) {
+                clientTableModel.addRow(new Object[]{
+                    client.getClientId(),
+                    client.getFirstName(),
+                    client.getLastName(),
+                    client.getEmail(),
+                    client.getPhoneNumber(),
+                    client.isActiveStatus() // Assuming Client has an isActive() method
+                });
+            }
+        //  for (int i = 0; i < ClientService.getClientDAO().getAllClients().size(); i++) {
+        //      Client c = ClientService.getClientDAO().getAllClients().get(i);
+        //      tableModel.addRow(new Object[]{
+        //              c.getClientId(), c.getFirstName(), c.getLastName(), c.getEmail(),
+        //          c.getPhoneNumber(), c.getGender(), c.getBirthDate(),
+        //              c.isActiveStatus(), c.getDateJoined(), c.getLastPurchaseDate(), c.getClientSumTotal()
+        //      });
+        //  }
      }
 }
 
