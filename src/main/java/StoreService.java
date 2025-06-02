@@ -6,6 +6,10 @@ import java.util.List;
 public class StoreService {
     // For interacting with the database
     private final static StoreDAO storeDAO = new StoreDAO();
+    private final StoreDAO storeDAO1;
+    public StoreService() {
+        this.storeDAO1 = new StoreDAO();
+    }
 
     // Show all stores
     public static List<Store> getStores() {
@@ -96,7 +100,7 @@ public class StoreService {
     }
 
     // Changes store's active status
-    public static boolean setStoreActiveStatus(int storeId, boolean activeStatus) {
-        return storeDAO.setStoreActive(storeId, activeStatus);
+    public boolean setStoreActiveStatus(int storeId, boolean activeStatus) {
+        return storeDAO1.setStoreActive(storeId, activeStatus);
     }
 }

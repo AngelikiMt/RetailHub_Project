@@ -9,6 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -125,6 +126,7 @@ public class TransactionDAO {
      * Builds and returns info in JSON format. */
     public String getTransactionAsJson(long transactionId) {
         StringBuilder json = new StringBuilder();
+        DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME; // ISO format for date-time
 
         String sqlTransaction = "SELECT * FROM transaction WHERE transactionId = ?";
         try (Connection connTransaction = DatabaseConnector.getConnection();
@@ -133,38 +135,52 @@ public class TransactionDAO {
             stmTransaction.setLong(1, transactionId);
             ResultSet rsTransaction = stmTransaction.executeQuery();
 
-            if (rsTransaction.next()) {
-                json.append("{\n   \"transactionId\": ").append(transactionId);
-                json.append("  \"clientId\": ").append(rsTransaction.getLong("clientId")).append(",\n");
-                json.append("  \"storeId\": ").append(rsTransaction.getInt("storeId")).append(",\n");
-                json.append("  \"dateTime\": ").append(rsTransaction.getTimestamp("dateTime").toLocalDateTime()).append("\",\n");
-                json.append("  \"paymentMethod\": ").append(rsTransaction.getString("paymentMethod")).append(",\n");
-                json.append("  \"sumTotal\": ").append(rsTransaction.getDouble("sumTotal")).append("\n}");
-                json.append("  \"discount\": ").append(rsTransaction.getDouble("discount")).append("\n}");
-                json.append(",\n   \"includesPerTransaction\": [\n");
+             if (rsTransaction.next()) {
+            json.append("{\n");
+            json.append("  \"transactionId\": ").append(transactionId).append(",\n"); // No comma before this
+            json.append("  \"clientId\": ").append(rsTransaction.getLong("clientId")).append(",\n");
+            json.append("  \"storeId\": ").append(rsTransaction.getInt("storeId")).append(",\n");
 
-                String sqlIncludes = "SELECT * FROM includes WHERE transactionId = ?";
-                try (PreparedStatement stmtIncludes = connTransaction.prepareStatement(sqlIncludes)) {
-
-                    stmtIncludes.setLong(1, transactionId);
-                    ResultSet rs = stmtIncludes.executeQuery();
-
-                    boolean first = true;
-                    while (rs.next()) {
-                        if (!first) json.append(",\n");
-                        json.append("   {\n \"productId\": ").append(rs.getLong("productId"))
-                        .append(", \"soldQuantity\": ").append(rs.getInt("soldQuantity }"));
-                        first = false;
-                    }
-                }
-            json.append("\n  ]\n}");
+            // Format LocalDateTime to a string and quote it
+            Timestamp dateTimeStamp = rsTransaction.getTimestamp("dateTime");
+            if (dateTimeStamp != null) {
+                json.append("  \"dateTime\": \"").append(dateTimeStamp.toLocalDateTime().format(formatter)).append("\",\n");
             } else {
-                return "{}"; // No transaction found to display
+                json.append("  \"dateTime\": null,\n"); // Handles null timestamp if possible
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return "{}";
+
+            json.append("  \"paymentMethod\": \"").append(rsTransaction.getString("paymentMethod")).append("\",\n");
+            json.append("  \"sumTotal\": ").append(rsTransaction.getDouble("sumTotal")).append(",\n"); // Add comma
+            json.append("  \"discount\": ").append(rsTransaction.getDouble("discount")).append(",\n"); // Add comma and remove extra '}'
+
+            json.append("  \"includesPerTransaction\": [\n");
+
+            String sqlIncludes = "SELECT * FROM includes WHERE transactionId = ?";
+            try (PreparedStatement stmtIncludes = connTransaction.prepareStatement(sqlIncludes)) {
+                stmtIncludes.setLong(1, transactionId);
+                ResultSet rs = stmtIncludes.executeQuery();
+
+                boolean firstInclude = true;
+                while (rs.next()) {
+                    if (!firstInclude) {
+                        json.append(",\n");
+                    }
+                    json.append("    {\n");
+                    json.append("      \"productId\": ").append(rs.getLong("productId")).append(",\n"); // Comma here
+                    json.append("      \"soldQuantity\": ").append(rs.getInt("soldQuantity")).append("\n"); // No extra '}' here
+                    json.append("    }");
+                    firstInclude = false;
+                }
+            }
+            json.append("\n  ]\n"); // Closes includesPerTransaction array
+            json.append("}"); // Closes the main transaction object
+        } else {
+            return "{}"; // No transaction found
         }
+    } catch (SQLException e) {
+        e.printStackTrace();
+        return "{}"; // Returns empty JSON object on error
+    }
     return json.toString();
     }
 }
