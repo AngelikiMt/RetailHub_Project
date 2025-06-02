@@ -48,7 +48,8 @@ def get_sales_by_product(product_id: int) -> dict:
         )
 
         return {
-            "product_id": product_id,
+            "report_type": "sales_by_product",
+            "product_id" : product_id,
             "description": description,
             "total_units_sold": total_units,
             "total_revenue": total_revenue,

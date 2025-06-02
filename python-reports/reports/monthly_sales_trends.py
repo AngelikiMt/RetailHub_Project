@@ -35,8 +35,8 @@ def get_monthly_sales_trends() -> dict:
         df["revenue"] = pd.to_numeric(df["revenue"]).round(2)
 
         return {
-            "report": "monthly_sales_trends",
-            "note": "Total monthly sales (units & revenue) across all of RetailHub.",
+            "report_type": "monthly_sales_trends",
+            #"note": "Total monthly sales (units & revenue) across all of RetailHub.",
             "monthly_stats": df.to_dict(orient="records")
         }
 
@@ -64,6 +64,6 @@ def plot_monthly_sales(df):
     fig.autofmt_xdate()
     fig.tight_layout()
     plt.savefig("io/report_chart.png", dpi=150)
-    print("Chart saved as 'io/report_chart.png'.")
+    #print("Chart saved as 'io/report_chart.png'.")
     plt.close(fig)
 

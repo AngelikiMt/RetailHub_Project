@@ -2,19 +2,42 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 import com.lowagie.text.Document;
+import com.lowagie.text.Element;
 import com.lowagie.text.Font;
 import com.lowagie.text.Paragraph;
+import com.lowagie.text.Phrase;
+import com.lowagie.text.pdf.PdfPCell;
+import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
 import com.lowagie.text.FontFactory;
+import java.util.List;
 
 public class ReportsFrame extends JFrame {
 
     private JTextArea outputArea;
     private JLabel chartLabel;
+    private static final List<String> reportsWithoutChart = new ArrayList<>(List.of("sales_by_product","profit_by_product","profit_by_store","sales_by_store","client_behavior","gpt_insights"));
+    private Boolean chartAvailable = false;
+    private JTextArea descriptionArea;
+    private static final Map<String, String> reportDescriptions = new HashMap<>() {{
+        put("client_behavior", "Summarizes a client's purchase behavior — total spent, number of transactions, and store visits. Useful for targeting loyal or high-value customers.");
+        put("sales_by_product", "Displays total sales and revenue for a specific product, with breakdown per store. Helps track where the product sells best.");
+        put("sales_by_store", "Lists the top-selling products for a specific store based on revenue and units sold. Useful for understanding local demand and planning inventory.");
+        put("profit_by_product", "Shows profit analysis for a single product, including sales, cost, and margin. Useful for evaluating how well that product performs financially.");
+        put("profit_by_store", "Breaks down a store’s total sales and profit by product. Helps understand which items drive profit and which may be hurting performance.");
+        put("store_ranking", "Ranks all stores based on total profit and margin. Helps identify top-performing and underperforming store locations.");
+        put("monthly_sales_trends", "Shows monthly sales trends in units and revenue over time. Helps track business growth and spot seasonal patterns.");
+        put("stock_vs_sales", "Highlights the 20 products with the most unsold stock across all stores. Useful for spotting overstock issues and adjusting inventory.");
+        put("gpt_insights", "Analyzes key reports using GPT to generate strategic suggestions. Helps executives make smarter decisions based on trends and customer behavior.");
+        put("category_performance", "Shows total sales, cost, and profit for each product category. Helps compare which categories perform best overall.");
+        put("most_profitable_products", "Shows the top 10 products with the highest profit margins, based on total sales, cost, and revenue. Helps RetailHub see which items bring the most profit.");
+    }};
+
 
     public ReportsFrame() {
         setTitle("RetailHub Reports");
@@ -24,20 +47,23 @@ public class ReportsFrame extends JFrame {
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLayout(new BorderLayout(10, 10));
 
-        // --- Φόρμα εισαγωγής ---
-        JPanel formPanel = new JPanel(new GridLayout(3, 2, 10, 10));
-        formPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 10, 20));
+       // --- Νέα Φόρμα Εισαγωγής ---
+        JPanel formPanel = new JPanel(new GridBagLayout());
+        formPanel.setBorder(BorderFactory.createTitledBorder("Report Input"));
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.gridx = 0;
+        gbc.gridy = 0;
 
-        JLabel productIdLabel = new JLabel("Product ID:");
-        JTextField productIdField = new JTextField();
+        // --- Report Type Label ---
+        JLabel reportTypeTitle = new JLabel("Select Report Type:");
+        reportTypeTitle.setFont(new java.awt.Font("SansSerif", Font.BOLD, 14));
+        formPanel.add(reportTypeTitle, gbc);
 
-        JLabel clientIdLabel = new JLabel("Client ID:");
-        JTextField clientIdField = new JTextField();
-
-        JLabel storeIdLabel = new JLabel("Store ID:");
-        JTextField storeIdField = new JTextField();
-
-        JLabel reportTypeLabel = new JLabel("Report Type:");
+        // --- Report Type ComboBox ---
+        gbc.gridx = 1;
         ReportItem[] reportOptions = {
             new ReportItem("Sales by Product", "sales_by_product"),
             new ReportItem("Profit by Product", "profit_by_product"),
@@ -51,15 +77,70 @@ public class ReportsFrame extends JFrame {
             new ReportItem("Category Performance", "category_performance"),
             new ReportItem("GPT Suggestions", "gpt_insights")
         };
-        JComboBox<ReportItem> reportTypeCombo = new JComboBox<>(reportOptions);
-        reportTypeCombo.addActionListener(e -> {
-            productIdLabel.setVisible(false);
-            productIdField.setVisible(false);
-            storeIdLabel.setVisible(false);
-            storeIdField.setVisible(false);
-            clientIdLabel.setVisible(false);
-            clientIdField.setVisible(false);
 
+        JComboBox<ReportItem> reportTypeCombo = new JComboBox<>(reportOptions);
+        formPanel.add(reportTypeCombo, gbc);
+
+        // --- Product ID ---
+        gbc.gridy++;
+        gbc.gridx = 0;
+        JLabel productIdLabel = new JLabel("Product ID:");
+        formPanel.add(productIdLabel, gbc);
+
+        gbc.gridx = 1;
+        JTextField productIdField = new JTextField(15);
+        formPanel.add(productIdField, gbc);
+
+        // --- Store ID ---
+        gbc.gridy++;
+        gbc.gridx = 0;
+        JLabel storeIdLabel = new JLabel("Store ID:");
+        formPanel.add(storeIdLabel, gbc);
+
+        gbc.gridx = 1;
+        JTextField storeIdField = new JTextField(15);
+        formPanel.add(storeIdField, gbc);
+
+        // --- Client ID ---
+        gbc.gridy++;
+        gbc.gridx = 0;
+        JLabel clientIdLabel = new JLabel("Client ID:");
+        formPanel.add(clientIdLabel, gbc);
+
+        gbc.gridx = 1;
+        JTextField clientIdField = new JTextField(15);
+        formPanel.add(clientIdField, gbc);
+
+        //--περιγραφη--
+        this.descriptionArea = new JTextArea(3, 30);
+        this.descriptionArea.setWrapStyleWord(true);
+        this.descriptionArea.setLineWrap(true);
+        this.descriptionArea.setEditable(false);
+        this.descriptionArea.setFont(new java.awt.Font("Arial", Font.ITALIC, 12));
+        this.descriptionArea.setBorder(BorderFactory.createTitledBorder("Description"));
+        formPanel.add(this.descriptionArea, gbc);
+
+        // --- Buttons ---
+        gbc.gridy++;
+        gbc.gridwidth = 1;
+        gbc.gridx = 0;
+        JButton generateBtn = new JButton("Generate Report");
+        formPanel.add(generateBtn, gbc);
+
+        gbc.gridx = 1;
+        JButton exportPdfBtn = new JButton("Export to PDF");
+        formPanel.add(exportPdfBtn, gbc);
+
+        // --- Αρχική Απόκρυψη ---
+        productIdLabel.setVisible(false);
+        productIdField.setVisible(false);
+        storeIdLabel.setVisible(false);
+        storeIdField.setVisible(false);
+        clientIdLabel.setVisible(false);
+        clientIdField.setVisible(false);
+
+        // --- Listener επιλογής ---
+        reportTypeCombo.addActionListener(e -> {
             String selected = ((ReportItem) reportTypeCombo.getSelectedItem()).getValue();
 
             productIdLabel.setVisible(selected.equals("sales_by_product") || selected.equals("profit_by_product"));
@@ -71,18 +152,20 @@ public class ReportsFrame extends JFrame {
             clientIdLabel.setVisible(selected.equals("client_behavior"));
             clientIdField.setVisible(selected.equals("client_behavior"));
 
+            String description = reportDescriptions.getOrDefault(selected, "No description available.");
+            descriptionArea.setText(description);
+
             formPanel.revalidate();
             formPanel.repaint();
-//=============================================sos allagh gia grafima !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            // Καθαρισμός γραφήματος αν αλλάζει επιλογή σε αναφορά που δεν έχει γράφημα
-           if (!(selected.equals("monthly_sales_trends") || selected.equals("most_profitable_products"))) {
-             chartLabel.setIcon(null);
-            }
-
         });
 
-        JButton generateBtn = new JButton("Generate Report");
-        JButton exportPdfBtn = new JButton("Export to PDF");
+        // --- Προσθήκη φόρμας στο πάνω μέρος ---
+        add(formPanel, BorderLayout.NORTH);
+
+
+
+        //JButton generateBtn = new JButton("Generate Report");
+        //JButton exportPdfBtn = new JButton("Export to PDF");
 
         formPanel.add(productIdLabel);
         formPanel.add(productIdField);
@@ -90,20 +173,34 @@ public class ReportsFrame extends JFrame {
         formPanel.add(clientIdField);
         formPanel.add(storeIdLabel);
         formPanel.add(storeIdField);
-        formPanel.add(reportTypeLabel);
+        formPanel.add(reportTypeTitle);
         formPanel.add(reportTypeCombo);
         formPanel.add(generateBtn);
         formPanel.add(exportPdfBtn);
 
         add(formPanel, BorderLayout.NORTH);
-//======== πλαισιο κειμενου αναφορας ==========================
+//======== πλαισιο κειμενου αναφορας -> πινακας  ==========================
         outputArea = new JTextArea();
         outputArea.setEditable(false);
-        outputArea.setFont(new java.awt.Font("Monospaced", java.awt.Font.PLAIN, 14));
+        outputArea.setFont(new java.awt.Font("Arial", java.awt.Font.PLAIN, 14));
         outputArea.setLineWrap(true);
         outputArea.setWrapStyleWord(true);
         JScrollPane textScrollPane = new JScrollPane(outputArea);
         textScrollPane.setBorder(BorderFactory.createTitledBorder("Report Output"));
+//=================== Πλαίσιο περιγραφής===================================
+        //descriptionArea = new JTextArea();
+        descriptionArea.setEditable(false);
+        descriptionArea.setFont(new java.awt.Font("Arial", java.awt.Font.ITALIC, 13));
+        descriptionArea.setLineWrap(true);
+        descriptionArea.setWrapStyleWord(true);
+        descriptionArea.setBorder(BorderFactory.createTitledBorder("Description"));
+
+        JScrollPane descriptionScrollPane = new JScrollPane(descriptionArea);
+
+        // Ομαδοποίηση πίνακα + περιγραφή σε κάθετο panel
+        JPanel textPanel = new JPanel(new BorderLayout(20, 20));
+        textPanel.add(textScrollPane, BorderLayout.CENTER);
+        textPanel.add(descriptionScrollPane, BorderLayout.NORTH);
 // ================== πλαισιο γραφηματων αναφορας =====================
         chartLabel = new JLabel();
         chartLabel.setHorizontalAlignment(JLabel.CENTER);
@@ -111,11 +208,15 @@ public class ReportsFrame extends JFrame {
         JScrollPane imageScrollPane = new JScrollPane(chartLabel);
         imageScrollPane.setBorder(BorderFactory.createTitledBorder("Report Chart"));
 
-        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, textScrollPane, imageScrollPane);
+        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, textPanel, imageScrollPane);
+
         splitPane.setDividerLocation(0.5);
         splitPane.setResizeWeight(0.5);
 
         add(splitPane, BorderLayout.CENTER);
+
+        
+
 //=============== ενεργοποιηση λειτουργιας κουμπιου για εμφανιση καταλληλησ αναφορας ===================
         generateBtn.addActionListener(e -> {
             ReportItem selectedItem = (ReportItem) reportTypeCombo.getSelectedItem();
@@ -174,30 +275,54 @@ public class ReportsFrame extends JFrame {
                 JOptionPane.showMessageDialog(this, "Invalid input. IDs must be numeric.");
                 return;
             }
+            //εμφανιζει το chart μονο σε αυτα που εχουν 
+            chartAvailable = !reportsWithoutChart.contains(reportType);
 
+            textScrollPane.setViewportView(outputArea);
             outputArea.setText("Running report...\n");
 
-            if (reportType.equals("most_profitable_products")) { // !!!!!!!!!!!!!!!!!!!!!!sos allagh ======================
-                new Thread(() -> {
-                    String result = ReportService.getReportResults(inputData, reportType);
-                    SwingUtilities.invokeLater(() -> {
-                        outputArea.setText(result);
+            new Thread(() -> {
+                String result = ReportService.getReportResults(inputData, reportType);
+                SwingUtilities.invokeLater(() -> {
+                    //outputArea.setText(result);
+                    if(reportType.equals("gpt_insights") ){
+                        outputArea.setText(ReportService.formatGptInsights2(result));
+                    }
+                    else{
+                       
+                        JTable table = new JTable(ReportTable.getTableModel(result));
+                        //εμφανιζει τον πινακα 
+                        table.setAutoCreateRowSorter(true); // ταξινομηση 
+                        textScrollPane.setViewportView(table);
+                    }
+                    
 
+                    if(chartAvailable){
+                        splitPane.setDividerLocation(0.5);
+                        splitPane.setResizeWeight(0.5);
                         //  η εικόνα αποθηκεύεται εδώ
                         String chartPath = "python-reports/io/report_chart.png";
-                        loadChartImage(chartPath);
-                    });
-                }).start();
-            } else {
-                chartLabel.setIcon(null); // Καθαρισμός γραφήματος
-                new Thread(() -> {
-                    String result = ReportService.getReportResults(inputData, reportType);
-                    SwingUtilities.invokeLater(() -> outputArea.setText(result));
-                }).start();
-            }
+                        //wait for layout resizing
+                        SwingUtilities.invokeLater(() -> {
+                            loadChartImage(chartPath);
+                        });
+                        
+                    }
+                    else{
+                        splitPane.setDividerLocation(1.0); //εξαφανιζουμε το chart 
+                    }
+                    
+                });
+            }).start();
+            
+            chartLabel.setIcon(null); // Καθαρισμός γραφήματος
+                  
         });
 
-        exportPdfBtn.addActionListener(e -> exportTextAsPDF(outputArea.getText()));
+        exportPdfBtn.addActionListener(e -> exportTextAsPDF(/*outputArea.getText(),*/chartAvailable));
+       
+
+
 
         setVisible(true);
     }
@@ -232,11 +357,13 @@ public class ReportsFrame extends JFrame {
             chartLabel.setIcon(null);
             JOptionPane.showMessageDialog(this, "Chart image not found:\n" + imgFile.getAbsolutePath());
         }
+        //imageScrollPane.setVisible(false);
     }
 
 //================================== αποθηκευση pdf ===================================================
-    private void exportTextAsPDF(String content) {
-        if (content == null || content.trim().isEmpty()) {
+    
+    private void exportTextAsPDF(Boolean chartAvailable) {
+        if (outputArea.getComponentCount() == 0 && !chartAvailable) {
             JOptionPane.showMessageDialog(this, "No report content to export.");
             return;
         }
@@ -260,35 +387,81 @@ public class ReportsFrame extends JFrame {
 
                 // --- Τίτλος ---
                 com.lowagie.text.Font titleFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 16);
-                Paragraph title = new Paragraph("RetailHub Report\n\n", titleFont);
+                ReportItem selectedItem = (ReportItem) ((JComboBox<?>) ((JPanel) getContentPane().getComponent(0)).getComponent(7)).getSelectedItem();
+                String reportTitle = selectedItem != null ? selectedItem.getLabel() : "RetailHub Report";
+                Paragraph title = new Paragraph(reportTitle + "\n\n", titleFont);
                 title.setAlignment(Paragraph.ALIGN_CENTER);
                 document.add(title);
 
-                // --- Περιεχόμενο κειμένου ---
-                com.lowagie.text.Font textFont = FontFactory.getFont(FontFactory.HELVETICA, 12);
-                Paragraph reportContent = new Paragraph(content + "\n\n", textFont);
-                document.add(reportContent);
+                // --- Περιγραφή ---
+                com.lowagie.text.Font descFont = FontFactory.getFont(FontFactory.HELVETICA_OBLIQUE, 12);
+                String descriptionText = descriptionArea.getText();
+                Paragraph descParagraph = new Paragraph(descriptionText + "\n\n", descFont);
+                document.add(descParagraph);
 
-                // --- Προσθήκη εικόνας, αν υπάρχει ---
+                // --- Περιεχόμενο Αναφοράς ---
+                Component outputComponent = null;
+                for (Component comp : outputArea.getComponents()) {
+                    if (comp instanceof JScrollPane) {
+                        outputComponent = comp;
+                        break;
+                    }
+                }
+
+                if (outputComponent instanceof JScrollPane scrollPane) {
+                    Component view = scrollPane.getViewport().getView();
+
+                    if (view instanceof JTextArea textArea) {
+                        com.lowagie.text.Font textFont = FontFactory.getFont(FontFactory.HELVETICA, 11);
+                        Paragraph textParagraph = new Paragraph(textArea.getText() + "\n\n", textFont);
+                        document.add(textParagraph);
+
+                    } else if (view instanceof JTable table) {
+                        PdfPTable pdfTable = new PdfPTable(table.getColumnCount());
+                        pdfTable.setWidthPercentage(100);
+
+                        // Κεφαλίδες
+                        for (int i = 0; i < table.getColumnCount(); i++) {
+                            pdfTable.addCell(new PdfPCell(new Phrase(table.getColumnName(i))));
+                        }
+
+                        // Δεδομένα
+                        for (int row = 0; row < table.getRowCount(); row++) {
+                            for (int col = 0; col < table.getColumnCount(); col++) {
+                                Object value = table.getValueAt(row, col);
+                                pdfTable.addCell(new PdfPCell(new Phrase(value != null ? value.toString() : "")));
+                            }
+                        }
+
+                        document.add(pdfTable);
+                        document.add(new Paragraph("\n"));
+                    }
+                }
+
+                // --- Εικόνα / Διάγραμμα ---
                 String chartPath = "python-reports/io/report_chart.png";
                 File imageFile = new File(chartPath);
-
-                if (imageFile.exists()) {
+                if (imageFile.exists() && chartAvailable) {
                     com.lowagie.text.Image chartImage = com.lowagie.text.Image.getInstance(imageFile.getAbsolutePath());
-                    chartImage.scaleToFit(500, 400); // προσαρμογή μεγέθους
+                    chartImage.scaleToFit(500, 400);
                     chartImage.setAlignment(com.lowagie.text.Image.ALIGN_CENTER);
                     document.add(chartImage);
                 }
 
                 document.close();
-
                 JOptionPane.showMessageDialog(this, "Exported successfully to " + file.getAbsolutePath());
+
             } catch (Exception ex) {
                 ex.printStackTrace();
                 JOptionPane.showMessageDialog(this, "Error exporting PDF: " + ex.getMessage());
             }
         }
-    }
+    } 
+
+
+
+
+
 
 
     public class ReportItem {

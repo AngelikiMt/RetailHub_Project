@@ -53,7 +53,7 @@ def get_most_profitable_products(limit=10):
         #plot_most_profitable_products(df.head(limit))
 
         return {
-            "report": "most_profitable_products",
+            "report_type": "most_profitable_products",
             "top_profitable_products": df.head(limit).to_dict(orient="records")
         }
 
@@ -83,5 +83,5 @@ def plot_most_profitable_products(df: pd.DataFrame, path="io/profitable_products
     plt.tight_layout()
     plt.savefig("io/report_chart.png", dpi=150)
     plt.close()
-    print(f"Chart saved as 'io/report_chart.png'")
+   
 

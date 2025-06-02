@@ -1,3 +1,5 @@
+import matplotlib.pyplot as plt
+import os
 import pandas as pd
 from database.db_utils import create_connection
 
@@ -52,10 +54,38 @@ def get_store_ranking() -> dict:
         # Sort κατά κέρδος
         df = df.sort_values(by="total_profit", ascending=False)
 
+        plot_store_ranking(df)
+
         return {
-            "report": "store_ranking",
+            "report_type": "store_ranking",
             "stores": df.to_dict(orient="records")
         }
 
     except Exception as e:
         return {"error": str(e)}
+
+
+def plot_store_ranking(df: pd.DataFrame, path="io/report_chart.png"):
+    if df.empty:
+        print("No data to plot.")
+        return
+
+    os.makedirs("io", exist_ok=True)
+
+    top_n = df.head(10)  # Προαιρετικά, δείξε τα 10 κορυφαία καταστήματα
+
+    fig, ax = plt.subplots(figsize=(10, 6))
+    bars = ax.barh(top_n["address"], top_n["total_profit"], color="dodgerblue")
+
+    ax.set_xlabel("Total Profit (€)")
+    ax.set_title("Top Stores by Total Profit")
+
+    for bar in bars:
+        width = bar.get_width()
+        ax.text(width + 0.01, bar.get_y() + bar.get_height() / 2, f"{width:.2f}", va="center")
+
+    plt.gca().invert_yaxis()
+    plt.tight_layout()
+    plt.savefig(path, dpi=150)
+    plt.close()
+    print(f"Chart saved as '{path}'")

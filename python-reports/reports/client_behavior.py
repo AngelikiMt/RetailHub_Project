@@ -43,6 +43,7 @@ def get_client_behavior(client_id: int) -> dict:
         stores_visited = row["stores"].split("|||") if row["stores"] else []
 
         return {
+            "report_type": "client_behavior",
             "client_id": client_id,
             "full_name": full_name,
             "total_transactions": total_transactions,

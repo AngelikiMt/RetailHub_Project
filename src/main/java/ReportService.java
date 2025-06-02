@@ -1,23 +1,15 @@
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.json.JSONObject;
+
 public class ReportService {
-
-    /*public static String getProductResults(long productId, String reportName) {
-        Map<String, Object> inputData = new HashMap<>();
-        inputData.put("report_type", reportName);
-
-        // Χρήση product_id μόνο όταν απαιτείται
-        if (!"most_profitable_products".equals(reportName)) {
-            inputData.put("product_id", productId);
-        }
-
-        return getReportResults(inputData, reportName);
-    }*/
 
     public static String getReportResults(Map<String, Object> inputData, String reportName) {
 
@@ -73,7 +65,8 @@ public class ReportService {
                 output.append("\nError: output.json not found\n");
             }
 
-            return output.toString();
+            //return output.toString();
+            return new String(Files.readAllBytes(Paths.get("python-reports/io/output.json")));
 
         } catch (Exception e) {
             return "Exception: " + e.getMessage();
@@ -427,36 +420,26 @@ public class ReportService {
         return sb.toString();
     }
 
-
-// ============================================ chart image  =================================================
-
-    /*public static String runMonthlySalesChartScript() {
+    public static String formatGptInsights2(String jsonString) {
+        String result = null;
         try {
-            ProcessBuilder pb = new ProcessBuilder("python", "monthly_sales_trends.py");
-            pb.directory(new File("python-reports"));  // φάκελος όπου βρίσκεται το script
-            pb.redirectErrorStream(true);
+                JSONObject json = new JSONObject(jsonString);
 
-            Process process = pb.start();
-            //Ξεκινάει το process — τρέχει το Python script
-            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            StringBuilder output = new StringBuilder();
-            //διαβάσει το output του script
-            String line;
-            while ((line = reader.readLine()) != null) {
-                output.append(line).append("\n"); // για logging output
+                if (json.has("suggestions")) {
+                    Object suggestion = json.get("suggestions");
+
+                    if (suggestion instanceof String) {
+                        result = (String) suggestion;
+                    }
+                } else {
+                    result = "No suggestions found.";
+                }
+            } catch (Exception e) {
+               
             }
+        return result;
+    }
 
-            int exitCode = process.waitFor();
-            if (exitCode != 0) {
-                return "Python script failed with exit code " + exitCode + "\nOutput:\n" + output.toString();
-            }
-
-            return "Python script executed successfully.\nOutput:\n" + output.toString();
-
-        } catch (Exception e) {
-            return "Exception running Python script: " + e.getMessage();
-        }
-    }*/
 
 // υποχτεωρτικα πεδια για id σε συγκεκριμενες αναφορες 
     public static String getAdvancedReportResults(String reportType, long productId, long storeId, long clientId) {

@@ -51,7 +51,7 @@ def get_category_performance() -> dict:
         df["margin"] = df["margin"].round(4)
 
         return {
-            "report": "category_performance",
+            "report_type": "category_performance",
             "categories": df.to_dict(orient="records")
         }
 

@@ -53,6 +53,7 @@ def get_sales_by_store(store_id: int) -> dict:
 
 
         return {
+            "report_type" : "sales_by_store",
             "store_id": store_id,
             "address": address,
             "total_units_sold": total_units,
