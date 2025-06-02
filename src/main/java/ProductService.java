@@ -62,7 +62,7 @@ public class ProductService {
 	}
 
 	// Get a product by ID
-	public Product findProductById(long productId) {
+	public static Product findProductById(long productId) {
 		return productDAO.getProductById(productId);
 	}
 

@@ -25,6 +25,14 @@ import javax.swing.SwingConstants;
 
 public class MainMenu extends JFrame {
     private static final String ADMIN_PIN = "12345";
+    private String path;
+
+    public static ImageIcon getIcon (String path){
+        ImageIcon icon = new ImageIcon(MainMenu.class.getResource(path));
+        Image image = icon.getImage().getScaledInstance(285, 195, Image.SCALE_SMOOTH); // π.χ. 64x64
+        icon = new ImageIcon(image);
+        return icon ;
+    }
 
     public MainMenu() {
         setTitle("Retail Hub Menu");
@@ -83,44 +91,31 @@ public class MainMenu extends JFrame {
 
         // === BUTTONS ===
         JButton clientBtn = new JButton();
-            ImageIcon clientIcon = new ImageIcon(getClass().getResource("/clienticon.png"));
-            Image clientImage = clientIcon.getImage().getScaledInstance(285, 195, Image.SCALE_SMOOTH); // π.χ. 64x64
-            clientIcon = new ImageIcon(clientImage);
-            clientBtn.setIcon(clientIcon);
+        path = "clienticon.png";
+        clientBtn.setIcon(getIcon(path));
 
         JButton productBtn = new JButton();
-            ImageIcon productIcon = new ImageIcon(getClass().getResource("/producticon.png"));
-            Image productImage = productIcon.getImage().getScaledInstance(285, 195, Image.SCALE_SMOOTH); // π.χ. 64x64
-            productIcon = new ImageIcon(productImage);
-            productBtn.setIcon(productIcon);
+            path = "/producticon.png";
+            productBtn.setIcon(getIcon(path));
 
         JButton storeBtn = new JButton("STORE (PIN)");
-            ImageIcon storeIcon = new ImageIcon(getClass().getResource("/storeicon.png"));
-            Image storeImage = storeIcon.getImage().getScaledInstance(285, 195, Image.SCALE_SMOOTH); // π.χ. 64x64
-            storeIcon = new ImageIcon(storeImage);
-            storeBtn.setIcon(storeIcon);
+            path = "/storeicon.png";
+            storeBtn.setIcon(getIcon(path));
 
         JButton stockBtn = new JButton();
-            ImageIcon stockIcon = new ImageIcon(getClass().getResource("/stockicon.png"));
-            Image stockImage = stockIcon.getImage().getScaledInstance(285, 195, Image.SCALE_SMOOTH); // π.χ. 64x64
-            stockIcon = new ImageIcon(stockImage);
-            stockBtn.setIcon(stockIcon);
+            path = "/stockicon.png";
+            stockBtn.setIcon(getIcon(path));
 
         JButton transactionBtn = new JButton();
-            ImageIcon transIcon = new ImageIcon(getClass().getResource("/transactionicon.png"));
-            Image transImage = transIcon.getImage().getScaledInstance(285, 195, Image.SCALE_SMOOTH); // π.χ. 64x64
-            transIcon = new ImageIcon(transImage);
-            transactionBtn.setIcon(transIcon);
+            path = "/transactionicon.png";
+            transactionBtn.setIcon(getIcon(path));
            
         JButton reportsBtn = new JButton("Reports");
-            ImageIcon repIcon = new ImageIcon(getClass().getResource("/reportsicon.png"));
-            Image repImage = repIcon.getImage().getScaledInstance(285, 195, Image.SCALE_SMOOTH); // π.χ. 64x64
-            repIcon = new ImageIcon(repImage);      
-            reportsBtn.setIcon(repIcon);
+            path = "/reportsicon.png";
+            reportsBtn.setIcon(getIcon(path));
 
         //JButton exitBtn = new JButton("EXIT");
 
-        //Font buttonFont = new Font("Arial", Font.BOLD, 20);
         Dimension buttonSize = new Dimension(200, 120);
 
         JButton[] buttons = {clientBtn, productBtn, storeBtn, stockBtn, transactionBtn, reportsBtn};
