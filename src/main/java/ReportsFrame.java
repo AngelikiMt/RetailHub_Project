@@ -24,6 +24,8 @@ public class ReportsFrame extends JFrame {
     private static final List<String> reportsWithoutChart = new ArrayList<>(List.of("sales_by_product","profit_by_product","profit_by_store","sales_by_store","client_behavior","gpt_insights"));
     private Boolean chartAvailable = false;
     private JTextArea descriptionArea;
+    private JComponent reportContentComponent;  // π.χ. JTable ή JTextArea
+
     private static final Map<String, String> reportDescriptions = new HashMap<>() {{
         put("client_behavior", "Summarizes a client's purchase behavior — total spent, number of transactions, and store visits. Useful for targeting loyal or high-value customers.");
         put("sales_by_product", "Displays total sales and revenue for a specific product, with breakdown per store. Helps track where the product sells best.");
@@ -286,14 +288,26 @@ public class ReportsFrame extends JFrame {
                 SwingUtilities.invokeLater(() -> {
                     //outputArea.setText(result);
                     if(reportType.equals("gpt_insights") ){
-                        outputArea.setText(ReportService.formatGptInsights2(result));
+                        //outputArea.setText(ReportService.formatGptInsights2(result));
+                        JTextArea textArea = new JTextArea(ReportService.formatGptInsights2(result));
+                        textArea.setFont(new java.awt.Font("Arial", java.awt.Font.PLAIN, 13));
+                        textArea.setWrapStyleWord(true);
+                        textArea.setLineWrap(true);
+                        textArea.setEditable(false);
+                        reportContentComponent = textArea;
+                        textScrollPane.setViewportView(reportContentComponent);
                     }
                     else{
                        
+                        // JTable table = new JTable(ReportTable.getTableModel(result));
+                        // //εμφανιζει τον πινακα 
+                        // table.setAutoCreateRowSorter(true); // ταξινομηση 
+                        // textScrollPane.setViewportView(table);
+
                         JTable table = new JTable(ReportTable.getTableModel(result));
-                        //εμφανιζει τον πινακα 
-                        table.setAutoCreateRowSorter(true); // ταξινομηση 
-                        textScrollPane.setViewportView(table);
+                        table.setAutoCreateRowSorter(true);
+                        reportContentComponent = table;
+                        textScrollPane.setViewportView(reportContentComponent);
                     }
                     
 
@@ -363,7 +377,7 @@ public class ReportsFrame extends JFrame {
 //================================== αποθηκευση pdf ===================================================
     
     private void exportTextAsPDF(Boolean chartAvailable) {
-        if (outputArea.getComponentCount() == 0 && !chartAvailable) {
+        if (reportContentComponent == null && !chartAvailable) {
             JOptionPane.showMessageDialog(this, "No report content to export.");
             return;
         }
@@ -400,42 +414,30 @@ public class ReportsFrame extends JFrame {
                 document.add(descParagraph);
 
                 // --- Περιεχόμενο Αναφοράς ---
-                Component outputComponent = null;
-                for (Component comp : outputArea.getComponents()) {
-                    if (comp instanceof JScrollPane) {
-                        outputComponent = comp;
-                        break;
+                if (reportContentComponent instanceof JTextArea textArea) {
+                    com.lowagie.text.Font textFont = FontFactory.getFont(FontFactory.HELVETICA, 11);
+                    Paragraph textParagraph = new Paragraph(textArea.getText() + "\n\n", textFont);
+                    document.add(textParagraph);
+
+                } else if (reportContentComponent instanceof JTable table) {
+                    PdfPTable pdfTable = new PdfPTable(table.getColumnCount());
+                    pdfTable.setWidthPercentage(100);
+
+                    // Κεφαλίδες
+                    for (int i = 0; i < table.getColumnCount(); i++) {
+                        pdfTable.addCell(new PdfPCell(new Phrase(table.getColumnName(i))));
                     }
-                }
 
-                if (outputComponent instanceof JScrollPane scrollPane) {
-                    Component view = scrollPane.getViewport().getView();
-
-                    if (view instanceof JTextArea textArea) {
-                        com.lowagie.text.Font textFont = FontFactory.getFont(FontFactory.HELVETICA, 11);
-                        Paragraph textParagraph = new Paragraph(textArea.getText() + "\n\n", textFont);
-                        document.add(textParagraph);
-
-                    } else if (view instanceof JTable table) {
-                        PdfPTable pdfTable = new PdfPTable(table.getColumnCount());
-                        pdfTable.setWidthPercentage(100);
-
-                        // Κεφαλίδες
-                        for (int i = 0; i < table.getColumnCount(); i++) {
-                            pdfTable.addCell(new PdfPCell(new Phrase(table.getColumnName(i))));
+                    // Δεδομένα
+                    for (int row = 0; row < table.getRowCount(); row++) {
+                        for (int col = 0; col < table.getColumnCount(); col++) {
+                            Object value = table.getValueAt(row, col);
+                            pdfTable.addCell(new PdfPCell(new Phrase(value != null ? value.toString() : "")));
                         }
-
-                        // Δεδομένα
-                        for (int row = 0; row < table.getRowCount(); row++) {
-                            for (int col = 0; col < table.getColumnCount(); col++) {
-                                Object value = table.getValueAt(row, col);
-                                pdfTable.addCell(new PdfPCell(new Phrase(value != null ? value.toString() : "")));
-                            }
-                        }
-
-                        document.add(pdfTable);
-                        document.add(new Paragraph("\n"));
                     }
+
+                    document.add(pdfTable);
+                    document.add(new Paragraph("\n"));
                 }
 
                 // --- Εικόνα / Διάγραμμα ---
@@ -456,7 +458,8 @@ public class ReportsFrame extends JFrame {
                 JOptionPane.showMessageDialog(this, "Error exporting PDF: " + ex.getMessage());
             }
         }
-    } 
+    }
+
 
 
 
