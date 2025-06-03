@@ -17,14 +17,16 @@ import org.json.*;
 
 // Create Table like json, with the right colums for every report
 public class ReportTable {
+
     
     public static DefaultTableModel getTableModel(String output) {
         JSONObject json = new JSONObject(new JSONTokener(output));
         String reportType = json.optString("report_type", null);
 
-        if (reportType == null) {
-            return buildGenericTable(json); // fallback αν δεν υπάρχει τύπος
+        if(reportType==null ){
+            return buildGenericTable(json);
         }
+        
 
         switch (reportType) {
 
@@ -58,6 +60,15 @@ public class ReportTable {
 
              case "stock_vs_sales":
                  return buildStockVsSalesTable(json);
+
+            case "profit_by_category_per_month" :
+                return null;  
+
+            case "spending_by_age_and_category"  :
+                return null;
+
+            case "uniqye_clients_per_month" :
+                return null ;
 
             // case "gpt_insights": It is String, we don't create Table.
                 
@@ -140,38 +151,7 @@ public class ReportTable {
         return new DefaultTableModel(data, columns);
     }
 
-    // public static void displayReport(JSONObject json) {
-    //     JFrame frame = new JFrame("Sales By Product Report");
-    //     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-    //     JTable table = new JTable(buildSalesByProductTable(json));
-
-    //     // Renderer για εναλλαγή χρωμάτων και bold στην 1η γραμμή
-    //     table.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
-    //         @Override
-    //         public Component getTableCellRendererComponent(
-    //                 JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-
-    //             Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-
-    //             if (row == 0) {
-    //                 c.setBackground(Color.WHITE);
-    //                 c.setFont(c.getFont().deriveFont(Font.BOLD));
-    //             } else {
-    //                 c.setBackground(new Color(235, 235, 235)); // ανοιχτό γκρι
-    //             }
-
-    //             return c;
-    //         }
-    //     });
-
-    //     table.setRowHeight(24);
-    //     JScrollPane scrollPane = new JScrollPane(table);
-    //     frame.add(scrollPane);
-
-    //     frame.setSize(1000, 300);
-    //     frame.setVisible(true);
-    // }
+    
 
     private static DefaultTableModel buildProfitByProductTable(JSONObject json) {
         String[] columns = {

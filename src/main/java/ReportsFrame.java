@@ -38,6 +38,9 @@ public class ReportsFrame extends JFrame {
         put("gpt_insights", "Analyzes key reports using GPT to generate strategic suggestions. Helps executives make smarter decisions based on trends and customer behavior.");
         put("category_performance", "Shows total sales, cost, and profit for each product category. Helps compare which categories perform best overall.");
         put("most_profitable_products", "Shows the top 10 products with the highest profit margins, based on total sales, cost, and revenue. Helps RetailHub see which items bring the most profit.");
+        put("profit_by_category_per_month", "Shows total profit by product category per month. Helps identify the best and worst performing product categories, as well as seasonal trends.");
+        put("spending_by_age_and_category", "Displays total profit per product category by age group. Helps gauge the popularity of each product category by age group and allows for  targeted marketing toward the right age group for each product category.");
+        put("unique_clients_per_month","This chart shows the number of unique customers who made purchases each month. It helps track overall client activity and highlights peaks, drops, and seasonal engagement patterns.");
     }};
 
 
@@ -72,10 +75,13 @@ public class ReportsFrame extends JFrame {
             new ReportItem("Most Profitable Products", "most_profitable_products"),
             new ReportItem("Profit by Store ID", "profit_by_store"),
             new ReportItem("Sales by Store", "sales_by_store"),
-            new ReportItem("Client Behavior", "client_behavior"),
             new ReportItem("Store Ranking", "store_ranking"),
+            new ReportItem("Client Behavior", "client_behavior"),
+            new ReportItem("Clients Per Month", "unique_clients_per_month"),
+            new ReportItem("Profit By Age & Category", "spending_by_age_and_category"), 
             new ReportItem("Stock vs Sales", "stock_vs_sales"),
             new ReportItem("Monthly Sales Trends", "monthly_sales_trends"),
+            new ReportItem("Profit Category Per Month", "profit_by_category_per_month"),
             new ReportItem("Category Performance", "category_performance"),
             new ReportItem("GPT Suggestions", "gpt_insights")
         };
@@ -164,11 +170,6 @@ public class ReportsFrame extends JFrame {
         // --- Προσθήκη φόρμας στο πάνω μέρος ---
         add(formPanel, BorderLayout.NORTH);
 
-
-
-        //JButton generateBtn = new JButton("Generate Report");
-        //JButton exportPdfBtn = new JButton("Export to PDF");
-
         formPanel.add(productIdLabel);
         formPanel.add(productIdField);
         formPanel.add(clientIdLabel);
@@ -190,7 +191,6 @@ public class ReportsFrame extends JFrame {
         JScrollPane textScrollPane = new JScrollPane(outputArea);
         textScrollPane.setBorder(BorderFactory.createTitledBorder("Report Output"));
 //=================== Πλαίσιο περιγραφής===================================
-        //descriptionArea = new JTextArea();
         descriptionArea.setEditable(false);
         descriptionArea.setFont(new java.awt.Font("Arial", java.awt.Font.ITALIC, 13));
         descriptionArea.setLineWrap(true);
@@ -265,6 +265,9 @@ public class ReportsFrame extends JFrame {
                     case "stock_vs_sales":
                     case "monthly_sales_trends":
                     case "category_performance":
+                    case "spending_by_age_and_category":
+                    case "unique_clients_per_month":
+                    case "profit_by_category_per_month":
                     case "gpt_insights":
                         // No ID required
                         break;
@@ -286,9 +289,7 @@ public class ReportsFrame extends JFrame {
             new Thread(() -> {
                 String result = ReportService.getReportResults(inputData, reportType);
                 SwingUtilities.invokeLater(() -> {
-                    //outputArea.setText(result);
                     if(reportType.equals("gpt_insights") ){
-                        //outputArea.setText(ReportService.formatGptInsights2(result));
                         JTextArea textArea = new JTextArea(ReportService.formatGptInsights2(result));
                         textArea.setFont(new java.awt.Font("Arial", java.awt.Font.PLAIN, 13));
                         textArea.setWrapStyleWord(true);
@@ -296,18 +297,34 @@ public class ReportsFrame extends JFrame {
                         textArea.setEditable(false);
                         reportContentComponent = textArea;
                         textScrollPane.setViewportView(reportContentComponent);
+                        textScrollPane.setVisible(true);
+                    }
+                    else if(chartAvailable &&(reportType.equals("profit_by_category_per_month") 
+                            || reportType.equals("spending_by_age_and_category") 
+                            || reportType.equals("uniqye_clients_per_month"))) {
+                        
+                        // Απόκρυψη του scroll pane
+                        textScrollPane.setViewportView(null);
+                        textScrollPane.setVisible(false); // το κάνει να μην φαίνεται   
+                          
+                        // Δημιουργία panel με περιγραφή πάνω και γράφημα κάτω
+                        JPanel chartOnlyPanel = new JPanel(new BorderLayout(10, 10));
+                        chartOnlyPanel.add(descriptionScrollPane, BorderLayout.NORTH);
+                        chartOnlyPanel.add(imageScrollPane, BorderLayout.CENTER);
+
+                        // Τοποθέτηση στο splitPane (αριστερό) και άδειασμα δεξιού
+                        splitPane.setLeftComponent(chartOnlyPanel);
+                        splitPane.setRightComponent(null);
+                        splitPane.setDividerLocation(0); // Ολοκληρωτική χρήση του chart panel   
+                                        
                     }
                     else{
                        
-                        // JTable table = new JTable(ReportTable.getTableModel(result));
-                        // //εμφανιζει τον πινακα 
-                        // table.setAutoCreateRowSorter(true); // ταξινομηση 
-                        // textScrollPane.setViewportView(table);
-
                         JTable table = new JTable(ReportTable.getTableModel(result));
-                        table.setAutoCreateRowSorter(true);
+                        table.setAutoCreateRowSorter(true); // ταξινομηση 
                         reportContentComponent = table;
                         textScrollPane.setViewportView(reportContentComponent);
+                        textScrollPane.setVisible(true);
                     }
                     
 
@@ -333,7 +350,7 @@ public class ReportsFrame extends JFrame {
                   
         });
 
-        exportPdfBtn.addActionListener(e -> exportTextAsPDF(/*outputArea.getText(),*/chartAvailable));
+        exportPdfBtn.addActionListener(e -> exportTextAsPDF(chartAvailable));
        
 
 
@@ -459,13 +476,6 @@ public class ReportsFrame extends JFrame {
             }
         }
     }
-
-
-
-
-
-
-
 
     public class ReportItem {
         private final String label;
