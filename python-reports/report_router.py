@@ -17,6 +17,9 @@ from reports.store_ranking import get_store_ranking
 from reports.gpt_insights import get_gpt_insights
 from reports.category_performance import get_category_performance
 from reports.category_performance import plot_category_performance
+from reports.profit_by_category_per_month import plot_profit_by_category_per_month
+from reports.spending_by_age_and_category import plot_total_spending_by_age_and_category
+from reports.unique_clients_per_month import plot_unique_clients_per_month
 
 
 
@@ -73,21 +76,29 @@ def main() -> None:
                 df = pd.DataFrame(result["categories"])
                 plot_category_performance(df)
 
-
         elif report_type == "stock_vs_sales":
            result = get_stock_vs_sales()
 
         elif report_type == "monthly_sales_trends":
-           result = get_monthly_sales_trends()
-           if "monthly_stats" in result:
-            df = pd.DataFrame(result["monthly_stats"])
-            plot_monthly_sales(df)
+            result = get_monthly_sales_trends()
+            if "monthly_stats" in result:
+                df = pd.DataFrame(result["monthly_stats"])
+                plot_monthly_sales(df)
 
         elif report_type == "store_ranking":
            result = get_store_ranking()
 
         elif report_type == "gpt_insights":
             result = get_gpt_insights()
+
+        elif report_type == "profit_by_category_per_month":
+            plot_profit_by_category_per_month()
+
+        elif report_type == "spending_by_age_and_category":
+            plot_total_spending_by_age_and_category()
+
+        elif report_type == "unique_clients_per_month":
+            plot_unique_clients_per_month()
 
         else:
             result = {"error": f"Unsupported report_type: {report_type}"}

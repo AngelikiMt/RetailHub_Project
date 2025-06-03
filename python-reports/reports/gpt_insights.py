@@ -12,7 +12,8 @@ def get_gpt_insights() -> dict:
         "stock_vs_sales.json",
         "monthly_sales_trends.json",
         "most_profitable_products.json",
-        "store_ranking.json"
+        "store_ranking.json",
+        "profit_by_category_per_month.json"
     ]
 
     # Φόρτωμα όλων των reports σε dict
@@ -26,12 +27,25 @@ def get_gpt_insights() -> dict:
                 except json.JSONDecodeError:
                     report_data[filename.replace(".json", "")] = {"error": "invalid JSON"}
 
+
+
+    # # should update prompt, it should cut to the chase, going to analysis and suggestions, not refrazing the question.
+    # # also maybe now special characters are available?
+    
+    # full_prompt = (
+    # "The following data comes from the RetailHub system.\n"
+    # "Please write a clear analysis and recommendations in plain text.\n"
+    # "Avoid using bullets, symbols, markdown, or special characters.\n"
+    # "Separate paragraphs only with line breaks and keep the tone simple and suitable for a GUI application.\n\n"
+    # )
     full_prompt = (
-    "The following data comes from the RetailHub system.\n"
-    "Please write a clear analysis and recommendations in plain text.\n"
-    "Avoid using bullets, symbols, markdown, or special characters.\n"
-    "Separate paragraphs only with line breaks and keep the tone simple and suitable for a GUI application.\n\n"
-    )
+    "You are an experienced business analyst reviewing operational reports from RetailHub.\n"
+    "Analyze the data below and provide actionable insights and strategic recommendations.\n"
+    "Focus on what matters — highlight performance trends, profit opportunities, and problem areas.\n"
+    "Use a clear and concise tone. You may use bullet points, symbols, and markdown for clarity.\n"
+    "No need to explain what the data is — go straight to conclusions and suggestions.\n\n"
+)
+
 
 
     for key, value in report_data.items():

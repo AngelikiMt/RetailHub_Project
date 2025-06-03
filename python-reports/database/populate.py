@@ -35,11 +35,12 @@ def create_stores(n=N_STORES):
     with conn.cursor() as cursor:
         for _ in range(n):
             cursor.execute("""
-                INSERT INTO Store (phone, address, country, storeName)
-                VALUES (%s, %s, %s, %s)
+                INSERT INTO Store (phone, address, city, country, storeName)
+                VALUES (%s, %s, %s, %s, %s)
             """, (
                 fake.unique.numerify(text="##########"),
-                fake.address().replace("\n", ", "),
+                f"{fake.word().capitalize()} {random.randint(1, 999)}",
+                fake.city(),
                 fake.country(),
                 fake.company()
             ))
@@ -56,7 +57,7 @@ def create_products(n=N_PRODUCTS):
                 fake.word(),
                 round(random.uniform(5, 200), 2),
                 round(random.uniform(2, 100), 2),
-                random.choice(['clothing', 'electronics', 'beauty'])
+                random.choice(['clothing', 'electronics', 'beauty', 'kitchen', 'kids'])
             ))
     conn.commit()
     print("Products inserted")
@@ -179,12 +180,18 @@ def update_client_totals():
         client_summaries = cursor.fetchall()
 
         for row in client_summaries:
-            cursor.execute("""
+                        cursor.execute("""
                 UPDATE Client
                 SET clientSumTotal = %s,
+                    clientCurrentTotal = %s,
                     lastPurchaseDate = %s
                 WHERE clientId = %s
-            """, (round(row['total'], 2), row['lastDate'], row['clientId']))
+            """, (
+                round(row['total'], 2),
+                round(row['total'], 2),
+                row['lastDate'],
+                row['clientId']
+            ))
 
     conn.commit()
     print("Updated clientSumTotal and lastPurchaseDate")
