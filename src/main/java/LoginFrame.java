@@ -65,17 +65,12 @@ public class LoginFrame extends JFrame {
             passField.setEchoChar(showPass.isSelected() ? (char) 0 : '•');
         });
 
-        ImageIcon login = new ImageIcon(getClass().getResource("login.png"));
-        JButton loginBtn = new JButton(login);
-        //loginBtn.setForeground(new Color (102, 178, 255));
-
-        //loginBtn.setBorder(BorderFactory.createLineBorder(new Color(102, 178, 255)));
-        loginBtn.setBorderPainted(false);
-        loginBtn.setContentAreaFilled(false);
-        loginBtn.setFocusPainted(false);
-        loginBtn.setOpaque(false);
-        loginBtn.setPreferredSize(new Dimension(30,30));
-        //loginBtn.setFont(new Font("Arial", Font.BOLD, 13));
+        //ImageIcon login = new ImageIcon(getClass().getResource("login.png"));
+        JButton loginBtn = new JButton("Login");
+        loginBtn.setBackground(new Color(128, 0, 128)); // Purple background
+        loginBtn.setForeground(Color.WHITE);
+        loginBtn.setFont(new Font("MinionPro", Font.PLAIN, 20));
+        loginBtn.setPreferredSize(new Dimension(120, 30));
 
         loginBtn.addActionListener(e -> {
             String enteredUser = userField.getText();

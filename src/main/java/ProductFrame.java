@@ -11,6 +11,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Image;
+import java.awt.MediaTracker;
 import java.awt.Insets;
 import java.util.List;
 
@@ -42,11 +43,9 @@ public class ProductFrame extends JFrame {
     private JPanel cardPanel;  // the center area with switchable views
     private CardLayout cardLayout;
 
-
     private JTextField descField, priceField, costField, idField;
     private JComboBox<String> categoryBox;
  
-
     public ProductFrame() {
         super();
         setTitle("Products Menu");
@@ -56,19 +55,15 @@ public class ProductFrame extends JFrame {
         //=== BACKGROUND PANEL===
         backgroundPanel = new JPanel() ;
         backgroundPanel.setBackground(Color.WHITE);
-        backgroundPanel.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
+       // backgroundPanel.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
         backgroundPanel.setLayout(new BorderLayout());
 
-        //=== BOTTOM PANEL WITH EXIT BUTTON===
-        JPanel exitBar = new JPanel();
-        exitBar.setLayout(new BoxLayout(exitBar, BoxLayout.X_AXIS));
-        exitBar.setPreferredSize(new Dimension(100, 90));
-        exitBar.setOpaque(false);
+        JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        bottomPanel.setOpaque(false);
+        bottomPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 10));
+       // bottomPanel.add(backButton);
+       // background.add(bottomPanel, BorderLayout.SOUTH);
         
-        // JPanel centerBar = new JPanel();
-        // centerBar.setLayout(getLayout());
-        // centerBar.setOpaque(true);
-
         cardLayout = new CardLayout();
         cardPanel = new JPanel(cardLayout);
         cardPanel.setOpaque(false);
@@ -80,19 +75,37 @@ public class ProductFrame extends JFrame {
         //=== TOP PANEL WITH Web-style top navigation bar
         JPanel topBar = new JPanel();
         topBar.setLayout(new BoxLayout(topBar, BoxLayout.X_AXIS));
-        topBar.setPreferredSize(new Dimension(200,100));
+        topBar.setPreferredSize(new Dimension(200,80));
         topBar.setBackground(new Color(239, 247, 255));
-        //topBar.setBorder(BorderFactory.createEmptyBorder(15, 20, 15, 20));
+        topBar.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
 //--------------------------------------------------------------------------------------------
-        
-        //===PRPODUCT ICON TOP LEFT CORNER====
-        path = "/producticon.png";
-        ImageIcon icon = MainMenu.getIcon(path);
-        JLabel logo = new JLabel(icon);
-        logo.setPreferredSize(new Dimension(200,200));
-        logo.setBorder(BorderFactory.createEmptyBorder(-30, 0, 0, 0));
+         // Icon Logo
+        JLabel logoLabel = new JLabel();
+        ImageIcon logoIcon = null;
+        logoIcon = new ImageIcon(getClass().getResource("/croppedLogo.png"));
+        if (logoIcon.getImageLoadStatus() == MediaTracker.COMPLETE) {
+                Image image = logoIcon.getImage();
+                Image scaledImage = image.getScaledInstance(-1, 60, Image.SCALE_SMOOTH);
+                logoIcon = new ImageIcon(scaledImage);
+        } else {
+            System.err.println("Warning: Could not load logo.png, or it's not a valid image.");
+            // Fallback to text if image fails to load
+            logoLabel.setText("ClientMenu");
+            logoLabel.setFont(new Font("MinionPro", Font.BOLD, 25));
+            logoLabel.setForeground(Color.BLACK);
+        }
 
-        topBar.add(logo);
+        if (logoIcon != null) {
+        logoLabel.setIcon(logoIcon);
+        }
+        //===PRPODUCT ICON TOP LEFT CORNER====
+        // path = "/retaillogo.png";
+        // ImageIcon icon = MainMenu.getIcon(path);
+        // JLabel logo = new JLabel(icon);
+        // logo.setPreferredSize(new Dimension(200,200));
+        // logo.setBorder(BorderFactory.createEmptyBorder(-30, 0, 0, 0));
+
+        topBar.add(logoLabel);
         topBar.add(Box.createHorizontalStrut(30)); // space before nav items
         topBar.add(Box.createHorizontalGlue());
         
@@ -112,6 +125,7 @@ public class ProductFrame extends JFrame {
             navButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
             navButton.setOpaque(false);
             navButton.setBorderPainted(false);
+            navButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
             navButton.setAlignmentY(Component.CENTER_ALIGNMENT);
             navButton.setMaximumSize(new Dimension(250, 30));
             
@@ -127,24 +141,37 @@ public class ProductFrame extends JFrame {
                 // case "Delete" -> navButton.addActionListener(e -> menuDeleteClient());
                 // case "Delete Inactive" -> navButton.addActionListener(e -> menuDeleteInactiveClients());
                 // case "Export JSON" -> navButton.addActionListener(e -> menuGetJson());
-            }}
-         
-            icon = new ImageIcon(MainMenu.class.getResource("/velos.png"));
-            Image image = icon.getImage().getScaledInstance(230, 150, Image.SCALE_SMOOTH); // π.χ. 64x64
-            icon = new ImageIcon(image);
-            JButton exitBtn = new JButton(icon);
-            exitBtn.setBorderPainted(false);
-            exitBtn.setContentAreaFilled(false);
-            exitBtn.setFocusPainted(false);
-            exitBtn.setOpaque(false);
-            exitBtn.setPreferredSize(new Dimension(100,100));
+            }
+        }
+               
+        JButton backButton = new JButton();
+        ImageIcon originalIcon = new ImageIcon(getClass().getResource("left-arrow.png"));
+        ImageIcon scaledIcon = null;
 
-            exitBar.add(Box.createHorizontalGlue());
-            exitBar.add(exitBtn);
+        if (originalIcon.getImageLoadStatus() == MediaTracker.COMPLETE) {
+            Image image = originalIcon.getImage();
+            Image newImage = image.getScaledInstance(50, 50, Image.SCALE_SMOOTH); // Scale to fit 40x30 button (e.g., 30x20 with padding)
+            scaledIcon = new ImageIcon(newImage);
+            backButton.setIcon(scaledIcon);
+        } else {
+            System.err.println("Warning: Could not load left-arrow.png, or it's not a valid image.");
+            backButton.setText("Back"); // Fallback
+        }
+
+        backButton.setPreferredSize(new Dimension(50, 50)); // Keep your desired button size
+        backButton.setBorderPainted(false);
+        backButton.setFocusPainted(false);
+        backButton.setOpaque(false); // Set to false for transparency
+        backButton.setContentAreaFilled(false);
+        backButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        backButton.addActionListener(e -> dispose());
+        
+        bottomPanel.add(backButton);
+       // bottomPanel.add(Box.createHorizontalGlue());
               
         backgroundPanel.add(cardPanel, BorderLayout.CENTER); 
         backgroundPanel.add(topBar,BorderLayout.NORTH);
-        backgroundPanel.add(exitBar,BorderLayout.SOUTH);
+        backgroundPanel.add(bottomPanel,BorderLayout.SOUTH);
 
         // Initial content will be the main product menu buttons
        //showProductMainMenu();
@@ -152,6 +179,8 @@ public class ProductFrame extends JFrame {
         setVisible(true);
     }
 
+    Font labelFont = new Font("Arial", Font.BOLD, 16);
+    Font fieldFont = new Font("Arial", Font.PLAIN, 16);
 
     private JPanel createProductForm (boolean isUpdate) {
 
@@ -163,7 +192,7 @@ public class ProductFrame extends JFrame {
         formPanel.setLayout(new GridBagLayout());
         formPanel.setOpaque(false);
         //formPanel.setBorder(BorderFactory.createEmptyBorder(50, 200, 0, 200));
-        formPanel.setBorder(BorderFactory.createLineBorder(Color.black));
+        //formPanel.setBorder(BorderFactory.createLineBorder(Color.black));
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(15, 15, 15, 15); // spacing between components
@@ -204,10 +233,6 @@ public class ProductFrame extends JFrame {
         
         gbc.gridx = 1;
         formPanel.add(costField, gbc);
-
-        Font labelFont = new Font("Arial", Font.BOLD, 16);
-        Font fieldFont = new Font("Arial", Font.PLAIN, 16);
-
         
         descLabel.setFont(labelFont);
         catLabel.setFont(labelFont);
@@ -225,9 +250,9 @@ public class ProductFrame extends JFrame {
         }
 
         JButton actionBtn = new JButton(isUpdate ? "Update Product" : "Create Product");
-        actionBtn.setFont(new Font("Arial", Font.BOLD, 18));
-        actionBtn.setForeground(new Color(0,0,205)); 
-        actionBtn.setBackground(new Color(239, 247, 255)); 
+        actionBtn.setBackground(new Color(128, 0, 128)); // Purple background
+        actionBtn.setForeground(Color.WHITE);
+        actionBtn.setFont(new Font("MinionPro", Font.BOLD, 20));
         actionBtn.setPreferredSize(new Dimension(200, 30));
         actionBtn.addActionListener(e -> createProduct());
 
@@ -253,12 +278,18 @@ public class ProductFrame extends JFrame {
 
         wrapper.setOpaque(false);
 
-        JPanel idPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        //idPanel.setPreferredSize(new Dimension(200,100));
-        idField = new JTextField(10); 
+        JPanel idPanel = new JPanel();
+        idPanel.setLayout(new BoxLayout(idPanel, BoxLayout.Y_AXIS));
+        idPanel.setPreferredSize(new Dimension(200,100));
+        idField = new JTextField(20); 
+        idField.setFont(fieldFont);
+        idField.setBorder(BorderFactory.createLineBorder(Color.GRAY,1));
         JLabel idLabel = new JLabel("Product ID to Update:");
+        idLabel.setFont(labelFont);
+        
         idPanel.add(idLabel);
         idPanel.add(idField);
+
         JPanel formPanel = createProductForm(true);
         formPanel.setMaximumSize(new Dimension(600, 500));
         formPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
