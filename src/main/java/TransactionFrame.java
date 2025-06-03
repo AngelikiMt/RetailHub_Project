@@ -8,6 +8,7 @@ import java.awt.Font;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Image;
+import java.awt.Insets;
 import java.awt.MediaTracker;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,37 +28,35 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 
 public class TransactionFrame extends JFrame {
-
     private final JPanel contentPanel;
-    private final TransactionService transactionService; // Assuming you have this service
-    private final ClientService clientService; // Assuming you have this service
-    Font customFont = new Font("MinionPro", Font.PLAIN, 25);
+    private final TransactionService transactionService;
+    private final ClientService clientService;
+    Font customFont = new Font("MinionPro", Font.PLAIN, 20);
 
     public TransactionFrame() {
         setTitle("Transaction Menu");
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
-        // Background with image - set up similarly to ClientFrame
         JPanel background = new JPanel();
         background.setOpaque(false);
         this.add(background);
-        getContentPane().setBackground(Color.WHITE); // Set background color
+        getContentPane().setBackground(Color.WHITE);
 
         // Top navigation bar
         JPanel topBar = new JPanel();
         topBar.setLayout(new BoxLayout(topBar, BoxLayout.X_AXIS));
-        topBar.setBackground(Color.WHITE);
+        topBar.setBackground(new Color(239, 247, 255));
         topBar.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
 
         // Navigation items
         String[] navItems = {"Create", "View All", "Export JSON"};
 
- // Icon Logo
         JLabel logoLabel = new JLabel();
         ImageIcon logoIcon = null;
         logoIcon = new ImageIcon(getClass().getResource("/croppedLogo.png"));
@@ -75,21 +74,19 @@ public class TransactionFrame extends JFrame {
 
         if (logoIcon != null) {
         logoLabel.setIcon(logoIcon);
-        // If you want text AND icon: logoLabel.setText("ClientMenu");
-        // If you only want the icon, you don't need font/foreground for text unless it's a fallback
         }
-        topBar.add(logoLabel);        topBar.add(Box.createHorizontalStrut(30)); // space before nav items
-
+        topBar.add(logoLabel);        
+        topBar.add(Box.createHorizontalStrut(30)); // space before nav items
         topBar.add(Box.createHorizontalGlue()); // Pushes elements to the right
 
-        Font navFont = new Font("MinionPro", Font.PLAIN, 24);
+        Font navFont = new Font("MinionPro", Font.BOLD, 20);
 
         for (String item : navItems) {
             JButton navButton = new JButton(item);
             navButton.setFont(navFont);
             navButton.setFocusPainted(false);
-            navButton.setForeground(Color.BLACK);
-            navButton.setBackground(Color.WHITE);
+            navButton.setForeground(new Color(0,0,205));
+            navButton.setBackground(new Color(239, 247, 255));
             navButton.setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 15));
             navButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
             navButton.setOpaque(true);
@@ -97,7 +94,6 @@ public class TransactionFrame extends JFrame {
             navButton.setAlignmentY(Component.CENTER_ALIGNMENT);
             navButton.setMaximumSize(new Dimension(250, 30));
 
-            // Adds spacing between buttons
             topBar.add(navButton);
             topBar.add(Box.createHorizontalStrut(10));
 
@@ -123,7 +119,7 @@ public class TransactionFrame extends JFrame {
             backButton.setText("Back");
         }
 
-        backButton.setPreferredSize(new Dimension(50, 30));
+        backButton.setPreferredSize(new Dimension(50, 50));
         backButton.setBorderPainted(false);
         backButton.setFocusPainted(false);
         backButton.setOpaque(false);
@@ -131,16 +127,21 @@ public class TransactionFrame extends JFrame {
         backButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
         backButton.addActionListener(e -> dispose());
 
-        // Add to the right side of the top bar
+        // Adds to the right side of the top bar
         topBar.add(Box.createHorizontalStrut(10));
-        topBar.add(backButton);
-
         background.setLayout(new BorderLayout());
         background.add(topBar, BorderLayout.NORTH);
 
         contentPanel = new JPanel(new BorderLayout());
         contentPanel.setOpaque(false);
         background.add(contentPanel, BorderLayout.CENTER);
+
+        // Bottom panel
+        JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        bottomPanel.setOpaque(false);
+        bottomPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 10));
+        bottomPanel.add(backButton);
+        background.add(bottomPanel, BorderLayout.SOUTH);
 
         transactionService = new TransactionService(); // Initialize TransactionService
         clientService = new ClientService(); // Initialize ClientService
@@ -151,9 +152,60 @@ public class TransactionFrame extends JFrame {
 
     private void menuCreateTransaction() {
         contentPanel.removeAll();
+        contentPanel.setLayout(new BorderLayout());
 
-        JPanel form = new JPanel(new GridLayout(0, 2, 10, 10));
-        form.setOpaque(false);
+        JPanel centerWrapper = new JPanel(new GridBagLayout());
+        centerWrapper.setOpaque(false);
+
+        JPanel borderedContentPanel = new JPanel(new BorderLayout());
+        borderedContentPanel.setOpaque(false);
+
+        TitledBorder titled = BorderFactory.createTitledBorder(
+            BorderFactory.createLineBorder(Color.GRAY, 2),
+            "",
+            TitledBorder.LEFT,
+            TitledBorder.TOP,
+            new Font("MinionPro", Font.BOLD, 20),
+            Color.DARK_GRAY
+        );
+        borderedContentPanel.setBorder(BorderFactory.createCompoundBorder(
+            titled,
+            BorderFactory.createEmptyBorder(30, 30, 30, 30)
+        ));
+
+        JLabel iconLabel = new JLabel();
+        ImageIcon addIcon = null;
+        try {
+            addIcon = new ImageIcon(getClass().getResource("/add-store.png"));
+            if (addIcon.getImageLoadStatus() == MediaTracker.COMPLETE) {
+                Image image = addIcon.getImage();
+                Image scaledImage = image.getScaledInstance(100, 100, Image.SCALE_SMOOTH);
+                addIcon = new ImageIcon(scaledImage);
+            } else {
+                System.err.println("Warning: Could not load add-store.png");
+                iconLabel.setText("Create Transaction");
+                iconLabel.setFont(new Font("MinionPro", Font.BOLD, 22));
+                iconLabel.setForeground(Color.DARK_GRAY);
+            }
+        } catch (Exception e) {
+            System.err.println("Error loading add-store.png: " + e.getMessage());
+            iconLabel.setText("Create Transaction");
+            iconLabel.setFont(new Font("MinionPro", Font.BOLD, 22));
+            iconLabel.setForeground(Color.DARK_GRAY);
+        }
+
+        if (addIcon != null) {
+            iconLabel.setIcon(addIcon);
+        }
+        iconLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        borderedContentPanel.add(iconLabel, BorderLayout.NORTH);
+
+        JPanel fieldsAndButtonPanel = new JPanel(new BorderLayout());
+        fieldsAndButtonPanel.setOpaque(false);
+        fieldsAndButtonPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0));
+
+        JPanel formFieldsPanel = new JPanel(new GridLayout(0, 2, 10, 10));
+        formFieldsPanel.setOpaque(false);
 
         JTextField clientInputField = new JTextField(15);
         JTextField storeIdField = new JTextField(15);
@@ -163,62 +215,37 @@ public class TransactionFrame extends JFrame {
         JTextField[] fields = {clientInputField, storeIdField, productIdField, quantityField};
         for (JTextField field : fields) {
             field.setFont(customFont);
-            field.setPreferredSize(new Dimension(200, 30));
+            field.setPreferredSize(new Dimension(200, 40));
             field.setBorder(BorderFactory.createCompoundBorder(
-                    field.getBorder(),
-                    BorderFactory.createEmptyBorder(5, 10, 5, 10)
+                field.getBorder(),
+                BorderFactory.createEmptyBorder(5, 10, 5, 10)
             ));
         }
 
-        JLabel clientLabel = new JLabel("Client's Email or Phone Number:");
-        clientLabel.setFont(customFont);
-        form.add(clientLabel); form.add(clientInputField);
+        formFieldsPanel.add(new JLabel("Client's Email or Phone:")).setFont(new Font("MinionPro", Font.BOLD, 20));
+        formFieldsPanel.add(clientInputField);
 
-        JLabel storeIdLabel = new JLabel("Store ID:");
-        storeIdLabel.setFont(customFont);
-        form.add(storeIdLabel); form.add(storeIdField);
+        formFieldsPanel.add(new JLabel("Store ID:")).setFont(new Font("MinionPro", Font.BOLD, 20));
+        formFieldsPanel.add(storeIdField);
 
-        JLabel productIdLabel = new JLabel("Product ID:");
-        productIdLabel.setFont(customFont);
-        form.add(productIdLabel); form.add(productIdField);
+        formFieldsPanel.add(new JLabel("Product ID:")).setFont(new Font("MinionPro", Font.BOLD, 20));
+        formFieldsPanel.add(productIdField);
 
-        JLabel quantityLabel = new JLabel("Product quantity:");
-        quantityLabel.setFont(customFont);
-        form.add(quantityLabel); form.add(quantityField);
+        formFieldsPanel.add(new JLabel("Quantity:")).setFont(new Font("MinionPro", Font.BOLD, 20));
+        formFieldsPanel.add(quantityField);
 
-        ImageIcon rawIcon = new ImageIcon(getClass().getResource("/add-store.png"));
-        Image scaledImage = rawIcon.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
-        ImageIcon icon = new ImageIcon(scaledImage);
-        JLabel titleLabel = new JLabel("", icon, JLabel.CENTER);
-        titleLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
-        titleLabel.setForeground(Color.DARK_GRAY);
-
-        TitledBorder titled = BorderFactory.createTitledBorder(
-                BorderFactory.createLineBorder(Color.GRAY, 2), "",
-                TitledBorder.CENTER,
-                TitledBorder.TOP
-        );
-
-        JPanel titledPanel = new JPanel(new BorderLayout());
-        titledPanel.setOpaque(false);
-        titledPanel.setBorder(BorderFactory.createCompoundBorder(
-            titled,
-            BorderFactory.createEmptyBorder(30, 30, 30, 30)
-        ));
-        titledPanel.add(titleLabel, BorderLayout.NORTH);
-        titledPanel.add(form, BorderLayout.CENTER);
+        fieldsAndButtonPanel.add(formFieldsPanel, BorderLayout.CENTER);
 
         JButton addProductBtn = new JButton("Add Product");
-        addProductBtn.setBackground(new Color(128, 0, 128));
-        addProductBtn.setForeground(Color.WHITE);
-        addProductBtn.setFont(new Font("MinionPro", Font.BOLD, 20));
-        addProductBtn.setPreferredSize(new Dimension(200, 40));
-
         JButton submitTransactionBtn = new JButton("Submit Transaction");
-        submitTransactionBtn.setBackground(new Color(128, 0, 128));
-        submitTransactionBtn.setForeground(Color.WHITE);
-        submitTransactionBtn.setFont(new Font("MinionPro", Font.BOLD, 20));
-        submitTransactionBtn.setPreferredSize(new Dimension(200, 40));
+
+        JButton[] buttons = {addProductBtn, submitTransactionBtn};
+        for (JButton button : buttons) {
+            button.setBackground(new Color(128, 0, 128));
+            button.setForeground(Color.WHITE);
+            button.setFont(new Font("MinionPro", Font.BOLD, 20));
+            button.setPreferredSize(new Dimension(200, 40));
+        }
 
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0));
         buttonPanel.setOpaque(false);
@@ -226,18 +253,11 @@ public class TransactionFrame extends JFrame {
         buttonPanel.add(addProductBtn);
         buttonPanel.add(submitTransactionBtn);
 
-        JPanel wrapper = new JPanel(new BorderLayout(10, 10));
-        wrapper.setOpaque(false);
-        wrapper.setBorder(BorderFactory.createEmptyBorder(80, 80, 80, 80));
-        wrapper.add(titledPanel, BorderLayout.NORTH);
-        wrapper.add(buttonPanel, BorderLayout.SOUTH);
-        wrapper.setMaximumSize(new Dimension(1000, 700));
-
-        JPanel centerWrapper = new JPanel(new GridBagLayout());
-        centerWrapper.setOpaque(false);
-        centerWrapper.add(wrapper);
-
+        fieldsAndButtonPanel.add(buttonPanel, BorderLayout.SOUTH);
+        borderedContentPanel.add(fieldsAndButtonPanel, BorderLayout.CENTER);
+        centerWrapper.add(borderedContentPanel);
         contentPanel.add(centerWrapper, BorderLayout.CENTER);
+
         contentPanel.revalidate();
         contentPanel.repaint();
 
@@ -434,7 +454,7 @@ public class TransactionFrame extends JFrame {
         contentPanel.removeAll();
         contentPanel.setLayout(new BorderLayout());
 
-        JPanel form = new JPanel(new FlowLayout());
+        JPanel form = new JPanel(new FlowLayout(FlowLayout.LEFT));
         form.setOpaque(false);
         form.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
@@ -452,15 +472,29 @@ public class TransactionFrame extends JFrame {
         showJsonBtn.setFont(customFont);
 
         JLabel enterTextLabel = new JLabel("Enter Transaction ID:");
-        enterTextLabel.setFont(customFont);
+        enterTextLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
+
         form.add(enterTextLabel);
         form.add(idField);
         form.add(showJsonBtn);
 
+        // === DISPLAY PANEL ===
         JTextArea jsonDisplayArea = new JTextArea(15, 50);
         jsonDisplayArea.setEditable(false);
-        jsonDisplayArea.setFont(new Font("Monospaced", Font.PLAIN, 18));
+        jsonDisplayArea.setFont(new Font("Monospaced", Font.PLAIN, 20));
+        jsonDisplayArea.setLineWrap(true);
+        jsonDisplayArea.setWrapStyleWord(true);
+        jsonDisplayArea.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
+        jsonDisplayArea.setBackground(Color.WHITE);
+        jsonDisplayArea.setMargin(new Insets(10, 10, 10, 10));
+
         JScrollPane scrollPane = new JScrollPane(jsonDisplayArea);
+        scrollPane.setPreferredSize(new Dimension(800, 400));
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setBorder(BorderFactory.createTitledBorder(
+                BorderFactory.createLineBorder(Color.GRAY, 1),
+                "", TitledBorder.LEFT, TitledBorder.TOP
+        ));
 
         JLabel titleLabel = new JLabel("");
         titleLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
@@ -473,24 +507,20 @@ public class TransactionFrame extends JFrame {
                 TitledBorder.TOP
         );
 
-        JPanel titledPanel = new JPanel(new BorderLayout());
-        titledPanel.setOpaque(false);
-        titledPanel.setBorder(BorderFactory.createCompoundBorder(
-                titled,
-                BorderFactory.createEmptyBorder(30, 30, 30, 30)
-        ));
-        titledPanel.add(titleLabel, BorderLayout.NORTH);
-        titledPanel.add(form, BorderLayout.CENTER);
+        // Box layout to stack vertically
+        JPanel centerPanel = new JPanel();
+        centerPanel.setOpaque(false);
+        centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
+        centerPanel.setBorder(BorderFactory.createEmptyBorder(60, 60, 60, 60));
+        centerPanel.add(form);
+        centerPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+        centerPanel.add(scrollPane);
+        centerPanel.add(Box.createRigidArea(new Dimension(0, 20)));
 
-        JPanel wrapper = new JPanel(new BorderLayout(10, 10));
-        wrapper.setOpaque(false);
-        wrapper.setBorder(BorderFactory.createEmptyBorder(80, 80, 80, 80));
-        wrapper.add(titledPanel, BorderLayout.NORTH);
-        wrapper.add(scrollPane, BorderLayout.CENTER);
-
+        // === CENTER WRAPPER FOR GRID ALIGNMENT ===
         JPanel centerWrapper = new JPanel(new GridBagLayout());
         centerWrapper.setOpaque(false);
-        centerWrapper.add(wrapper);
+        centerWrapper.add(centerPanel);
 
         contentPanel.add(centerWrapper, BorderLayout.CENTER);
 

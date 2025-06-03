@@ -4,11 +4,16 @@ import java.sql.SQLException;
 
 public class DatabaseConnector {
 
-    private static final String URL = "jdbc:mysql://localhost:3306/retailhub_db"; // άλλαξε το αν χρειάζεται
-    private static final String USER = "root";         // ή όπως λέγεται ο χρήστης σου
-    private static final String PASSWORD = "password"; // βάλε τον δικό σου κωδικό
+   private static final String URL = "jdbc:mysql://164.92.229.54:3306/retailhub_db"; 
+    private static final String USER = "retailhub"; 
+    private static final String PASSWORD = "oMada3###ftw"; 
 
     public static Connection getConnection() throws SQLException {
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+        } catch (ClassNotFoundException ex) {
+            ex.printStackTrace();
+        }
         return DriverManager.getConnection(URL, USER, PASSWORD);
     }
 }

@@ -8,6 +8,7 @@ import java.awt.Font;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Image;
+import java.awt.Insets;
 import java.awt.MediaTracker;
 import java.util.List;
 
@@ -31,7 +32,7 @@ import javax.swing.table.DefaultTableModel;
 public class StoreFrame extends JFrame {
     private final JPanel contentPanel; 
     private final StoreService storeService;
-    Font customFont = new Font("MinionPro", Font.PLAIN, 25);
+    Font customFont = new Font("MinionPro", Font.PLAIN, 20);
 
     public StoreFrame() {
         setTitle("Store Menu"); // Changed title for consistency
@@ -47,13 +48,13 @@ public class StoreFrame extends JFrame {
         // Web-style top navigation bar
         JPanel topBar = new JPanel();
         topBar.setLayout(new BoxLayout(topBar, BoxLayout.X_AXIS));
-        topBar.setBackground(Color.WHITE);
+        topBar.setBackground(new Color(239, 247, 255));
         topBar.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
 
         // Navigation items
         String[] navItems = {"Create", "Update", "Activate/Deactivate", "Show Store", "View All", "Export JSON"};
 
-         // Icon Logo
+        // Icon Logo
         JLabel logoLabel = new JLabel();
         ImageIcon logoIcon = null;
         logoIcon = new ImageIcon(getClass().getResource("/croppedLogo.png"));
@@ -71,22 +72,19 @@ public class StoreFrame extends JFrame {
 
         if (logoIcon != null) {
         logoLabel.setIcon(logoIcon);
-        // If you want text AND icon: logoLabel.setText("ClientMenu");
-        // If you only want the icon, you don't need font/foreground for text unless it's a fallback
         }
         topBar.add(logoLabel);
-        topBar.add(Box.createHorizontalStrut(30)); // space before nav items
-
+        topBar.add(Box.createHorizontalStrut(15)); // space before nav items
         topBar.add(Box.createHorizontalGlue()); // Pushes elements to the right
 
-        Font navFont = new Font("MinionPro", Font.PLAIN, 24);
+        Font navFont = new Font("MinionPro", Font.BOLD, 20);
 
         for (String item : navItems) {
             JButton navButton = new JButton(item);
             navButton.setFont(navFont);
             navButton.setFocusPainted(false);
-            navButton.setForeground(Color.BLACK);
-            navButton.setBackground(Color.WHITE);
+            navButton.setForeground(new Color(0,0,205));
+            navButton.setBackground(new Color(239, 247, 255));
             navButton.setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 15));
             navButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
             navButton.setOpaque(true);
@@ -94,8 +92,8 @@ public class StoreFrame extends JFrame {
             navButton.setAlignmentY(Component.CENTER_ALIGNMENT);
             navButton.setMaximumSize(new Dimension(250, 30));
 
-            // Adds spacing between buttons
             topBar.add(navButton);
+            // Adds spacing between buttons
             topBar.add(Box.createHorizontalStrut(10));
 
             // Adds action listeners based on button text
@@ -123,7 +121,7 @@ public class StoreFrame extends JFrame {
             backButton.setText("Back");
         }
 
-        backButton.setPreferredSize(new Dimension(50, 30));
+        backButton.setPreferredSize(new Dimension(50, 50));
         backButton.setBorderPainted(false);
         backButton.setFocusPainted(false);
         backButton.setOpaque(false);
@@ -133,7 +131,6 @@ public class StoreFrame extends JFrame {
 
         // Add to the left or right side of the top bar
         topBar.add(Box.createHorizontalStrut(10));
-        topBar.add(backButton);
 
         background.setLayout(new BorderLayout());
         background.add(topBar, BorderLayout.NORTH);
@@ -141,6 +138,13 @@ public class StoreFrame extends JFrame {
         contentPanel = new JPanel(new BorderLayout());
         contentPanel.setOpaque(false);
         background.add(contentPanel, BorderLayout.CENTER);
+
+        // Bottom panel
+        JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        bottomPanel.setOpaque(false);
+        bottomPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 10));
+        bottomPanel.add(backButton);
+        background.add(bottomPanel, BorderLayout.SOUTH);
 
         storeService = new StoreService(); // Initialize StoreService
 
@@ -171,21 +175,18 @@ public class StoreFrame extends JFrame {
     );
     borderedContentPanel.setBorder(BorderFactory.createCompoundBorder(
         titled,
-        BorderFactory.createEmptyBorder(30, 30, 30, 30) // Inner padding
+        BorderFactory.createEmptyBorder(30, 30, 30, 30)
     ));
 
-    // --- ADD ICON HERE ---
     JLabel iconLabel = new JLabel();
     ImageIcon addIcon = null;
 
     try {
-        // Option 1: Load from classpath (recommended for bundled images)
         addIcon = new ImageIcon(getClass().getResource("/add-store.png"));
 
-        // If the icon is too large or small, scale it
         if (addIcon.getImageLoadStatus() == MediaTracker.COMPLETE) {
             Image image = addIcon.getImage();
-            Image scaledImage = image.getScaledInstance(100, 100, Image.SCALE_SMOOTH); // Adjust size as needed
+            Image scaledImage = image.getScaledInstance(100, 100, Image.SCALE_SMOOTH);
             addIcon = new ImageIcon(scaledImage);
         } else {
             System.err.println("Warning: Could not load add.png, or it's not a valid image.");
@@ -201,84 +202,83 @@ public class StoreFrame extends JFrame {
         iconLabel.setFont(new Font("MinionPro", Font.BOLD, 22));
         iconLabel.setForeground(Color.DARK_GRAY);
     }
-
     if (addIcon != null) {
         iconLabel.setIcon(addIcon);
     }
 
-    iconLabel.setHorizontalAlignment(SwingConstants.CENTER); // Center the icon
-    borderedContentPanel.add(iconLabel, BorderLayout.NORTH); // Add icon at the top of the bordered panel
+    iconLabel.setHorizontalAlignment(SwingConstants.CENTER);
+    borderedContentPanel.add(iconLabel, BorderLayout.NORTH);
 
-    // Create a panel to hold the form fields and button
+    // Creates a panel to hold the form fields and button
     JPanel fieldsAndButtonPanel = new JPanel(new BorderLayout());
     fieldsAndButtonPanel.setOpaque(false);
     fieldsAndButtonPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0)); // Padding below icon
 
-    // Form layout (your existing GridLayout for fields)
+    // Form layout
     JPanel formFieldsPanel = new JPanel(new GridLayout(0, 2, 10, 10));
     formFieldsPanel.setOpaque(false);
 
     JTextField nameField = new JTextField(15);
     nameField.setFont(customFont);
-    nameField.setPreferredSize(new Dimension(200, 30));
+    nameField.setPreferredSize(new Dimension(200, 10));
     nameField.setBorder(BorderFactory.createCompoundBorder(
         nameField.getBorder(),
-        BorderFactory.createEmptyBorder(5, 10, 5, 10)
+        BorderFactory.createEmptyBorder(1, 5, 1, 5)
     ));
 
     JTextField addressField = new JTextField(15);
     addressField.setFont(customFont);
-    addressField.setPreferredSize(new Dimension(200, 30));
+    addressField.setPreferredSize(new Dimension(200, 10));
     addressField.setBorder(BorderFactory.createCompoundBorder(
         addressField.getBorder(),
-        BorderFactory.createEmptyBorder(5, 10, 5, 10)
+        BorderFactory.createEmptyBorder(1, 5, 1, 5)
     ));
 
     JTextField cityField = new JTextField(15);
     cityField.setFont(customFont);
-    cityField.setPreferredSize(new Dimension(200, 30));
+    cityField.setPreferredSize(new Dimension(200, 10));
     cityField.setBorder(BorderFactory.createCompoundBorder(
         cityField.getBorder(),
-        BorderFactory.createEmptyBorder(5, 10, 5, 10)
+        BorderFactory.createEmptyBorder(1, 5, 1, 5)
     ));
 
     JTextField countryField = new JTextField(15);
     countryField.setFont(customFont);
-    countryField.setPreferredSize(new Dimension(200, 30));
+    countryField.setPreferredSize(new Dimension(200, 10));
     countryField.setBorder(BorderFactory.createCompoundBorder(
         countryField.getBorder(),
-        BorderFactory.createEmptyBorder(5, 10, 5, 10)
+        BorderFactory.createEmptyBorder(1, 5, 1, 5)
     ));
 
     JTextField phoneField = new JTextField(15);
     phoneField.setFont(customFont);
-    phoneField.setPreferredSize(new Dimension(200, 30));
+    phoneField.setPreferredSize(new Dimension(200, 10));
     phoneField.setBorder(BorderFactory.createCompoundBorder(
         phoneField.getBorder(),
-        BorderFactory.createEmptyBorder(5, 10, 5, 10)
+        BorderFactory.createEmptyBorder(1, 5, 1, 5)
     ));
 
     JLabel nameLabel = new JLabel("Name:");
-    nameLabel.setFont(customFont);
+    nameLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
     formFieldsPanel.add(nameLabel); formFieldsPanel.add(nameField);
 
     JLabel addressLabel = new JLabel("Address:");
-    addressLabel.setFont(customFont);
+    addressLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
     formFieldsPanel.add(addressLabel); formFieldsPanel.add(addressField);
 
     JLabel cityLabel = new JLabel("City:");
-    cityLabel.setFont(customFont);
+    cityLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
     formFieldsPanel.add(cityLabel); formFieldsPanel.add(cityField);
 
     JLabel countryLabel = new JLabel("Country:");
-    countryLabel.setFont(customFont);
+    countryLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
     formFieldsPanel.add(countryLabel); formFieldsPanel.add(countryField);
 
     JLabel phoneLabel = new JLabel("Phone Number:");
-    phoneLabel.setFont(customFont);
+    phoneLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
     formFieldsPanel.add(phoneLabel); formFieldsPanel.add(phoneField);
 
-    // Add formFieldsPanel to the center of the fieldsAndButtonPanel
+    // Adds formFieldsPanel to the center of the fieldsAndButtonPanel
     fieldsAndButtonPanel.add(formFieldsPanel, BorderLayout.CENTER);
 
     // Submit button
@@ -312,13 +312,7 @@ public class StoreFrame extends JFrame {
                 return;
             }
 
-            Store store = storeService.createStore(
-                nameField.getText(),
-                addressField.getText(),
-                cityField.getText(),
-                countryField.getText(),
-                phoneField.getText()
-            );
+            Store store = storeService.createStore(nameField.getText(), addressField.getText(), cityField.getText(), countryField.getText(), phoneField.getText());
 
             if (store != null) {
                 JOptionPane.showMessageDialog(contentPanel, "Store created with ID: " + store.getStoreId(), "Success", JOptionPane.INFORMATION_MESSAGE);
@@ -346,7 +340,7 @@ public class StoreFrame extends JFrame {
     private void menuUpdateStore() {
         contentPanel.removeAll();
 
-        JPanel form = new JPanel(new GridLayout(0, 2, 10, 10));
+        JPanel form = new JPanel(new GridLayout(0, 2, 8, 8));
         form.setOpaque(false);
 
         JTextField idField = new JTextField(15);
@@ -359,35 +353,35 @@ public class StoreFrame extends JFrame {
         JTextField[] fields = {idField, nameField, addressField, cityField, countryField, phoneField};
         for (JTextField field : fields) {
             field.setFont(customFont);
-            field.setPreferredSize(new Dimension(200, 30));
+            field.setPreferredSize(new Dimension(200, 35));
             field.setBorder(BorderFactory.createCompoundBorder(
                 field.getBorder(),
-                BorderFactory.createEmptyBorder(5, 10, 5, 10)
+                BorderFactory.createEmptyBorder(0, 8, 0, 8)
             ));
         }
 
         JLabel idLabel = new JLabel("Store ID:");
-        idLabel.setFont(customFont);
+        idLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
         form.add(idLabel); form.add(idField);
 
         JLabel nameLabel = new JLabel("New Name (optional):");
-        nameLabel.setFont(customFont);
+        nameLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
         form.add(nameLabel); form.add(nameField);
 
         JLabel addressLabel = new JLabel("New Address (optional):");
-        addressLabel.setFont(customFont);
+        addressLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
         form.add(addressLabel); form.add(addressField);
 
         JLabel cityLabel = new JLabel("New City (optional):");
-        cityLabel.setFont(customFont);
+        cityLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
         form.add(cityLabel); form.add(cityField);
 
         JLabel countryLabel = new JLabel("New Country (optional):");
-        countryLabel.setFont(customFont);
+        countryLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
         form.add(countryLabel); form.add(countryField);
 
         JLabel phoneLabel = new JLabel("New Phone (optional):");
-        phoneLabel.setFont(customFont);
+        phoneLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
         form.add(phoneLabel); form.add(phoneField);
 
         ImageIcon rawIcon = new ImageIcon(getClass().getResource("/refresh.png"));
@@ -396,10 +390,11 @@ public class StoreFrame extends JFrame {
         JLabel titleLabel = new JLabel("", icon, JLabel.CENTER);
         titleLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
         titleLabel.setForeground(Color.DARK_GRAY);
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(10, 30, 40, 30));
 
         TitledBorder titled = BorderFactory.createTitledBorder(
             BorderFactory.createLineBorder(Color.GRAY, 1),
-            "", // no text
+            "",
             TitledBorder.CENTER,
             TitledBorder.TOP
         );
@@ -408,7 +403,7 @@ public class StoreFrame extends JFrame {
         titledPanel.setOpaque(false);
         titledPanel.setBorder(BorderFactory.createCompoundBorder(
             titled,
-            BorderFactory.createEmptyBorder(30, 30, 30, 30)
+            BorderFactory.createEmptyBorder(5, 30, 30, 30)
         ));
         titledPanel.add(titleLabel, BorderLayout.NORTH);
         titledPanel.add(form, BorderLayout.CENTER);
@@ -492,7 +487,7 @@ public class StoreFrame extends JFrame {
         ));
 
         JLabel idLabel = new JLabel("Store ID to change Status:");
-        idLabel.setFont(customFont);
+        idLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
         form.add(idLabel);
         form.add(idField);
 
@@ -576,7 +571,7 @@ public class StoreFrame extends JFrame {
         idField.setPreferredSize(new Dimension(200, 30));
         idField.setBorder(BorderFactory.createCompoundBorder(
             idField.getBorder(),
-            BorderFactory.createEmptyBorder(5, 10, 5, 10)
+            BorderFactory.createEmptyBorder(2, 10, 2, 10)
         ));
 
         JButton search = new JButton("Search");
@@ -585,7 +580,7 @@ public class StoreFrame extends JFrame {
         search.setFont(customFont);
 
         JLabel enterTextLabel = new JLabel("Enter Store ID:");
-        enterTextLabel.setFont(customFont);
+        enterTextLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
         form.add(enterTextLabel);
         form.add(idField);
         form.add(search);
@@ -597,25 +592,22 @@ public class StoreFrame extends JFrame {
 
         JPanel topSection = new JPanel(new BorderLayout());
         topSection.setOpaque(false);
-        topSection.add(form, BorderLayout.NORTH); // Adjusted to put input/search at the top
+        topSection.add(form, BorderLayout.NORTH);
 
-        JLabel titleLabel = new JLabel(""); // Added text to title
+        JLabel titleLabel = new JLabel("");
         titleLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
         titleLabel.setForeground(Color.DARK_GRAY);
 
         TitledBorder titled = BorderFactory.createTitledBorder(
             BorderFactory.createLineBorder(Color.GRAY, 1),
-            "", // no text
+            "",
             TitledBorder.LEFT,
             TitledBorder.TOP
         );
 
         JPanel titledPanel = new JPanel(new BorderLayout());
         titledPanel.setOpaque(false);
-        titledPanel.setBorder(BorderFactory.createCompoundBorder(
-            titled,
-            BorderFactory.createEmptyBorder(30, 30, 30, 30)
-        ));
+        titledPanel.setBorder(BorderFactory.createEmptyBorder(10, 30, 10, 30));
         titledPanel.add(titleLabel, BorderLayout.NORTH);
         titledPanel.add(form, BorderLayout.CENTER);
 
@@ -623,8 +615,8 @@ public class StoreFrame extends JFrame {
         JPanel wrapper = new JPanel(new BorderLayout(10, 10));
         wrapper.setOpaque(false);
         wrapper.setBorder(BorderFactory.createEmptyBorder(80, 80, 80, 80));
-        wrapper.add(titledPanel, BorderLayout.NORTH); // Changed to NORTH to make room for results
-        wrapper.add(scroll, BorderLayout.CENTER); // Added scrollable result area
+        wrapper.add(titledPanel, BorderLayout.NORTH);
+        wrapper.add(scroll, BorderLayout.CENTER);
 
         JPanel centerWrapper = new JPanel(new GridBagLayout());
         centerWrapper.setOpaque(false);
@@ -657,8 +649,8 @@ public class StoreFrame extends JFrame {
         contentPanel.repaint();
     }
 
-    private DefaultTableModel storeTableModel; // Keep reference to table model
-    private JTable storeTable; // Keep reference to table
+    private DefaultTableModel storeTableModel;
+    private JTable storeTable;
 
     private void menuViewAllStores() {
         contentPanel.removeAll();
@@ -666,7 +658,7 @@ public class StoreFrame extends JFrame {
 
         JPanel tableDisplayPanel = new JPanel(new BorderLayout());
         tableDisplayPanel.setOpaque(false);
-        tableDisplayPanel.setBorder(BorderFactory.createEmptyBorder(50, 50, 50, 50)); // Padding
+        tableDisplayPanel.setBorder(BorderFactory.createEmptyBorder(50, 50, 50, 50));
 
         storeTableModel = new DefaultTableModel(new String[]{"ID", "Name", "Address", "City", "Country", "Phone", "Active"}, 0) {
             @Override
@@ -675,14 +667,14 @@ public class StoreFrame extends JFrame {
             }
         };
         storeTable = new JTable(storeTableModel);
-        storeTable.setFont(new Font("MinionPro", Font.PLAIN, 18)); // Custom font
-        storeTable.getTableHeader().setFont(new Font("MinionPro", Font.BOLD, 20)); // Custom font for header
-        storeTable.setRowHeight(30); // Larger row height
+        storeTable.setFont(new Font("MinionPro", Font.PLAIN, 18));
+        storeTable.getTableHeader().setFont(new Font("MinionPro", Font.BOLD, 20));
+        storeTable.setRowHeight(30);
 
         JScrollPane scrollPane = new JScrollPane(storeTable);
         tableDisplayPanel.add(scrollPane, BorderLayout.CENTER);
 
-        ImageIcon rawIcon = new ImageIcon(getClass().getResource("/refresh.png")); // Example icon
+        ImageIcon rawIcon = new ImageIcon(getClass().getResource("/refresh.png"));
         Image scaledImage = rawIcon.getImage().getScaledInstance(40, 40, Image.SCALE_SMOOTH);
         ImageIcon icon = new ImageIcon(scaledImage);
 
@@ -705,8 +697,7 @@ public class StoreFrame extends JFrame {
         ));
         titledPanel.add(titleLabel, BorderLayout.NORTH);
 
-
-        // Add the titled panel to the NORTH of the table display panel
+        // Adds the titled panel to the NORTH of the table display panel
         JPanel overallPanel = new JPanel(new BorderLayout());
         overallPanel.setOpaque(false);
         overallPanel.add(titledPanel, BorderLayout.NORTH);
@@ -715,14 +706,14 @@ public class StoreFrame extends JFrame {
         contentPanel.add(overallPanel, BorderLayout.CENTER);
 
 
-        refreshStoreTable(); // Populate table on display
+        refreshStoreTable(); // Populates table on display
 
         contentPanel.revalidate();
         contentPanel.repaint();
     }
 
     private void refreshStoreTable() {
-        storeTableModel.setRowCount(0); // Clear existing data
+        storeTableModel.setRowCount(0); // Clears existing data
         List<Store> allStores = storeService.getStores();
         for (Store s : allStores) {
             storeTableModel.addRow(new Object[]{
@@ -735,9 +726,13 @@ public class StoreFrame extends JFrame {
         contentPanel.removeAll();
         contentPanel.setLayout(new BorderLayout());
 
-        JPanel form = new JPanel(new FlowLayout());
+        // === INPUT PANEL ===
+        JPanel form = new JPanel(new FlowLayout(FlowLayout.LEFT));
         form.setOpaque(false);
-        form.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        form.setBorder(BorderFactory.createEmptyBorder(20, 20, 10, 20));
+
+        JLabel enterTextLabel = new JLabel("Enter Store ID:");
+        enterTextLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
 
         JTextField idField = new JTextField(15);
         idField.setFont(customFont);
@@ -752,61 +747,47 @@ public class StoreFrame extends JFrame {
         showJsonBtn.setForeground(Color.WHITE);
         showJsonBtn.setFont(customFont);
 
-        JLabel enterTextLabel = new JLabel("Enter Store ID:");
-        enterTextLabel.setFont(customFont);
         form.add(enterTextLabel);
         form.add(idField);
         form.add(showJsonBtn);
 
-        JTextArea jsonDisplayArea = new JTextArea(15, 50);
+        // === DISPLAY AREA ===
+        JTextArea jsonDisplayArea = new JTextArea(10, 50);
         jsonDisplayArea.setEditable(false);
-        jsonDisplayArea.setFont(new Font("Monospaced", Font.PLAIN, 18)); // Larger font for JSON
-        JScrollPane scrollPane = new JScrollPane(jsonDisplayArea);
+        jsonDisplayArea.setFont(new Font("Monospaced", Font.PLAIN, 20));
+        jsonDisplayArea.setLineWrap(true);
+        jsonDisplayArea.setWrapStyleWord(true);
+        jsonDisplayArea.setBackground(Color.WHITE);
+        jsonDisplayArea.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
+        jsonDisplayArea.setMargin(new Insets(10, 10, 10, 10));
 
+        // === WRAPPER TO STACK INPUT + DISPLAY ===
+        JPanel stackedPanel = new JPanel();
+        stackedPanel.setLayout(new BoxLayout(stackedPanel, BoxLayout.Y_AXIS));
+        stackedPanel.setOpaque(false);
+        stackedPanel.setBorder(BorderFactory.createEmptyBorder(60, 60, 60, 60));
+        stackedPanel.add(form);
+        stackedPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+        stackedPanel.add(jsonDisplayArea);
 
-        JPanel topSection = new JPanel(new BorderLayout());
-        topSection.setOpaque(false);
-        topSection.add(form, BorderLayout.NORTH);
-
-        JLabel titleLabel = new JLabel("");
-        titleLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
-        titleLabel.setForeground(Color.DARK_GRAY);
-
-        TitledBorder titled = BorderFactory.createTitledBorder(
-            BorderFactory.createLineBorder(Color.GRAY, 1),
-            "", // no text
-            TitledBorder.LEFT,
-            TitledBorder.TOP
-        );
-
-        JPanel titledPanel = new JPanel(new BorderLayout());
-        titledPanel.setOpaque(false);
-        titledPanel.setBorder(BorderFactory.createCompoundBorder(
-            titled,
-            BorderFactory.createEmptyBorder(30, 30, 30, 30)
-        ));
-        titledPanel.add(titleLabel, BorderLayout.NORTH);
-        titledPanel.add(form, BorderLayout.CENTER);
-
-        JPanel wrapper = new JPanel(new BorderLayout(10, 10));
-        wrapper.setOpaque(false);
-        wrapper.setBorder(BorderFactory.createEmptyBorder(80, 80, 80, 80));
-        wrapper.add(titledPanel, BorderLayout.NORTH);
-        wrapper.add(scrollPane, BorderLayout.CENTER);
-
+        // === CENTER WRAPPER FOR GRID ALIGNMENT ===
         JPanel centerWrapper = new JPanel(new GridBagLayout());
         centerWrapper.setOpaque(false);
-        centerWrapper.add(wrapper);
+        centerWrapper.add(stackedPanel);
 
+        // === ADD TO CONTENT PANEL ===
         contentPanel.add(centerWrapper, BorderLayout.CENTER);
 
+        // === BUTTON LOGIC ===
         showJsonBtn.addActionListener(e -> {
             try {
-                if (idField.getText().trim().isEmpty()) {
+                String input = idField.getText().trim();
+                if (input.isEmpty()) {
                     jsonDisplayArea.setText("Please enter a Store ID to view JSON.");
                     return;
                 }
-                int id = Integer.parseInt(idField.getText());
+
+                int id = Integer.parseInt(input);
                 String json = storeService.getStoreAsJson(id);
                 if (json != null && !json.contains("Store not found")) {
                     jsonDisplayArea.setText(json);
@@ -822,5 +803,4 @@ public class StoreFrame extends JFrame {
 
         contentPanel.revalidate();
         contentPanel.repaint();
-    }
-}
+}}

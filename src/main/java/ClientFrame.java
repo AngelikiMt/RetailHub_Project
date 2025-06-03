@@ -8,6 +8,7 @@ import java.awt.Font;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Image;
+import java.awt.Insets;
 import java.awt.MediaTracker;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -35,7 +36,7 @@ import javax.swing.table.DefaultTableModel;
 
 public class ClientFrame extends JFrame {
     private final JPanel contentPanel;
-    Font customFont = new Font("MinionPro", Font.PLAIN, 25);
+    Font customFont = new Font("MinionPro", Font.PLAIN, 20);
     // Table model and table for "View All Clients" to be accessible for refresh
     private DefaultTableModel clientTableModel;
     private JTable clientTable;
@@ -47,7 +48,6 @@ public class ClientFrame extends JFrame {
 
         JPanel background = new JPanel();
         background.setOpaque(false);
-        
         this.add(background);
         getContentPane().setBackground(Color.WHITE);
 
@@ -61,14 +61,14 @@ public class ClientFrame extends JFrame {
             }
         };
         clientTable = new JTable(clientTableModel);
-        clientTable.setFont(new Font("MinionPro", Font.PLAIN, 18));
-        clientTable.getTableHeader().setFont(new Font("MinionPro", Font.BOLD, 20));
+        clientTable.setFont(new Font("MinionPro", Font.PLAIN, 15));
+        clientTable.getTableHeader().setFont(new Font("MinionPro", Font.BOLD, 17));
         clientTable.setRowHeight(30);
 
         // Top navigation bar
         JPanel topBar = new JPanel();
         topBar.setLayout(new BoxLayout(topBar, BoxLayout.X_AXIS));
-        topBar.setBackground(Color.WHITE);
+        topBar.setBackground(new Color(239, 247, 255));
         topBar.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
 
         // Navigation items
@@ -93,32 +93,29 @@ public class ClientFrame extends JFrame {
 
         if (logoIcon != null) {
         logoLabel.setIcon(logoIcon);
-        // If you want text AND icon: logoLabel.setText("ClientMenu");
-        // If you only want the icon, you don't need font/foreground for text unless it's a fallback
         }
         topBar.add(logoLabel);
-        topBar.add(Box.createHorizontalStrut(30)); // space before nav items
-
+        topBar.add(Box.createHorizontalStrut(15)); // space before nav items
         topBar.add(Box.createHorizontalGlue());
 
-        Font navFont = new Font("MinionPro", Font.PLAIN, 24);
+        Font navFont = new Font("MinionPro", Font.BOLD, 20);
 
         for (String item : navItems) {
             JButton navButton = new JButton(item);
             navButton.setFont(navFont);
             navButton.setFocusPainted(false);
-            navButton.setForeground(Color.BLACK);
-            navButton.setBackground(Color.WHITE);
+            navButton.setForeground(new Color(0,0,205)); // Light blue background
+            navButton.setBackground(new Color(239, 247, 255)); // Blue text
             navButton.setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 15));
             navButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
             navButton.setOpaque(true);
             navButton.setBorderPainted(false);
             navButton.setAlignmentY(Component.CENTER_ALIGNMENT);
             navButton.setMaximumSize(new Dimension(250, 30));
-
-            // Adds spacing between buttons
+            
             topBar.add(navButton);
-            topBar.add(Box.createHorizontalStrut(10));
+            // Adds spacing between buttons
+            topBar.add(Box.createHorizontalStrut(5));
 
             // Adds action listeners based on button text
             switch (item) {
@@ -138,7 +135,7 @@ public class ClientFrame extends JFrame {
 
         if (originalIcon.getImageLoadStatus() == MediaTracker.COMPLETE) {
             Image image = originalIcon.getImage();
-            Image newImage = image.getScaledInstance(50, 50, Image.SCALE_SMOOTH); // Scale to fit 40x30 button (e.g., 30x20 with padding)
+            Image newImage = image.getScaledInstance(50, 50, Image.SCALE_SMOOTH);
             scaledIcon = new ImageIcon(newImage);
             backButton.setIcon(scaledIcon);
         } else {
@@ -146,29 +143,34 @@ public class ClientFrame extends JFrame {
             backButton.setText("Back"); // Fallback
         }
 
-        backButton.setPreferredSize(new Dimension(50, 30)); // Keep your desired button size
+        backButton.setPreferredSize(new Dimension(50, 50));
         backButton.setBorderPainted(false);
         backButton.setFocusPainted(false);
-        backButton.setOpaque(false); // Set to false for transparency
+        backButton.setOpaque(false);
         backButton.setContentAreaFilled(false);
         backButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
         backButton.addActionListener(e -> dispose());
         // Adds to the right side of the top bar
         topBar.add(Box.createHorizontalStrut(10));
-        topBar.add(backButton);
 
         background.setLayout(new BorderLayout());
         background.add(topBar, BorderLayout.NORTH);
 
         contentPanel = new JPanel(new BorderLayout());
         contentPanel.setOpaque(false);
-        background.add(contentPanel, BorderLayout.CENTER); 
+        background.add(contentPanel, BorderLayout.CENTER);
+        
+        // Bottom panel
+        JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        bottomPanel.setOpaque(false);
+        bottomPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 10));
+        bottomPanel.add(backButton);
+        background.add(bottomPanel, BorderLayout.SOUTH);
 
         menuCreateClient(); // Shows create form by default
         setVisible(true); // Shows window
     }
 
-    // Creates a new client
     private void menuCreateClient() {
         contentPanel.removeAll(); // Clears previous content
         contentPanel.setLayout(new BorderLayout());
@@ -203,7 +205,7 @@ public class ClientFrame extends JFrame {
 
             if (addIcon.getImageLoadStatus() == MediaTracker.COMPLETE) {
                 Image image = addIcon.getImage();
-                Image scaledImage = image.getScaledInstance(100, 100, Image.SCALE_SMOOTH); // Adjust size as needed
+                Image scaledImage = image.getScaledInstance(100, 100, Image.SCALE_SMOOTH);
                 addIcon = new ImageIcon(scaledImage);
             } else {
                 System.err.println("Warning: Could not load add.png, or it's not a valid image.");
@@ -219,7 +221,6 @@ public class ClientFrame extends JFrame {
             iconLabel.setFont(new Font("MinionPro", Font.BOLD, 22));
             iconLabel.setForeground(Color.DARK_GRAY);
         }
-
         if (addIcon != null) {
             iconLabel.setIcon(addIcon);
         }
@@ -227,51 +228,51 @@ public class ClientFrame extends JFrame {
         iconLabel.setHorizontalAlignment(SwingConstants.CENTER);
         borderedContentPanel.add(iconLabel, BorderLayout.NORTH);
 
-        // Create a panel to hold the form fields and button
+        // Creates a panel to hold the form fields and button
         JPanel fieldsAndButtonPanel = new JPanel(new BorderLayout());
         fieldsAndButtonPanel.setOpaque(false);
         fieldsAndButtonPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0)); // Padding below icon
 
-        // Form layout (your existing GridLayout for fields)
+        // Form layout
         JPanel formFieldsPanel = new JPanel(new GridLayout(0, 2, 10, 10));
         formFieldsPanel.setOpaque(false);
 
         JTextField fname = new JTextField(15);
         fname.setFont(customFont);
-        fname.setPreferredSize(new Dimension(200, 30));
+        fname.setPreferredSize(new Dimension(200, 10));
         fname.setBorder(BorderFactory.createCompoundBorder(
             fname.getBorder(),
-            BorderFactory.createEmptyBorder(5, 10, 5, 10)
+            BorderFactory.createEmptyBorder(1, 5, 1, 5)
         ));
 
         JTextField lname = new JTextField(15);
         lname.setFont(customFont);
-        lname.setPreferredSize(new Dimension(200, 30));
+        lname.setPreferredSize(new Dimension(200, 10));
         lname.setBorder(BorderFactory.createCompoundBorder(
             lname.getBorder(),
-            BorderFactory.createEmptyBorder(5, 10, 5, 10)
+            BorderFactory.createEmptyBorder(1, 5, 1, 5)
         ));
 
         JTextField phone = new JTextField(15);
         phone.setFont(customFont);
-        phone.setPreferredSize(new Dimension(200, 30));
+        phone.setPreferredSize(new Dimension(200, 10));
         phone.setBorder(BorderFactory.createCompoundBorder(
             phone.getBorder(),
-            BorderFactory.createEmptyBorder(5, 10, 5, 10)
+            BorderFactory.createEmptyBorder(1, 5, 1, 5)
         ));
 
         JTextField email = new JTextField(15);
         email.setFont(customFont);
-        email.setPreferredSize(new Dimension(200, 30));
+        email.setPreferredSize(new Dimension(200, 10));
         email.setBorder(BorderFactory.createCompoundBorder(
             email.getBorder(),
-            BorderFactory.createEmptyBorder(5, 10, 5, 10)
+            BorderFactory.createEmptyBorder(1, 5, 1, 5)
         ));
 
         String[] genderOptions = {"MALE", "FEMALE", "OTHER"};
         JComboBox<String> genderBox = new JComboBox<>(genderOptions);
         genderBox.setFont(customFont);
-        genderBox.setPreferredSize(new Dimension(200, 30));
+        genderBox.setPreferredSize(new Dimension(200, 10));
         genderBox.setBorder(BorderFactory.createCompoundBorder(
             genderBox.getBorder(),
             BorderFactory.createEmptyBorder(5, 10, 5, 10)
@@ -287,27 +288,27 @@ public class ClientFrame extends JFrame {
 
         // Add fields to formFieldsPanel
         JLabel label = new JLabel("First Name:");
-        label.setFont(customFont);
+        label.setFont(new Font("MinionPro", Font.BOLD, 20));
         formFieldsPanel.add(label); formFieldsPanel.add(fname);
 
         JLabel lLabel = new JLabel("Last Name:");
-        lLabel.setFont(customFont);
+        lLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
         formFieldsPanel.add(lLabel); formFieldsPanel.add(lname);
 
         JLabel pLabel = new JLabel("Phone Number:");
-        pLabel.setFont(customFont);
+        pLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
         formFieldsPanel.add(pLabel); formFieldsPanel.add(phone);
 
         JLabel eLabel = new JLabel("Email:");
-        eLabel.setFont(customFont);
+        eLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
         formFieldsPanel.add(eLabel); formFieldsPanel.add(email);
 
         JLabel gLabel = new JLabel("Gender:");
-        gLabel.setFont(customFont);
+        gLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
         formFieldsPanel.add(gLabel); formFieldsPanel.add(genderBox);
 
         JLabel bLabel = new JLabel("Birth Date (dd/MM/yyyy):");
-        bLabel.setFont(customFont);
+        bLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
         formFieldsPanel.add(bLabel); formFieldsPanel.add(birth);
 
         // Adds formFieldsPanel to the center of the fieldsAndButtonPanel
@@ -325,7 +326,6 @@ public class ClientFrame extends JFrame {
         buttonPanel.add(submit);
 
         fieldsAndButtonPanel.add(buttonPanel, BorderLayout.SOUTH);
-
         borderedContentPanel.add(fieldsAndButtonPanel, BorderLayout.CENTER);
 
         centerWrapper.add(borderedContentPanel);
@@ -350,7 +350,6 @@ public class ClientFrame extends JFrame {
                 email.setText("");
                 birth.setText("");
                 genderBox.setSelectedIndex(0); // Reset gender to first option
-
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(contentPanel, ex.getMessage(), "Validation Error", JOptionPane.ERROR_MESSAGE);
                 ex.printStackTrace(); // Print stack trace for debugging
@@ -402,19 +401,19 @@ public class ClientFrame extends JFrame {
 
     // Add fields to form
     JLabel fLabel = new JLabel("First Name:");
-    fLabel.setFont(customFont);
+    fLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
     form.add(fLabel); form.add(newFname);
 
     JLabel lLabel = new JLabel("Last Name:");
-    lLabel.setFont(customFont);
+    lLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
     form.add(lLabel); form.add(newLname);
 
     JLabel eLabel = new JLabel("Email:");
-    eLabel.setFont(customFont);
+    eLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
     form.add(eLabel); form.add(newEmail);
 
     JLabel pLabel = new JLabel("Phone Number:");
-    pLabel.setFont(customFont);
+    pLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
     form.add(pLabel); form.add(newPhone);
 
     // Title with icon
@@ -424,11 +423,12 @@ public class ClientFrame extends JFrame {
     JLabel titleLabel = new JLabel("", icon, JLabel.CENTER);
     titleLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
     titleLabel.setForeground(Color.DARK_GRAY);
+    titleLabel.setBorder(BorderFactory.createEmptyBorder(10, 30, 40, 30));
 
     // Custom titled border
     TitledBorder titled = BorderFactory.createTitledBorder(
         BorderFactory.createLineBorder(Color.GRAY, 1),
-        "", // no text here
+        "",
         TitledBorder.LEFT,
         TitledBorder.TOP
     );
@@ -438,7 +438,7 @@ public class ClientFrame extends JFrame {
     titledPanel.setOpaque(false);
     titledPanel.setBorder(BorderFactory.createCompoundBorder(
         titled,
-        BorderFactory.createEmptyBorder(30, 30, 30, 30)
+        BorderFactory.createEmptyBorder(5, 30, 30, 30)
     ));
     titledPanel.add(titleLabel, BorderLayout.NORTH);
     titledPanel.add(form, BorderLayout.CENTER);
@@ -513,7 +513,7 @@ public class ClientFrame extends JFrame {
     search.setFont(customFont);
 
     JLabel enterTextLabel = new JLabel("Enter Email or Phone Number:");
-    enterTextLabel.setFont(customFont);
+    enterTextLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
     form.add(enterTextLabel);
     form.add(inputField);
     form.add(search);
@@ -536,10 +536,8 @@ public class ClientFrame extends JFrame {
 
     JPanel titledPanel = new JPanel(new BorderLayout());
     titledPanel.setOpaque(false);
-    titledPanel.setBorder(BorderFactory.createCompoundBorder(
-            titled,
-            BorderFactory.createEmptyBorder(30, 30, 30, 30)
-    ));
+    titledPanel.setBorder(BorderFactory.createEmptyBorder(10, 30, 10, 30)
+    );
     titledPanel.add(titleLabel, BorderLayout.NORTH);
     titledPanel.add(form, BorderLayout.CENTER);
 
@@ -557,14 +555,14 @@ public class ClientFrame extends JFrame {
 
     search.addActionListener(e -> {
         try {
-            String input = inputField.getText().trim(); // Trim whitespace
+            String input = inputField.getText().trim();
             if (input.isEmpty()) {
                 resultArea.setText("Please enter an email or phone number.");
                 return;
             }
 
             Optional<Client> clientOptional = ClientService.getClientDAO().getAllClients().stream()
-                    .filter(c -> input.equalsIgnoreCase(c.getEmail()) || input.equals(c.getPhoneNumber())) // Case-insensitive email check
+                    .filter(c -> input.equalsIgnoreCase(c.getEmail()) || input.equals(c.getPhoneNumber()))
                     .findFirst();
 
             if (clientOptional.isPresent()) {
@@ -629,6 +627,7 @@ public class ClientFrame extends JFrame {
     private void menuDeleteClient() {
         contentPanel.removeAll();
         contentPanel.setLayout(new BorderLayout());
+        contentPanel.setBackground(Color.WHITE);
 
         JPanel form = new JPanel(new BorderLayout());
         form.setBorder(BorderFactory.createTitledBorder(
@@ -639,6 +638,7 @@ public class ClientFrame extends JFrame {
             new Font("MinionPro", Font.BOLD, 20),
             Color.DARK_GRAY
         ));
+        form.setBackground(Color.WHITE);
 
         JTextField inputField = new JTextField(20);
         inputField.setFont(customFont);
@@ -655,10 +655,11 @@ public class ClientFrame extends JFrame {
 
         JPanel topPanel = new JPanel(new FlowLayout());
         JLabel enterTextLabel = new JLabel("Enter Email or Phone:");
-        enterTextLabel.setFont(customFont);
+        enterTextLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
         topPanel.add(enterTextLabel);        
         topPanel.add(inputField);
         topPanel.add(delete);
+        topPanel.setBackground(Color.WHITE);
 
         form.add(topPanel, BorderLayout.NORTH);
 
@@ -689,6 +690,7 @@ public class ClientFrame extends JFrame {
     private void menuDeleteInactiveClients() {
         contentPanel.removeAll();
         contentPanel.setLayout(new BorderLayout());
+        contentPanel.setBackground(Color.WHITE);
 
         JPanel form = new JPanel(new BorderLayout());
         form.setBorder(BorderFactory.createTitledBorder(
@@ -699,6 +701,7 @@ public class ClientFrame extends JFrame {
             new Font("MinionPro", Font.BOLD, 20),
             Color.DARK_GRAY
         ));
+        form.setBackground(Color.WHITE);
 
         JTextField pinField = new JPasswordField(10);
         pinField.setFont(customFont);
@@ -715,10 +718,11 @@ public class ClientFrame extends JFrame {
 
         JPanel centerPanel = new JPanel(new FlowLayout());
         JLabel enterTextLabel = new JLabel("Enter Admin PIN:");
-        enterTextLabel.setFont(customFont);
+        enterTextLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
         centerPanel.add(enterTextLabel);
         centerPanel.add(pinField);
         centerPanel.add(confirm);
+        centerPanel.setBackground(Color.WHITE);
 
         form.add(centerPanel, BorderLayout.CENTER);
 
@@ -771,16 +775,19 @@ public class ClientFrame extends JFrame {
         contentPanel.removeAll();
         contentPanel.setLayout(new BorderLayout());
 
-        JPanel form = new JPanel(new FlowLayout());
-        form.setOpaque(false);
-        form.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        JPanel inputPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        inputPanel.setOpaque(false);
+        inputPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 10, 20));
+
+        JLabel enterTextLabel = new JLabel("Enter client ID:");
+        enterTextLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
 
         JTextField idField = new JTextField(15);
         idField.setFont(customFont);
         idField.setPreferredSize(new Dimension(200, 30));
         idField.setBorder(BorderFactory.createCompoundBorder(
             idField.getBorder(),
-            BorderFactory.createEmptyBorder(1, 10, 1, 10)
+            BorderFactory.createEmptyBorder(5, 10, 1, 10)
         ));
 
         JButton showJsonBtn = new JButton("Show JSON");
@@ -788,71 +795,60 @@ public class ClientFrame extends JFrame {
         showJsonBtn.setForeground(Color.WHITE);
         showJsonBtn.setFont(customFont);
 
-        JLabel enterTextLabel = new JLabel("Enter client ID:");
-        enterTextLabel.setFont(customFont);
-        form.add(enterTextLabel);
-        form.add(idField);
-        form.add(showJsonBtn);
+        inputPanel.add(enterTextLabel);
+        inputPanel.add(idField);
+        inputPanel.add(showJsonBtn);
 
-        JTextArea jsonDisplayArea = new JTextArea(15, 50);
+        // === DISPLAY PANEL ===
+        JTextArea jsonDisplayArea = new JTextArea(10, 50);
         jsonDisplayArea.setEditable(false);
-        jsonDisplayArea.setFont(new Font("Monospaced", Font.PLAIN, 18));
-        JScrollPane scrollPane = new JScrollPane(jsonDisplayArea);
+        jsonDisplayArea.setFont(new Font("Monospaced", Font.PLAIN, 20));
+        jsonDisplayArea.setLineWrap(true);
+        jsonDisplayArea.setWrapStyleWord(true);
+        jsonDisplayArea.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
+        jsonDisplayArea.setBackground(Color.WHITE);
+        jsonDisplayArea.setMargin(new Insets(10, 10, 10, 10));
 
-        JPanel topSection = new JPanel(new BorderLayout());
-        topSection.setOpaque(false);
-        topSection.add(form, BorderLayout.NORTH);
+        // Box layout to stack vertically
+        JPanel centerPanel = new JPanel();
+        centerPanel.setOpaque(false);
+        centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
+        centerPanel.setBorder(BorderFactory.createEmptyBorder(60, 60, 60, 60));
+        centerPanel.add(inputPanel);
+        centerPanel.add(jsonDisplayArea);
+        centerPanel.add(Box.createRigidArea(new Dimension(0, 20)));
 
-        JLabel titleLabel = new JLabel("");
-        titleLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
-        titleLabel.setForeground(Color.DARK_GRAY);
-
-        TitledBorder titled = BorderFactory.createTitledBorder(
-            BorderFactory.createLineBorder(Color.GRAY, 1),
-            "", // no text
-            TitledBorder.LEFT,
-            TitledBorder.TOP
-        );
-
-        JPanel titledPanel = new JPanel(new BorderLayout());
-        titledPanel.setOpaque(false);
-        titledPanel.setBorder(BorderFactory.createCompoundBorder(
-            titled,
-            BorderFactory.createEmptyBorder(30, 30, 30, 30)
-        ));
-        titledPanel.add(titleLabel, BorderLayout.NORTH);
-        titledPanel.add(form, BorderLayout.CENTER);
-
-        JPanel wrapper = new JPanel(new BorderLayout(10, 10));
-        wrapper.setOpaque(false);
-        wrapper.setBorder(BorderFactory.createEmptyBorder(80, 80, 80, 80));
-        wrapper.add(titledPanel, BorderLayout.NORTH);
-        wrapper.add(scrollPane, BorderLayout.CENTER);
-
+        // === CENTER WRAPPER FOR GRID ALIGNMENT ===
         JPanel centerWrapper = new JPanel(new GridBagLayout());
         centerWrapper.setOpaque(false);
-        centerWrapper.add(wrapper);
+        centerWrapper.add(centerPanel);
 
         contentPanel.add(centerWrapper, BorderLayout.CENTER);
 
+        // === ACTION HANDLER ===
         showJsonBtn.addActionListener(e -> {
             try {
-                if (idField.getText().trim().isEmpty()) {
-                    jsonDisplayArea.setText("Please enter a client ID to view JSON.");
+                String input = idField.getText().trim();
+                if (input.isEmpty()) {
+                    jsonDisplayArea.setText("Please enter a client ID.");
                     return;
                 }
+                if (!input.matches("\\d+")) {
+                    jsonDisplayArea.setText("Client ID must be a number.");
+                    return;
+                }
+
+                long id = Long.parseLong(input);
                 ClientService clientService = new ClientService();
-                long id = Long.parseLong(idField.getText());
                 String json = clientService.getClientAsJson(id);
+
                 if (json != null && !json.contains("Client not found")) {
                     jsonDisplayArea.setText(json);
                 } else {
                     jsonDisplayArea.setText("Client not found with ID: " + id);
                 }
-            } catch (NumberFormatException ex) {
-                jsonDisplayArea.setText("Invalid Client ID. Please enter a number.");
             } catch (Exception ex) {
-                jsonDisplayArea.setText("An error occurred: " + ex.getMessage());
+                jsonDisplayArea.setText("Error: " + ex.getMessage());
             }
         });
 
@@ -862,33 +858,25 @@ public class ClientFrame extends JFrame {
 
      // Updates the table with current client list
      private void refreshTable() {
-        clientTableModel.setRowCount(0); // clear existing data
+        clientTableModel.setRowCount(0); // clears existing data
 
-         // Fetching all clients
-         List <Client> clients = ClientService.getClientDAO().getAllClients();
-         for (Client client : clients) {
-                clientTableModel.addRow(new Object[]{
-                    client.getClientId(),
-                    client.getFirstName(),
-                    client.getLastName(),
-                    client.getEmail(),
-                    client.getPhoneNumber(),
-                    client.getGender(),
-                    client.getBirthDate(),                    
-                    client.isActiveStatus(),                    
-                    client.getDateJoined(),                    
-                    client.getLastPurchaseDate(),
-                    client.getClientSumTotal()
-                });
-            }
-        //  for (int i = 0; i < ClientService.getClientDAO().getAllClients().size(); i++) {
-        //      Client c = ClientService.getClientDAO().getAllClients().get(i);
-        //      tableModel.addRow(new Object[]{
-        //              c.getClientId(), c.getFirstName(), c.getLastName(), c.getEmail(),
-        //          c.getPhoneNumber(), c.getGender(), c.getBirthDate(),
-        //              c.isActiveStatus(), c.getDateJoined(), c.getLastPurchaseDate(), c.getClientSumTotal()
-        //      });
-        //  }
-     }
+        // Fetches all clients
+        List <Client> clients = ClientService.getClientDAO().getAllClients();
+        for (Client client : clients) {
+            clientTableModel.addRow(new Object[]{
+                client.getClientId(),
+                client.getFirstName(),
+                client.getLastName(),
+                client.getEmail(),
+                client.getPhoneNumber(),
+                client.getGender(),
+                client.getBirthDate(),                    
+                client.isActiveStatus(),                    
+                client.getDateJoined(),                    
+                client.getLastPurchaseDate(),
+                client.getClientSumTotal()
+            });
+        }
+    }
 }
 
