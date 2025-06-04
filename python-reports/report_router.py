@@ -20,6 +20,8 @@ from reports.category_performance import plot_category_performance
 from reports.profit_by_category_per_month import plot_profit_by_category_per_month
 from reports.spending_by_age_and_category import plot_total_spending_by_age_and_category
 from reports.unique_clients_per_month import plot_unique_clients_per_month
+from reports.predict_monthly_profits import predict_monthly_profits
+from reports.predict_category_sales import predict_category_sales
 
 
 
@@ -99,6 +101,12 @@ def main() -> None:
 
         elif report_type == "unique_clients_per_month":
             plot_unique_clients_per_month()
+        
+        elif report_type == "predict_category_sales":
+            result = predict_category_sales()
+
+        elif report_type == "predict_monthly_profits":
+            result = predict_monthly_profits()
 
         else:
             result = {"error": f"Unsupported report_type: {report_type}"}
