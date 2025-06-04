@@ -22,6 +22,7 @@ public class ReportsFrame extends JFrame {
     private JTextArea outputArea;
     private JLabel chartLabel;
     private static final List<String> reportsWithoutChart = new ArrayList<>(List.of("sales_by_product","profit_by_product","profit_by_store","sales_by_store","client_behavior","gpt_insights"));
+    private static final List<String> reportsWithoutTable = new ArrayList<>(List.of("profit_by_category_per_month","spending_by_age_and_category","unique_clients_per_month"));
     private Boolean chartAvailable = false;
     private JTextArea descriptionArea;
     private JComponent reportContentComponent;  // π.χ. JTable ή JTextArea
@@ -221,6 +222,7 @@ public class ReportsFrame extends JFrame {
 
 //=============== ενεργοποιηση λειτουργιας κουμπιου για εμφανιση καταλληλησ αναφορας ===================
         generateBtn.addActionListener(e -> {
+            
             ReportItem selectedItem = (ReportItem) reportTypeCombo.getSelectedItem();
             if (selectedItem == null) return;
 
@@ -280,6 +282,13 @@ public class ReportsFrame extends JFrame {
                 JOptionPane.showMessageDialog(this, "Invalid input. IDs must be numeric.");
                 return;
             }
+            //ανανεωση παραθυρου
+            textPanel.add(textScrollPane, BorderLayout.CENTER);
+            textPanel.add(descriptionScrollPane, BorderLayout.NORTH);
+            splitPane.setLeftComponent(textPanel);
+            splitPane.setRightComponent(imageScrollPane);
+            splitPane.setDividerLocation(0.5);
+
             //εμφανιζει το chart μονο σε αυτα που εχουν 
             chartAvailable = !reportsWithoutChart.contains(reportType);
 
@@ -299,14 +308,8 @@ public class ReportsFrame extends JFrame {
                         textScrollPane.setViewportView(reportContentComponent);
                         textScrollPane.setVisible(true);
                     }
-                    else if(chartAvailable &&(reportType.equals("profit_by_category_per_month") 
-                            || reportType.equals("spending_by_age_and_category") 
-                            || reportType.equals("uniqye_clients_per_month"))) {
-                        
-                        // Απόκρυψη του scroll pane
-                        textScrollPane.setViewportView(null);
-                        textScrollPane.setVisible(false); // το κάνει να μην φαίνεται   
-                          
+                    else if(reportsWithoutTable.contains(reportType)) {
+                        imageScrollPane.setViewportView(chartLabel);
                         // Δημιουργία panel με περιγραφή πάνω και γράφημα κάτω
                         JPanel chartOnlyPanel = new JPanel(new BorderLayout(10, 10));
                         chartOnlyPanel.add(descriptionScrollPane, BorderLayout.NORTH);
@@ -314,23 +317,26 @@ public class ReportsFrame extends JFrame {
 
                         // Τοποθέτηση στο splitPane (αριστερό) και άδειασμα δεξιού
                         splitPane.setLeftComponent(chartOnlyPanel);
-                        splitPane.setRightComponent(null);
-                        splitPane.setDividerLocation(0); // Ολοκληρωτική χρήση του chart panel   
+                        splitPane.setRightComponent(null);  
                                         
                     }
                     else{
-                       
                         JTable table = new JTable(ReportTable.getTableModel(result));
                         table.setAutoCreateRowSorter(true); // ταξινομηση 
                         reportContentComponent = table;
                         textScrollPane.setViewportView(reportContentComponent);
                         textScrollPane.setVisible(true);
+                        
                     }
                     
 
                     if(chartAvailable){
                         splitPane.setDividerLocation(0.5);
                         splitPane.setResizeWeight(0.5);
+                        if(!reportsWithoutTable.contains(reportType)){
+                                splitPane.setRightComponent(chartLabel);
+                            }
+                        
                         //  η εικόνα αποθηκεύεται εδώ
                         String chartPath = "python-reports/io/report_chart.png";
                         //wait for layout resizing
