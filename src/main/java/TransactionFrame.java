@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -368,7 +367,7 @@ public class TransactionFrame extends JFrame {
         tableDisplayPanel.setOpaque(false);
         tableDisplayPanel.setBorder(BorderFactory.createEmptyBorder(50, 50, 50, 50));
 
-        transactionTableModel = new DefaultTableModel(new String[]{"ID", "Client ID", "Store ID", "Date", "Total Amount", "Payment Method", "Products"}, 0) {
+        transactionTableModel = new DefaultTableModel(new String[]{"ID", "Client ID", "Store ID", "Date", "Total Amount", "Discount", "Payment Method", "Products"}, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false; // Makes table non-editable
@@ -382,7 +381,7 @@ public class TransactionFrame extends JFrame {
         JScrollPane scrollPane = new JScrollPane(transactionTable);
         tableDisplayPanel.add(scrollPane, BorderLayout.CENTER);
 
-        JLabel titleLabel = new JLabel("All Transactions");
+        JLabel titleLabel = new JLabel("");
         titleLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
         titleLabel.setForeground(Color.DARK_GRAY);
 
@@ -431,7 +430,7 @@ public class TransactionFrame extends JFrame {
 
             if (!includesForTransaction.isEmpty()) {
                 for (Includes inc : includesForTransaction) {
-                    productsDisplay.append("P:").append(inc.getProductId()).append(" (x").append(inc.getSoldQuantity()).append(") ");
+                    productsDisplay.append(inc.getProductId()).append(" (x").append(inc.getSoldQuantity()).append(") ");
                 }
             } else {
                 productsDisplay.append("N/A");
@@ -458,12 +457,15 @@ public class TransactionFrame extends JFrame {
         form.setOpaque(false);
         form.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
+        JLabel enterTextLabel = new JLabel("Enter Transaction ID:");
+        enterTextLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
+
         JTextField idField = new JTextField(15);
         idField.setFont(customFont);
         idField.setPreferredSize(new Dimension(200, 30));
         idField.setBorder(BorderFactory.createCompoundBorder(
                 idField.getBorder(),
-                BorderFactory.createEmptyBorder(5, 10, 5, 10)
+                BorderFactory.createEmptyBorder(5, 10, 1, 10)
         ));
 
         JButton showJsonBtn = new JButton("Show JSON");
@@ -471,15 +473,12 @@ public class TransactionFrame extends JFrame {
         showJsonBtn.setForeground(Color.WHITE);
         showJsonBtn.setFont(customFont);
 
-        JLabel enterTextLabel = new JLabel("Enter Transaction ID:");
-        enterTextLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
-
         form.add(enterTextLabel);
         form.add(idField);
         form.add(showJsonBtn);
 
         // === DISPLAY PANEL ===
-        JTextArea jsonDisplayArea = new JTextArea(15, 50);
+        JTextArea jsonDisplayArea = new JTextArea(10, 50);
         jsonDisplayArea.setEditable(false);
         jsonDisplayArea.setFont(new Font("Monospaced", Font.PLAIN, 20));
         jsonDisplayArea.setLineWrap(true);
@@ -500,20 +499,12 @@ public class TransactionFrame extends JFrame {
         titleLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
         titleLabel.setForeground(Color.DARK_GRAY);
 
-        TitledBorder titled = BorderFactory.createTitledBorder(
-                BorderFactory.createLineBorder(Color.GRAY, 1),
-                "", // no text
-                TitledBorder.LEFT,
-                TitledBorder.TOP
-        );
-
         // Box layout to stack vertically
         JPanel centerPanel = new JPanel();
         centerPanel.setOpaque(false);
         centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
         centerPanel.setBorder(BorderFactory.createEmptyBorder(60, 60, 60, 60));
         centerPanel.add(form);
-        centerPanel.add(Box.createRigidArea(new Dimension(0, 20)));
         centerPanel.add(scrollPane);
         centerPanel.add(Box.createRigidArea(new Dimension(0, 20)));
 

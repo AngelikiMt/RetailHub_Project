@@ -28,5 +28,9 @@ Thumbs.db
 # Logs
 *.log
 
+# Properties files
+config.Properties
+
+
 # Optional (JetBrains-specific metadata)
 *.iws
