@@ -18,3 +18,7 @@ Thumbs.db
 # Optional (JetBrains-specific metadata)
 *.iws
 out/
+
+# Properties files
+config.Properties
+
