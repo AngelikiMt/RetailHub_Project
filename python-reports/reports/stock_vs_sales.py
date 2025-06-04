@@ -92,4 +92,4 @@ def plot_stock_vs_sales(df: pd.DataFrame, path="io/report_chart.png"):
     plt.tight_layout()
     plt.savefig(path, dpi=150)
     plt.close()
-    print(f"Chart saved as '{path}'")
+    # print(f"Chart saved as '{path}'")
