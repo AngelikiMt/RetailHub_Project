@@ -1,0 +1,122 @@
+#report_router.py
+import pandas as pd
+import json
+from reports.sales_by_product import get_sales_by_product
+from reports.profit_by_product import get_profit_by_product
+from reports.most_profitable_products import get_most_profitable_products
+from reports.most_profitable_products import plot_most_profitable_products
+from reports.sales_by_store import get_sales_by_store
+from reports.profit_by_store import get_profit_by_store
+from reports.client_behavior import get_client_behavior
+from reports.category_performance import get_category_performance
+from reports.stock_vs_sales import get_stock_vs_sales
+from reports.monthly_sales_trends import get_monthly_sales_trends
+from reports.monthly_sales_trends import plot_monthly_sales
+
+from reports.store_ranking import get_store_ranking
+from reports.gpt_insights import get_gpt_insights
+from reports.category_performance import get_category_performance
+from reports.category_performance import plot_category_performance
+from reports.profit_by_category_per_month import plot_profit_by_category_per_month
+from reports.spending_by_age_and_category import plot_total_spending_by_age_and_category
+from reports.unique_clients_per_month import plot_unique_clients_per_month
+from reports.predict_monthly_profits import predict_monthly_profits
+from reports.predict_category_sales import predict_category_sales
+
+
+
+INPUT_PATH  = "io/input.json"
+OUTPUT_PATH = "io/output.json"
+
+
+def load_input() -> dict:
+    with open(INPUT_PATH, encoding="utf-8") as f:
+        return json.load(f)
+
+
+def save_output(data: dict) -> None:
+    with open(OUTPUT_PATH, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=4, ensure_ascii=False)
+
+        
+
+
+def main() -> None:
+    try:
+        data = load_input()
+        report_type = data.get("report_type")
+
+        if report_type == "sales_by_product":
+            pid = int(data["product_id"])
+            result = get_sales_by_product(pid)
+
+        elif report_type == "profit_by_product":
+            pid = int(data["product_id"])
+            result = get_profit_by_product(pid)
+            
+        elif report_type == "sales_by_store":
+            store_id = int(data["store_id"])
+            result = get_sales_by_store(store_id)
+
+        elif report_type == "profit_by_store":
+            store_id = int(data["store_id"])
+            result = get_profit_by_store(store_id)
+
+        elif report_type == "most_profitable_products":
+            result = get_most_profitable_products()
+            if "top_profitable_products" in result:
+               df = pd.DataFrame(result["top_profitable_products"])
+               plot_most_profitable_products(df)
+        
+        elif report_type == "client_behavior":
+            client_id = int(data["client_id"])
+            result = get_client_behavior(client_id)
+
+        elif report_type == "category_performance":
+            result = get_category_performance()
+            if "categories" in result:
+                df = pd.DataFrame(result["categories"])
+                plot_category_performance(df)
+
+        elif report_type == "stock_vs_sales":
+           result = get_stock_vs_sales()
+
+        elif report_type == "monthly_sales_trends":
+            result = get_monthly_sales_trends()
+            if "monthly_stats" in result:
+                df = pd.DataFrame(result["monthly_stats"])
+                plot_monthly_sales(df)
+
+        elif report_type == "store_ranking":
+           result = get_store_ranking()
+
+        elif report_type == "gpt_insights":
+            result = get_gpt_insights()
+
+        elif report_type == "profit_by_category_per_month":
+            plot_profit_by_category_per_month()
+
+        elif report_type == "spending_by_age_and_category":
+            plot_total_spending_by_age_and_category()
+
+        elif report_type == "unique_clients_per_month":
+            plot_unique_clients_per_month()
+        
+        elif report_type == "predict_category_sales":
+            result = predict_category_sales()
+
+        elif report_type == "predict_monthly_profits":
+            result = predict_monthly_profits()
+
+        else:
+            result = {"error": f"Unsupported report_type: {report_type}"}
+
+        save_output(result)
+
+    except Exception as e:
+        save_output({"error": str(e)})
+
+
+
+if __name__ == "__main__":
+    main()

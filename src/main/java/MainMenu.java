@@ -155,7 +155,7 @@ public class MainMenu extends JFrame {
         });
         stockBtn.addActionListener(e -> new StockFrame());
         transactionBtn.addActionListener(e -> new TransactionFrame());
-        //reportsBtn.addActionListener(e -> new ReportsFrame());
+        reportsBtn.addActionListener(e -> new ReportsFrame());
 
         //exitBtn.addActionListener(e -> {
         //     dispose();

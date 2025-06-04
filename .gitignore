@@ -1,20 +1,32 @@
+# Java / Maven
+/target/
+/*.jar
+/*.war
+*.class
+
 # IntelliJ
-.idea/
-*.iml
+/.idea/
+/*.iml
+/out/
 
-# Maven
-target/
+# Python
+/python-reports/venv/
+/venv/
+/.env/
+/python-reports/.env
+__pycache__/
+/*.py[cod]
 
-# OS/system
+# I/O files
+python-reports/io/*
+!python-reports/io/.gitkeep
+
+# System
 .DS_Store
 Thumbs.db
 
 # Logs
 *.log
 
-# Java
-*.class
-
 # Optional (JetBrains-specific metadata)
 *.iws
-out/
