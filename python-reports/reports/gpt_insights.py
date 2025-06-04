@@ -28,25 +28,17 @@ def get_gpt_insights() -> dict:
                     report_data[filename.replace(".json", "")] = {"error": "invalid JSON"}
 
 
-
-    # # should update prompt, it should cut to the chase, going to analysis and suggestions, not refrazing the question.
-    # # also maybe now special characters are available?
     
-    # full_prompt = (
-    # "The following data comes from the RetailHub system.\n"
-    # "Please write a clear analysis and recommendations in plain text.\n"
-    # "Avoid using bullets, symbols, markdown, or special characters.\n"
-    # "Separate paragraphs only with line breaks and keep the tone simple and suitable for a GUI application.\n\n"
-    # )
     full_prompt = (
-    "You are an experienced business analyst reviewing operational reports from RetailHub.\n"
+    "The following data comes from the RetailHub system.\n"
+    "Please write a clear analysis and recommendations in plain text.\n"
+    "Avoid using bullets, symbols, markdown, or special characters.\n"
     "Analyze the data below and provide actionable insights and strategic recommendations.\n"
     "Focus on what matters — highlight performance trends, profit opportunities, and problem areas.\n"
-    "Use a clear and concise tone. You may use bullet points, symbols, and markdown for clarity.\n"
+    "Use a clear and concise tone."
     "No need to explain what the data is — go straight to conclusions and suggestions.\n\n"
-)
-
-
+    "Separate paragraphs only with line breaks and keep the tone simple and suitable for a GUI application.\n\n"
+    )
 
     for key, value in report_data.items():
         full_prompt += f"\n[{key.upper()}]\n{json.dumps(value, indent=2, ensure_ascii=False)}\n"
@@ -60,7 +52,7 @@ def get_gpt_insights() -> dict:
             {"role": "system", "content": "You are a data analyst responsible for interpreting KPIs and providing actionable recommendations."},
             {"role": "user", "content": full_prompt}
         ],
-        max_tokens=500
+        max_tokens=300
     )
 
     gpt_reply = response.choices[0].message.content
