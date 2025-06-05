@@ -24,7 +24,7 @@ public class StoreLoginFrame extends JFrame {
     public StoreLoginFrame() {
         setTitle("Login - Store");
         setFont(new Font("MinionPro", Font.BOLD, 20));
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
         //setExtendedState(JFrame.MAXIMIZED_BOTH); // Fullscreen
                
         ImageIcon icon = new ImageIcon(getClass().getResource("storeicon.png"));
