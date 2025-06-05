@@ -1,5 +1,6 @@
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -55,9 +56,11 @@ public class LoginFrame extends JFrame {
 
         JLabel userLabel = new JLabel("Username:");
         JTextField userField = new JTextField(15);
+        userField.setBorder(BorderFactory.createLineBorder(Color.GRAY,1));
 
         JLabel passLabel = new JLabel("Password:");
         JPasswordField passField = new JPasswordField(15);
+        passField.setBorder(BorderFactory.createLineBorder(Color.GRAY,1));
 
         JCheckBox showPass = new JCheckBox("Show Password");
         showPass.setOpaque(false); // To be transparent
@@ -71,6 +74,7 @@ public class LoginFrame extends JFrame {
         loginBtn.setForeground(Color.WHITE);
         loginBtn.setFont(new Font("MinionPro", Font.PLAIN, 20));
         loginBtn.setPreferredSize(new Dimension(120, 30));
+        loginBtn.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
         loginBtn.addActionListener(e -> {
             String enteredUser = userField.getText();
@@ -106,6 +110,8 @@ public class LoginFrame extends JFrame {
         JPanel mainPanel = new JPanel();
         mainPanel.setOpaque(false);
         mainPanel.setLayout(new GridBagLayout());
+       // loginFrame.setResizable(false);           // ❌ Disable resizing
+        //loginFrame.setMaximumSize(loginFrame.getSize()); // Optional: lock 
 
         // === Placing loginPanel in the center ===
         GridBagConstraints panelGbc = new GridBagConstraints();
@@ -115,15 +121,12 @@ public class LoginFrame extends JFrame {
         panelGbc.gridx = 0; panelGbc.gridy = 1;
         mainPanel.add(loginPanel,panelGbc);
 
-        //panelGbc.weighty = 1.0;
-        //panelGbc.anchor = GridBagConstraints.PAGE_END;
-        //panelGbc.insets = new Insets(0, 0, 10, 0);
-        //backgroundPanel.add(loginPanel, panelGbc);
-        //setContentPane(backgroundPanel);
         this.getContentPane().add(mainPanel);
         getContentPane().setBackground(Color.WHITE);
         pack();
         this.setSize(350,350);
+        this.setResizable(false);
+        this.setMaximumSize(this.getSize());
         this.setLocationRelativeTo(null);
         setVisible(true);
     }
