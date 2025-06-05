@@ -47,17 +47,17 @@ public class ProductService {
 
 
     // Delete
-	public boolean deleteProduct(long productId) {
+	public static boolean deleteProduct(long productId) {
 		return productDAO.deleteProduct(productId);
 	}
 
 	// Activate/Deactivate
-	public boolean setProductActiveStatus(long productId, boolean active) {
+	public static boolean setProductActiveStatus(long productId, boolean active) {
 		return productDAO.setProductActive(productId, active);
 	}
 
 	// Show all products
-	public List<Product> getAllProducts() {
+	public static List<Product> getAllProducts() {
 		return productDAO.getAllProducts();
 	}
 
