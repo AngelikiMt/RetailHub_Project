@@ -22,10 +22,10 @@ public class ReportsFrame extends JFrame {
     private JTextArea outputArea;
     private JLabel chartLabel;
     private static final List<String> reportsWithoutChart = new ArrayList<>(List.of("sales_by_product","profit_by_product","profit_by_store","sales_by_store","client_behavior","gpt_insights"));
-    private static final List<String> reportsWithoutTable = new ArrayList<>(List.of("profit_by_category_per_month","spending_by_age_and_category","unique_clients_per_month"));
+    private static final List<String> reportsWithoutTable = new ArrayList<>(List.of("profit_by_category_per_month","spending_by_age_and_category","unique_clients_per_month","predict_category_sales","predict_monthly_profits"));
     private Boolean chartAvailable = false;
     private JTextArea descriptionArea;
-    private JComponent reportContentComponent;  // π.χ. JTable ή JTextArea
+    private JComponent reportContentComponent;  // JTable ή JTextArea
 
     private static final Map<String, String> reportDescriptions = new HashMap<>() {{
         put("client_behavior", "Summarizes a client's purchase behavior — total spent, number of transactions, and store visits. Useful for targeting loyal or high-value customers.");
@@ -42,6 +42,8 @@ public class ReportsFrame extends JFrame {
         put("profit_by_category_per_month", "Shows total profit by product category per month. Helps identify the best and worst performing product categories, as well as seasonal trends.");
         put("spending_by_age_and_category", "Displays total profit per product category by age group. Helps gauge the popularity of each product category by age group and allows for  targeted marketing toward the right age group for each product category.");
         put("unique_clients_per_month","This chart shows the number of unique customers who made purchases each month. It helps track overall client activity and highlights peaks, drops, and seasonal engagement patterns.");
+        put("predict_monthly_profits","Predicts total future sales over time using past monthly trends. Helps management plan ahead and make data-driven decisions.");
+        put("predict_category_sales","Predicts future sales volume or revenue (e.g., next 3 months) per product or category. Helps plan inventory better.");
     }};
 
 
@@ -84,6 +86,8 @@ public class ReportsFrame extends JFrame {
             new ReportItem("Monthly Sales Trends", "monthly_sales_trends"),
             new ReportItem("Profit Category Per Month", "profit_by_category_per_month"),
             new ReportItem("Category Performance", "category_performance"),
+            new ReportItem("Predict Category Sales", "predict_category_sales"),
+            new ReportItem("Predict Monthly Profits", "predict_monthly_profits"),
             new ReportItem("GPT Suggestions", "gpt_insights")
         };
 
@@ -270,6 +274,8 @@ public class ReportsFrame extends JFrame {
                     case "spending_by_age_and_category":
                     case "unique_clients_per_month":
                     case "profit_by_category_per_month":
+                    case "predict_monthly_profits":
+                    case "predict_category_sales":
                     case "gpt_insights":
                         // No ID required
                         break;

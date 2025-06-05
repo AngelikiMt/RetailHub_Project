@@ -69,6 +69,11 @@ public class ReportTable {
 
             case "uniqye_clients_per_month" :
                 return null ;
+            
+            case "predict_category_sales":
+                return null; 
+            case "predict_monthly_prodits":
+                return null;       
 
             // case "gpt_insights": It is String, we don't create Table.
                 
