@@ -225,7 +225,7 @@ public class ProductFrame extends JFrame {
 
             if (addIcon.getImageLoadStatus() == MediaTracker.COMPLETE) {
                 Image image = addIcon.getImage();
-                Image scaledImage = image.getScaledInstance(100, 100, Image.SCALE_SMOOTH);
+                Image scaledImage = image.getScaledInstance(200, 200, Image.SCALE_SMOOTH);
                 addIcon = new ImageIcon(scaledImage);
             } else {
                 System.err.println("Warning: Could not load add.png, or it's not a valid image.");

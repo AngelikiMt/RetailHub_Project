@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.Cursor;
 import java.awt.Image;
 
 import javax.swing.BorderFactory;
@@ -121,10 +122,11 @@ public class MainMenu extends JFrame {
             btn.setContentAreaFilled(false);
             btn.setFocusPainted(false);
             btn.setOpaque(false);
+            btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
          }
 
         // === PANEL WITH 3 COLUMNS × 2 LINES ===
-        JPanel buttonGrid = new JPanel(new GridLayout(2, 3, 20, 20));
+        JPanel buttonGrid = new JPanel(new GridLayout(2, 3, 30, 30));
         buttonGrid.setOpaque(false); // Transparent so the background is visible
         for (JButton btn : buttons) {
             buttonGrid.add(btn);
