@@ -14,7 +14,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
-
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -362,133 +361,180 @@ public class ClientFrame extends JFrame {
 
     private void menuUpdateClient() {
         contentPanel.removeAll();
+        contentPanel.setLayout(new BorderLayout());
 
-        String input = JOptionPane.showInputDialog(this, "Enter Email or Phone:");
-        Client client = null;
-        for (int i = 0; i < ClientService.getClientDAO().getAllClients().size(); i++) {
-            Client c = ClientService.getClientDAO().getAllClients().get(i);
-            if (input == null || input.trim().isEmpty()) {
-                JOptionPane.showMessageDialog(contentPanel, "Please enter an email or PhoneNumber");
-            }
-            if (input.equals(c.getEmail()) || input.equals(c.getPhoneNumber())) {
-                client = c;
-                break;
-            }
-        }
-
-        if (client == null) {
-            JOptionPane.showMessageDialog(this, "Client not found.");
-            return;
-        }
-
-        JPanel form = new JPanel(new GridLayout(0, 2, 8, 8));
-        form.setOpaque(false);
-
-        JTextField newFname = new JTextField(client.getFirstName(), 15);
-        JTextField newLname = new JTextField(client.getLastName(), 15);
-        JTextField newEmail = new JTextField(client.getEmail(), 15);
-        JTextField newPhone = new JTextField(client.getPhoneNumber(), 15);
-
-        JTextField[] fields = {newFname, newLname, newEmail, newPhone};
-        for (JTextField field : fields) {
-            field.setFont(customFont);
-            field.setPreferredSize(new Dimension(200, 35));
-            field.setBorder(BorderFactory.createCompoundBorder(
-                field.getBorder(),
-                BorderFactory.createEmptyBorder(0, 8, 0, 8)
+        JPanel form = new JPanel(new BorderLayout());
+        form.setBorder(BorderFactory.createTitledBorder(
+            BorderFactory.createEmptyBorder(20, 20, 20, 20),
+            "",
+            TitledBorder.LEFT,
+            TitledBorder.TOP,
+            new Font("MinionPro", Font.BOLD, 20),
+            Color.DARK_GRAY
         ));
-    }
+        form.setBackground(Color.WHITE);
 
-    // Add fields to form
-    JLabel fLabel = new JLabel("First Name:");
-    fLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
-    form.add(fLabel); form.add(newFname);
+        JTextField inputField = new JTextField(20);
+        inputField.setFont(customFont);
+        inputField.setPreferredSize(new Dimension(200, 30));
+        inputField.setBorder(BorderFactory.createCompoundBorder(
+        inputField.getBorder(),
+        BorderFactory.createEmptyBorder(1, 10, 1, 10)));
 
-    JLabel lLabel = new JLabel("Last Name:");
-    lLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
-    form.add(lLabel); form.add(newLname);
+        JButton findButton = new JButton("Update");
+        findButton.setBackground(new Color(128, 0, 128));
+        findButton.setForeground(Color.WHITE);
+        findButton.setFont(new Font("MinionPro", Font.BOLD, 20));
+        findButton.setPreferredSize(new Dimension(200, 40));
 
-    JLabel eLabel = new JLabel("Email:");
-    eLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
-    form.add(eLabel); form.add(newEmail);
+        JPanel topPanel = new JPanel(new FlowLayout());
+        JLabel enterTextLabel = new JLabel("Enter Email or Phone Number:");
+        enterTextLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
+        topPanel.add(enterTextLabel);        
+        topPanel.add(inputField);
+        topPanel.add(findButton);
+        topPanel.setBackground(Color.WHITE);
 
-    JLabel pLabel = new JLabel("Phone Number:");
-    pLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
-    form.add(pLabel); form.add(newPhone);
+        form.add(topPanel, BorderLayout.NORTH);
 
-    // Title with icon
-    ImageIcon rawIcon = new ImageIcon(getClass().getResource("/refresh.png"));
-    Image scaledImage = rawIcon.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
-    ImageIcon icon = new ImageIcon(scaledImage);    
-    JLabel titleLabel = new JLabel("", icon, JLabel.CENTER);
-    titleLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
-    titleLabel.setForeground(Color.DARK_GRAY);
-    titleLabel.setBorder(BorderFactory.createEmptyBorder(10, 30, 40, 30));
+        contentPanel.add(form, BorderLayout.CENTER);
+        contentPanel.revalidate();
+        contentPanel.repaint();
 
-    // Custom titled border
-    TitledBorder titled = BorderFactory.createTitledBorder(
-        BorderFactory.createLineBorder(Color.GRAY, 1),
-        "",
-        TitledBorder.LEFT,
-        TitledBorder.TOP
-    );
+        findButton.addActionListener(e -> {
+            String input = inputField.getText().trim();
+            if (input.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Please enter an email or phone number.", "Input Required", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
 
-    // Wrap title in JPanel
-    JPanel titledPanel = new JPanel(new BorderLayout());
-    titledPanel.setOpaque(false);
-    titledPanel.setBorder(BorderFactory.createCompoundBorder(
-        titled,
-        BorderFactory.createEmptyBorder(5, 30, 30, 30)
-    ));
-    titledPanel.add(titleLabel, BorderLayout.NORTH);
-    titledPanel.add(form, BorderLayout.CENTER);
+            Client foundClient = null;
+            // Iterates through all clients to find a match by email or phone
+            for (Client c : ClientService.getClientDAO().getAllClients()) {
+                if (input.equalsIgnoreCase(c.getEmail()) || input.equals(c.getPhoneNumber())) {
+                    foundClient = c;
+                    break;
+                }
+            }
 
-    // Submit button
-    JButton submit = new JButton("Update");
-    submit.setBackground(new Color(128, 0, 128)); // Purple
-    submit.setForeground(Color.WHITE);
-    submit.setFont(new Font("MinionPro", Font.BOLD, 20));
-    submit.setPreferredSize(new Dimension(200, 40));
-    JPanel buttonPanel = new JPanel();
-    buttonPanel.setOpaque(false);
-    buttonPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
-    buttonPanel.add(submit);
+            if (foundClient == null) {
+                JOptionPane.showMessageDialog(this, "Client not found with the provided email or phone number.", "Client Not Found", JOptionPane.ERROR_MESSAGE);
+                return; // Stays on the find client panel
+            }
 
-    // Wrapper layout
-    JPanel wrapper = new JPanel(new BorderLayout(10, 10));
-    wrapper.setOpaque(false);
-    wrapper.setBorder(BorderFactory.createEmptyBorder(80, 80, 80, 80));
-    wrapper.add(titledPanel, BorderLayout.CENTER);
-    wrapper.add(buttonPanel, BorderLayout.SOUTH);
-    wrapper.setMaximumSize(new Dimension(1000, 700));
+            // If client is found, removes the findClientPanel and shows the update form
+            contentPanel.removeAll();
+            contentPanel.setLayout(new BorderLayout());
 
-    JPanel centerWrapper = new JPanel(new GridBagLayout());
-    centerWrapper.setOpaque(false);
-    centerWrapper.add(wrapper);
+            // Build and add the existing update form
+            JPanel updateFormPanel = new JPanel(new GridLayout(0, 2, 8, 8));
+            updateFormPanel.setOpaque(false);
 
-    contentPanel.setLayout(new BorderLayout());
-    contentPanel.add(centerWrapper, BorderLayout.CENTER);
+            JTextField newFname = new JTextField(foundClient.getFirstName(), 15);
+            JTextField newLname = new JTextField(foundClient.getLastName(), 15);
+            JTextField newEmail = new JTextField(foundClient.getEmail(), 15);
+            JTextField newPhone = new JTextField(foundClient.getPhoneNumber(), 15);
 
-    // Action
-    Client finalClient = client;
-    submit.addActionListener(e -> {
-        try {
-            ClientService.updateClient(
-                finalClient,
-                newFname.getText(),
-                newLname.getText(),
-                newEmail.getText(),
-                newPhone.getText()
+            JTextField[] fields = {newFname, newLname, newEmail, newPhone};
+            for (JTextField field : fields) {
+                field.setFont(customFont);
+                field.setPreferredSize(new Dimension(200, 35));
+                field.setBorder(BorderFactory.createCompoundBorder(
+                    field.getBorder(),
+                    BorderFactory.createEmptyBorder(0, 8, 0, 8)
+                ));
+            }
+
+            // Add fields to form
+            JLabel fLabel = new JLabel("First Name:");
+            fLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
+            updateFormPanel.add(fLabel); updateFormPanel.add(newFname);
+
+            JLabel lLabel = new JLabel("Last Name:");
+            lLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
+            updateFormPanel.add(lLabel); updateFormPanel.add(newLname);
+
+            JLabel eLabel = new JLabel("Email:");
+            eLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
+            updateFormPanel.add(eLabel); updateFormPanel.add(newEmail);
+
+            JLabel pLabel = new JLabel("Phone Number:");
+            pLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
+            updateFormPanel.add(pLabel); updateFormPanel.add(newPhone);
+
+            // Title with icon
+            ImageIcon rawIcon = new ImageIcon(getClass().getResource("/refresh.png"));
+            Image scaledImage = rawIcon.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
+            ImageIcon icon = new ImageIcon(scaledImage);
+            JLabel titleLabel = new JLabel("", icon, JLabel.CENTER);
+            titleLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
+            titleLabel.setForeground(Color.DARK_GRAY);
+            titleLabel.setBorder(BorderFactory.createEmptyBorder(10, 30, 40, 30));
+
+            // Custom titled border
+            TitledBorder titled = BorderFactory.createTitledBorder(
+                BorderFactory.createLineBorder(Color.GRAY, 1),
+                "",
+                TitledBorder.LEFT,
+                TitledBorder.TOP
             );
-            refreshTable();
-            JOptionPane.showMessageDialog(this, "Client updated.");
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, ex.getMessage(), "Update Failed", JOptionPane.ERROR_MESSAGE);
-        }
-    });
 
-    contentPanel.revalidate();
-    contentPanel.repaint();
+            // Wrap title in JPanel
+            JPanel titledPanel = new JPanel(new BorderLayout());
+            titledPanel.setOpaque(false);
+            titledPanel.setBorder(BorderFactory.createCompoundBorder(
+                titled,
+                BorderFactory.createEmptyBorder(5, 30, 30, 30)
+            ));
+            titledPanel.add(titleLabel, BorderLayout.NORTH);
+            titledPanel.add(updateFormPanel, BorderLayout.CENTER);
+
+            // Submit button
+            JButton submit = new JButton("Update");
+            submit.setBackground(new Color(128, 0, 128)); // Purple
+            submit.setForeground(Color.WHITE);
+            submit.setFont(new Font("MinionPro", Font.BOLD, 20));
+            submit.setPreferredSize(new Dimension(200, 40));
+            JPanel buttonPanel = new JPanel();
+            buttonPanel.setOpaque(false);
+            buttonPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
+            buttonPanel.add(submit);
+
+            // Wrapper layout
+            JPanel wrapper = new JPanel(new BorderLayout(10, 10));
+            wrapper.setOpaque(false);
+            wrapper.setBorder(BorderFactory.createEmptyBorder(80, 80, 80, 80));
+            wrapper.add(titledPanel, BorderLayout.CENTER);
+            wrapper.add(buttonPanel, BorderLayout.SOUTH);
+            wrapper.setMaximumSize(new Dimension(1000, 700));
+
+            JPanel finalCenterWrapper = new JPanel(new GridBagLayout()); // New wrapper for the update form
+            finalCenterWrapper.setOpaque(false);
+            finalCenterWrapper.add(wrapper);
+
+            contentPanel.add(finalCenterWrapper, BorderLayout.CENTER);
+
+            // Action listener for the update button
+            Client finalClient = foundClient;
+            submit.addActionListener(event -> {
+                try {
+                    ClientService.updateClient(
+                        finalClient,
+                        newFname.getText(),
+                        newLname.getText(),
+                        newEmail.getText(),
+                        newPhone.getText()
+                    );
+                    refreshTable();
+                    JOptionPane.showMessageDialog(this, "Client updated successfully.");
+                    menuUpdateClient();
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(this, ex.getMessage(), "Update Failed", JOptionPane.ERROR_MESSAGE);
+                }
+            });
+            contentPanel.revalidate();
+            contentPanel.repaint();
+        });
     }
 
     private void menuShowClient() {
