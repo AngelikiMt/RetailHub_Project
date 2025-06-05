@@ -147,20 +147,31 @@ public class StockDAO {
 
             ResultSet rs = stmt.executeQuery();
 
-            boolean first = true;
-            if (rs.next()) {
-                json.append("{\n   \"productId\": ").append(productId).append(",\n   \"stockPerStore\": [\n");
-                if (!first) json.append(",\n");
+            boolean firstEntryForProduct = true; // Flag to handle the first entry of the product
+            boolean productHasStock = false; // Flag to check if any stock was found for the product
+
+            if (rs.isBeforeFirst()) { // Checks if there are any rows to process
+                json.append("{\n  \"productId\": ").append(productId).append(",\n  \"stockPerStore\": [\n");
+            }
+
+            while (rs.next()) { // Iterates through all rows
+                productHasStock = true; // Mark that stock was found for this product
+                if (!firstEntryForProduct) {
+                    json.append(",\n"); // Add comma for subsequent entries
+                }
                 json.append("    { \"storeId\": ").append(rs.getInt("storeId")).append(", \"quantity\": ").append(rs.getInt("stockQuantity")).append(" }");
-                first = false;
-            } else {
-                return "{}"; // No stock found
+                firstEntryForProduct = false; // After the first entry, set this to false
+                }
+
+                if (productHasStock) {
+                    json.append("\n  ]\n}");
+                } else {
+                    return "{}"; // No stock found for the given productId
             }
         } catch (SQLException e) {
             e.printStackTrace();
+            return "{ \"error\": \"Database error: " + e.getMessage() + "\" }"; // Returns an error JSON
         }
-
-        json.append("\n  ]\n}");
         return json.toString();
     }
 }
