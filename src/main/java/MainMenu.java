@@ -4,21 +4,16 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.GraphicsEnvironment;
 import java.awt.GridLayout;
 import java.awt.Image;
-import java.io.File;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
@@ -44,7 +39,7 @@ public class MainMenu extends JFrame {
         topPanel.setPreferredSize(new Dimension(400,350));
         topPanel.setBackground(new Color(239, 247, 255));
         
-        // 🟦 Left side (welcome text + description)
+        // Left side (welcome text + description)
         JPanel textPanel = new JPanel();
         textPanel.setLayout(new BoxLayout(textPanel, BoxLayout.Y_AXIS));
         textPanel.setOpaque(false);
@@ -145,14 +140,7 @@ public class MainMenu extends JFrame {
         // === ACTIONS ===
         clientBtn.addActionListener(e -> new ClientFrame());
         productBtn.addActionListener(e -> new ProductFrame());
-        storeBtn.addActionListener(e -> {
-            String pin = JOptionPane.showInputDialog(this, "Enter PIN:");
-            if (ADMIN_PIN.equals(pin)) {
-                new StoreFrame();
-            } else {
-                JOptionPane.showMessageDialog(this, "Invalid PIN.");
-            }
-        });
+        storeBtn.addActionListener(e -> new StoreLoginFrame());
         stockBtn.addActionListener(e -> new StockFrame());
         transactionBtn.addActionListener(e -> new TransactionFrame());
         reportsBtn.addActionListener(e -> new ReportsFrame());
