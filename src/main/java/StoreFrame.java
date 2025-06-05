@@ -474,61 +474,76 @@ public class StoreFrame extends JFrame {
         contentPanel.removeAll();
         contentPanel.setLayout(new BorderLayout());
 
-        JPanel form = new JPanel(new FlowLayout());
-        form.setOpaque(false);
-        form.setBorder(BorderFactory.createEmptyBorder(100, 200, 100, 200));
+        JPanel form = new JPanel(new BorderLayout());
+        form.setBorder(BorderFactory.createTitledBorder(
+            BorderFactory.createEmptyBorder(20, 20, 20, 20),
+            "",
+            TitledBorder.LEFT,
+            TitledBorder.TOP,
+            new Font("MinionPro", Font.BOLD, 20),
+            Color.DARK_GRAY
+        ));
+        form.setBackground(Color.WHITE);
+
+        // JPanel form = new JPanel(new FlowLayout());
+        // form.setOpaque(false);
+        // form.setBorder(BorderFactory.createEmptyBorder(100, 200, 100, 200));
 
         JTextField idField = new JTextField(15);
         idField.setFont(customFont);
         idField.setPreferredSize(new Dimension(200, 30));
         idField.setBorder(BorderFactory.createCompoundBorder(
             idField.getBorder(),
-            BorderFactory.createEmptyBorder(5, 10, 5, 10)
+            BorderFactory.createEmptyBorder(1, 10, 1, 10)
         ));
-
-        JLabel idLabel = new JLabel("Store ID to change Status:");
-        idLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
-        form.add(idLabel);
-        form.add(idField);
 
         JButton toggleBtn = new JButton("Activate/Deactivate");
         toggleBtn.setBackground(new Color(128, 0, 128));
         toggleBtn.setForeground(Color.WHITE);
         toggleBtn.setFont(new Font("MinionPro", Font.BOLD, 20));
         toggleBtn.setPreferredSize(new Dimension(200, 40));
-        form.add(toggleBtn);
 
-        JLabel titleLabel = new JLabel("");
-        titleLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
-        titleLabel.setForeground(Color.DARK_GRAY);
-        titleLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
+        JPanel topPanel = new JPanel(new FlowLayout());
+        JLabel idLabel = new JLabel("Store ID to change Status:");
+        idLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
+        topPanel.add(idLabel);
+        topPanel.add(idField);
+        topPanel.add(toggleBtn);
+        topPanel.setBackground(Color.WHITE);
 
-        TitledBorder titled = BorderFactory.createTitledBorder(
-            BorderFactory.createLineBorder(Color.GRAY, 1),
-            "", // no text
-            TitledBorder.LEFT,
-            TitledBorder.TOP
-        );
+        form.add(topPanel, BorderLayout.NORTH);
 
-        JPanel titledPanel = new JPanel(new BorderLayout());
-        titledPanel.setOpaque(false);
-        titledPanel.setBorder(BorderFactory.createCompoundBorder(
-            titled,
-            BorderFactory.createEmptyBorder(30, 30, 30, 30)
-        ));
-        titledPanel.add(titleLabel, BorderLayout.NORTH);
-        titledPanel.add(form, BorderLayout.CENTER);
+        // JLabel titleLabel = new JLabel("");
+        // titleLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
+        // titleLabel.setForeground(Color.DARK_GRAY);
+        // titleLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
 
-        JPanel wrapper = new JPanel(new BorderLayout(10, 10));
-        wrapper.setOpaque(false);
-        wrapper.setBorder(BorderFactory.createEmptyBorder(80, 80, 80, 80));
-        wrapper.add(titledPanel, BorderLayout.CENTER);
-        wrapper.setMaximumSize(new Dimension(1000, 700));
+        // TitledBorder titled = BorderFactory.createTitledBorder(
+        //     BorderFactory.createLineBorder(Color.GRAY, 1),
+        //     "", // no text
+        //     TitledBorder.LEFT,
+        //     TitledBorder.TOP
+        // );
 
-        JPanel centerWrapper = new JPanel(new GridBagLayout());
-        centerWrapper.setOpaque(false);
-        centerWrapper.add(wrapper);
-        contentPanel.add(centerWrapper, BorderLayout.CENTER);
+        // JPanel titledPanel = new JPanel(new BorderLayout());
+        // titledPanel.setOpaque(false);
+        // titledPanel.setBorder(BorderFactory.createCompoundBorder(
+        //     titled,
+        //     BorderFactory.createEmptyBorder(30, 30, 30, 30)
+        // ));
+        // titledPanel.add(titleLabel, BorderLayout.NORTH);
+        // titledPanel.add(form, BorderLayout.CENTER);
+
+        // JPanel wrapper = new JPanel(new BorderLayout(10, 10));
+        // wrapper.setOpaque(false);
+        // wrapper.setBorder(BorderFactory.createEmptyBorder(80, 80, 80, 80));
+        // wrapper.add(titledPanel, BorderLayout.CENTER);
+        // wrapper.setMaximumSize(new Dimension(1000, 700));
+
+        // JPanel centerWrapper = new JPanel(new GridBagLayout());
+        // centerWrapper.setOpaque(false);
+        // centerWrapper.add(wrapper);
+        // contentPanel.add(centerWrapper, BorderLayout.CENTER);
 
         toggleBtn.addActionListener(e -> {
             try {
@@ -554,6 +569,7 @@ public class StoreFrame extends JFrame {
                 JOptionPane.showMessageDialog(this, ex.getMessage(), "Unexpected Error", JOptionPane.ERROR_MESSAGE);
             }
         });
+        contentPanel.add(form, BorderLayout.CENTER);
         contentPanel.revalidate();
         contentPanel.repaint();
     }
