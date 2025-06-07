@@ -1,3 +1,5 @@
+/** A user-friendly Java Swing interface  */
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -35,17 +37,16 @@ public class StoreFrame extends JFrame {
     Font customFont = new Font("MinionPro", Font.PLAIN, 20);
 
     public StoreFrame() {
-        setTitle("Store Menu"); // Changed title for consistency
+        setTitle("Store Menu");
         setExtendedState(JFrame.MAXIMIZED_BOTH); // Fullscreen
         setDefaultCloseOperation(DISPOSE_ON_CLOSE); // Closes only this window
 
-        // Background with image - set up similarly to ClientFrame
         JPanel background = new JPanel();
         background.setOpaque(false);
         this.add(background);
-        getContentPane().setBackground(Color.WHITE); // Set background color
+        getContentPane().setBackground(Color.WHITE);
 
-        // Web-style top navigation bar
+        // Top navigation bar
         JPanel topBar = new JPanel();
         topBar.setLayout(new BoxLayout(topBar, BoxLayout.X_AXIS));
         topBar.setBackground(new Color(239, 247, 255));
@@ -64,8 +65,7 @@ public class StoreFrame extends JFrame {
                 logoIcon = new ImageIcon(scaledImage);
         } else {
             System.err.println("Warning: Could not load logo.png, or it's not a valid image.");
-            // Fallback to text if image fails to load
-            logoLabel.setText("StoreMenu");
+            logoLabel.setText("StoreMenu"); // Fallback to text if image fails to load
             logoLabel.setFont(new Font("MinionPro", Font.BOLD, 25));
             logoLabel.setForeground(Color.BLACK);
         }
@@ -93,8 +93,7 @@ public class StoreFrame extends JFrame {
             navButton.setMaximumSize(new Dimension(250, 30));
 
             topBar.add(navButton);
-            // Adds spacing between buttons
-            topBar.add(Box.createHorizontalStrut(10));
+            topBar.add(Box.createHorizontalStrut(10)); // Adds spacing between buttons
 
             // Adds action listeners based on button text
             switch (item) {
@@ -129,8 +128,7 @@ public class StoreFrame extends JFrame {
         backButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
         backButton.addActionListener(e -> dispose());
 
-        // Add to the left or right side of the top bar
-        topBar.add(Box.createHorizontalStrut(10));
+        topBar.add(Box.createHorizontalStrut(10)); // Add to the right side of the top bar
 
         background.setLayout(new BorderLayout());
         background.add(topBar, BorderLayout.NORTH);
@@ -146,195 +144,193 @@ public class StoreFrame extends JFrame {
         bottomPanel.add(backButton);
         background.add(bottomPanel, BorderLayout.SOUTH);
 
-        storeService = new StoreService(); // Initialize StoreService
+        storeService = new StoreService(); // Initializes StoreService
 
         menuCreateStore(); // Shows create form by default
-        setVisible(true); // Show window
+        setVisible(true); // Shows window
     }
 
-   private void menuCreateStore() {
-    contentPanel.removeAll(); // Clear previous content
-    contentPanel.setLayout(new BorderLayout());
+    private void menuCreateStore() {
+        contentPanel.removeAll(); // Clears previous content
+        contentPanel.setLayout(new BorderLayout());
 
-    // Main panel to hold the form, centered on the screen
-    JPanel centerWrapper = new JPanel(new GridBagLayout());
-    centerWrapper.setOpaque(false); // Make it transparent to show contentPanel's background
+        // Main panel to hold the form, centered on the screen
+        JPanel centerWrapper = new JPanel(new GridBagLayout());
+        centerWrapper.setOpaque(false);
 
-    // This is the panel that will have the border and contain the icon and the form fields
-    JPanel borderedContentPanel = new JPanel(new BorderLayout()); // Use BorderLayout for this container
-    borderedContentPanel.setOpaque(false);
+        // This panel will have the border and contain the icon and the form fields
+        JPanel borderedContentPanel = new JPanel(new BorderLayout());
+        borderedContentPanel.setOpaque(false);
 
-    // Set the border for this panel
-    TitledBorder titled = BorderFactory.createTitledBorder(
-        BorderFactory.createLineBorder(Color.GRAY, 2),
-        "", // No title text here, the icon will be visually above
-        TitledBorder.LEFT,
-        TitledBorder.TOP,
-        new Font("MinionPro", Font.BOLD, 20),
-        Color.DARK_GRAY
-    );
-    borderedContentPanel.setBorder(BorderFactory.createCompoundBorder(
-        titled,
-        BorderFactory.createEmptyBorder(30, 30, 30, 30)
-    ));
+        // Sets the border for this panel
+        TitledBorder titled = BorderFactory.createTitledBorder(
+            BorderFactory.createLineBorder(Color.GRAY, 2),
+            "", 
+            TitledBorder.LEFT,
+            TitledBorder.TOP,
+            new Font("MinionPro", Font.BOLD, 20),
+            Color.DARK_GRAY
+        );
+        borderedContentPanel.setBorder(BorderFactory.createCompoundBorder(
+            titled,
+            BorderFactory.createEmptyBorder(30, 30, 30, 30)
+        ));
 
-    JLabel iconLabel = new JLabel();
-    ImageIcon addIcon = null;
+        JLabel iconLabel = new JLabel();
+        ImageIcon addIcon = null;
 
-    try {
-        addIcon = new ImageIcon(getClass().getResource("/add-store.png"));
+        try {
+            addIcon = new ImageIcon(getClass().getResource("/add-store.png"));
 
-        if (addIcon.getImageLoadStatus() == MediaTracker.COMPLETE) {
-            Image image = addIcon.getImage();
-            Image scaledImage = image.getScaledInstance(100, 100, Image.SCALE_SMOOTH);
-            addIcon = new ImageIcon(scaledImage);
-        } else {
-            System.err.println("Warning: Could not load add.png, or it's not a valid image.");
-            // Fallback to text if icon fails to load
-            iconLabel.setText("Add New Store");
+            if (addIcon.getImageLoadStatus() == MediaTracker.COMPLETE) {
+                Image image = addIcon.getImage();
+                Image scaledImage = image.getScaledInstance(100, 100, Image.SCALE_SMOOTH);
+                addIcon = new ImageIcon(scaledImage);
+            } else {
+                System.err.println("Warning: Could not load add.png, or it's not a valid image.");
+                iconLabel.setText("Add New Store"); // Fallbacks to text if icon fails to load
+                iconLabel.setFont(new Font("MinionPro", Font.BOLD, 22));
+                iconLabel.setForeground(Color.DARK_GRAY);
+            }
+        } catch (Exception e) {
+            System.err.println("Error loading add.png: " + e.getMessage());
+            iconLabel.setText("Add New Store"); // Fallbacks to text if an exception occurs
             iconLabel.setFont(new Font("MinionPro", Font.BOLD, 22));
             iconLabel.setForeground(Color.DARK_GRAY);
         }
-    } catch (Exception e) {
-        System.err.println("Error loading add.png: " + e.getMessage());
-        // Fallback to text if an exception occurs
-        iconLabel.setText("Add New Store");
-        iconLabel.setFont(new Font("MinionPro", Font.BOLD, 22));
-        iconLabel.setForeground(Color.DARK_GRAY);
-    }
-    if (addIcon != null) {
-        iconLabel.setIcon(addIcon);
-    }
-
-    iconLabel.setHorizontalAlignment(SwingConstants.CENTER);
-    borderedContentPanel.add(iconLabel, BorderLayout.NORTH);
-
-    // Creates a panel to hold the form fields and button
-    JPanel fieldsAndButtonPanel = new JPanel(new BorderLayout());
-    fieldsAndButtonPanel.setOpaque(false);
-    fieldsAndButtonPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0)); // Padding below icon
-
-    // Form layout
-    JPanel formFieldsPanel = new JPanel(new GridLayout(0, 2, 10, 10));
-    formFieldsPanel.setOpaque(false);
-
-    JTextField nameField = new JTextField(15);
-    nameField.setFont(customFont);
-    nameField.setPreferredSize(new Dimension(200, 10));
-    nameField.setBorder(BorderFactory.createCompoundBorder(
-        nameField.getBorder(),
-        BorderFactory.createEmptyBorder(1, 5, 1, 5)
-    ));
-
-    JTextField addressField = new JTextField(15);
-    addressField.setFont(customFont);
-    addressField.setPreferredSize(new Dimension(200, 10));
-    addressField.setBorder(BorderFactory.createCompoundBorder(
-        addressField.getBorder(),
-        BorderFactory.createEmptyBorder(1, 5, 1, 5)
-    ));
-
-    JTextField cityField = new JTextField(15);
-    cityField.setFont(customFont);
-    cityField.setPreferredSize(new Dimension(200, 10));
-    cityField.setBorder(BorderFactory.createCompoundBorder(
-        cityField.getBorder(),
-        BorderFactory.createEmptyBorder(1, 5, 1, 5)
-    ));
-
-    JTextField countryField = new JTextField(15);
-    countryField.setFont(customFont);
-    countryField.setPreferredSize(new Dimension(200, 10));
-    countryField.setBorder(BorderFactory.createCompoundBorder(
-        countryField.getBorder(),
-        BorderFactory.createEmptyBorder(1, 5, 1, 5)
-    ));
-
-    JTextField phoneField = new JTextField(15);
-    phoneField.setFont(customFont);
-    phoneField.setPreferredSize(new Dimension(200, 10));
-    phoneField.setBorder(BorderFactory.createCompoundBorder(
-        phoneField.getBorder(),
-        BorderFactory.createEmptyBorder(1, 5, 1, 5)
-    ));
-
-    JLabel nameLabel = new JLabel("Name:");
-    nameLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
-    formFieldsPanel.add(nameLabel); formFieldsPanel.add(nameField);
-
-    JLabel addressLabel = new JLabel("Address:");
-    addressLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
-    formFieldsPanel.add(addressLabel); formFieldsPanel.add(addressField);
-
-    JLabel cityLabel = new JLabel("City:");
-    cityLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
-    formFieldsPanel.add(cityLabel); formFieldsPanel.add(cityField);
-
-    JLabel countryLabel = new JLabel("Country:");
-    countryLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
-    formFieldsPanel.add(countryLabel); formFieldsPanel.add(countryField);
-
-    JLabel phoneLabel = new JLabel("Phone Number:");
-    phoneLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
-    formFieldsPanel.add(phoneLabel); formFieldsPanel.add(phoneField);
-
-    // Adds formFieldsPanel to the center of the fieldsAndButtonPanel
-    fieldsAndButtonPanel.add(formFieldsPanel, BorderLayout.CENTER);
-
-    // Submit button
-    JButton submit = new JButton("Submit");
-    submit.setBackground(new Color(128, 0, 128));
-    submit.setForeground(Color.WHITE);
-    submit.setFont(new Font("MinionPro", Font.BOLD, 20));
-    submit.setPreferredSize(new Dimension(200, 40));
-    JPanel buttonPanel = new JPanel();
-    buttonPanel.setOpaque(false);
-    buttonPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
-    buttonPanel.add(submit);
-
-    // Add buttonPanel to the south of the fieldsAndButtonPanel
-    fieldsAndButtonPanel.add(buttonPanel, BorderLayout.SOUTH);
-
-    // Add the fieldsAndButtonPanel to the borderedContentPanel
-    borderedContentPanel.add(fieldsAndButtonPanel, BorderLayout.CENTER);
-
-    // Add borderedContentPanel to the centerWrapper, then add centerWrapper to contentPanel
-    centerWrapper.add(borderedContentPanel); // Center the bordered panel
-    contentPanel.add(centerWrapper, BorderLayout.CENTER);
-
-    submit.addActionListener(e -> {
-        try {
-            // Basic validation
-            if (nameField.getText().isEmpty() || addressField.getText().isEmpty() ||
-                cityField.getText().isEmpty() || countryField.getText().isEmpty() ||
-                phoneField.getText().isEmpty()) {
-                JOptionPane.showMessageDialog(contentPanel, "Please fill in all fields.", "Input Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            Store store = storeService.createStore(nameField.getText(), addressField.getText(), cityField.getText(), countryField.getText(), phoneField.getText());
-
-            if (store != null) {
-                JOptionPane.showMessageDialog(contentPanel, "Store created with ID: " + store.getStoreId(), "Success", JOptionPane.INFORMATION_MESSAGE);
-                // Clear fields after successful submission
-                nameField.setText("");
-                addressField.setText("");
-                cityField.setText("");
-                countryField.setText("");
-                phoneField.setText("");
-            } else {
-                JOptionPane.showMessageDialog(contentPanel, "Failed to create store. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
-            }
-        } catch (IllegalArgumentException ex) {
-            JOptionPane.showMessageDialog(contentPanel, "Error: " + ex.getMessage(), "Validation Error", JOptionPane.ERROR_MESSAGE);
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(contentPanel, "An unexpected error occurred: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-            ex.printStackTrace(); // Print stack trace for debugging
+        if (addIcon != null) {
+            iconLabel.setIcon(addIcon);
         }
-    });
 
-    contentPanel.revalidate();
-    contentPanel.repaint();
+        iconLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        borderedContentPanel.add(iconLabel, BorderLayout.NORTH);
+
+        // Creates a panel to hold the form fields and button
+        JPanel fieldsAndButtonPanel = new JPanel(new BorderLayout());
+        fieldsAndButtonPanel.setOpaque(false);
+        fieldsAndButtonPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0)); // Padding below icon
+
+        // Form layout
+        JPanel formFieldsPanel = new JPanel(new GridLayout(0, 2, 10, 10));
+        formFieldsPanel.setOpaque(false);
+
+        JTextField nameField = new JTextField(15);
+        nameField.setFont(customFont);
+        nameField.setPreferredSize(new Dimension(200, 10));
+        nameField.setBorder(BorderFactory.createCompoundBorder(
+            nameField.getBorder(),
+            BorderFactory.createEmptyBorder(1, 5, 1, 5)
+        ));
+
+        JTextField addressField = new JTextField(15);
+        addressField.setFont(customFont);
+        addressField.setPreferredSize(new Dimension(200, 10));
+        addressField.setBorder(BorderFactory.createCompoundBorder(
+            addressField.getBorder(),
+            BorderFactory.createEmptyBorder(1, 5, 1, 5)
+        ));
+
+        JTextField cityField = new JTextField(15);
+        cityField.setFont(customFont);
+        cityField.setPreferredSize(new Dimension(200, 10));
+        cityField.setBorder(BorderFactory.createCompoundBorder(
+            cityField.getBorder(),
+            BorderFactory.createEmptyBorder(1, 5, 1, 5)
+        ));
+
+        JTextField countryField = new JTextField(15);
+        countryField.setFont(customFont);
+        countryField.setPreferredSize(new Dimension(200, 10));
+        countryField.setBorder(BorderFactory.createCompoundBorder(
+            countryField.getBorder(),
+            BorderFactory.createEmptyBorder(1, 5, 1, 5)
+        ));
+
+        JTextField phoneField = new JTextField(15);
+        phoneField.setFont(customFont);
+        phoneField.setPreferredSize(new Dimension(200, 10));
+        phoneField.setBorder(BorderFactory.createCompoundBorder(
+            phoneField.getBorder(),
+            BorderFactory.createEmptyBorder(1, 5, 1, 5)
+        ));
+
+        JLabel nameLabel = new JLabel("Name:");
+        nameLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
+        formFieldsPanel.add(nameLabel); formFieldsPanel.add(nameField);
+
+        JLabel addressLabel = new JLabel("Address:");
+        addressLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
+        formFieldsPanel.add(addressLabel); formFieldsPanel.add(addressField);
+
+        JLabel cityLabel = new JLabel("City:");
+        cityLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
+        formFieldsPanel.add(cityLabel); formFieldsPanel.add(cityField);
+
+        JLabel countryLabel = new JLabel("Country:");
+        countryLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
+        formFieldsPanel.add(countryLabel); formFieldsPanel.add(countryField);
+
+        JLabel phoneLabel = new JLabel("Phone Number:");
+        phoneLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
+        formFieldsPanel.add(phoneLabel); formFieldsPanel.add(phoneField);
+
+        // Adds formFieldsPanel to the center of the fieldsAndButtonPanel
+        fieldsAndButtonPanel.add(formFieldsPanel, BorderLayout.CENTER);
+
+        // Submit button
+        JButton submit = new JButton("Submit");
+        submit.setBackground(new Color(128, 0, 128));
+        submit.setForeground(Color.WHITE);
+        submit.setFont(new Font("MinionPro", Font.BOLD, 20));
+        submit.setPreferredSize(new Dimension(200, 40));
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setOpaque(false);
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
+        buttonPanel.add(submit);
+
+        // Adds buttonPanel to the south of the fieldsAndButtonPanel
+        fieldsAndButtonPanel.add(buttonPanel, BorderLayout.SOUTH);
+
+        // Adds the fieldsAndButtonPanel to the borderedContentPanel
+        borderedContentPanel.add(fieldsAndButtonPanel, BorderLayout.CENTER);
+
+        // Adds borderedContentPanel to the centerWrapper, then add centerWrapper to contentPanel
+        centerWrapper.add(borderedContentPanel); // Centers the bordered panel
+        contentPanel.add(centerWrapper, BorderLayout.CENTER);
+
+        submit.addActionListener(e -> {
+            try {
+                // Basic validation
+                if (nameField.getText().isEmpty() || addressField.getText().isEmpty() ||
+                    cityField.getText().isEmpty() || countryField.getText().isEmpty() ||
+                    phoneField.getText().isEmpty()) {
+                    JOptionPane.showMessageDialog(contentPanel, "Please fill in all fields.", "Input Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                Store store = storeService.createStore(nameField.getText(), addressField.getText(), cityField.getText(), countryField.getText(), phoneField.getText());
+
+                if (store != null) {
+                    JOptionPane.showMessageDialog(contentPanel, "Store created with ID: " + store.getStoreId(), "Success", JOptionPane.INFORMATION_MESSAGE);
+                    // Clears fields after successful submission
+                    nameField.setText("");
+                    addressField.setText("");
+                    cityField.setText("");
+                    countryField.setText("");
+                    phoneField.setText("");
+                } else {
+                    JOptionPane.showMessageDialog(contentPanel, "Failed to create store. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            } catch (IllegalArgumentException ex) {
+                JOptionPane.showMessageDialog(contentPanel, "Error: " + ex.getMessage(), "Validation Error", JOptionPane.ERROR_MESSAGE);
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(contentPanel, "An unexpected error occurred: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                ex.printStackTrace(); // Prints stack trace for debugging
+            }
+        });
+
+        contentPanel.revalidate();
+        contentPanel.repaint();
     }
 
     private void menuUpdateStore() {
@@ -433,11 +429,7 @@ public class StoreFrame extends JFrame {
 
         submit.addActionListener(e -> {
             try {
-                if (idField.getText().trim().isEmpty()) {
-                    JOptionPane.showMessageDialog(this, "Please enter a Store ID to update.", "Validation Error", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-                int id = Integer.parseInt(idField.getText());
+                int id = parseStoreId(idField);
 
                 Store store = storeService.getStoreById(id);
                 if (store == null) {
@@ -485,10 +477,6 @@ public class StoreFrame extends JFrame {
         ));
         form.setBackground(Color.WHITE);
 
-        // JPanel form = new JPanel(new FlowLayout());
-        // form.setOpaque(false);
-        // form.setBorder(BorderFactory.createEmptyBorder(100, 200, 100, 200));
-
         JTextField idField = new JTextField(15);
         idField.setFont(customFont);
         idField.setPreferredSize(new Dimension(200, 30));
@@ -513,46 +501,9 @@ public class StoreFrame extends JFrame {
 
         form.add(topPanel, BorderLayout.NORTH);
 
-        // JLabel titleLabel = new JLabel("");
-        // titleLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
-        // titleLabel.setForeground(Color.DARK_GRAY);
-        // titleLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
-
-        // TitledBorder titled = BorderFactory.createTitledBorder(
-        //     BorderFactory.createLineBorder(Color.GRAY, 1),
-        //     "", // no text
-        //     TitledBorder.LEFT,
-        //     TitledBorder.TOP
-        // );
-
-        // JPanel titledPanel = new JPanel(new BorderLayout());
-        // titledPanel.setOpaque(false);
-        // titledPanel.setBorder(BorderFactory.createCompoundBorder(
-        //     titled,
-        //     BorderFactory.createEmptyBorder(30, 30, 30, 30)
-        // ));
-        // titledPanel.add(titleLabel, BorderLayout.NORTH);
-        // titledPanel.add(form, BorderLayout.CENTER);
-
-        // JPanel wrapper = new JPanel(new BorderLayout(10, 10));
-        // wrapper.setOpaque(false);
-        // wrapper.setBorder(BorderFactory.createEmptyBorder(80, 80, 80, 80));
-        // wrapper.add(titledPanel, BorderLayout.CENTER);
-        // wrapper.setMaximumSize(new Dimension(1000, 700));
-
-        // JPanel centerWrapper = new JPanel(new GridBagLayout());
-        // centerWrapper.setOpaque(false);
-        // centerWrapper.add(wrapper);
-        // contentPanel.add(centerWrapper, BorderLayout.CENTER);
-
         toggleBtn.addActionListener(e -> {
             try {
-                String idText = idField.getText().trim();
-                if (idText.isEmpty()) {
-                    JOptionPane.showMessageDialog(this, "Please enter a Store ID to toggle status.", "Validation Error", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-                int id = Integer.parseInt(idText);
+                int id = parseStoreId(idField);
                 Store s = storeService.getStoreById(id);
                 if (s == null) {
                     JOptionPane.showMessageDialog(this, "No store found with ID: " + id, "Error", JOptionPane.ERROR_MESSAGE);
@@ -614,19 +565,11 @@ public class StoreFrame extends JFrame {
         titleLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
         titleLabel.setForeground(Color.DARK_GRAY);
 
-        TitledBorder titled = BorderFactory.createTitledBorder(
-            BorderFactory.createLineBorder(Color.GRAY, 1),
-            "",
-            TitledBorder.LEFT,
-            TitledBorder.TOP
-        );
-
         JPanel titledPanel = new JPanel(new BorderLayout());
         titledPanel.setOpaque(false);
         titledPanel.setBorder(BorderFactory.createEmptyBorder(10, 30, 10, 30));
         titledPanel.add(titleLabel, BorderLayout.NORTH);
         titledPanel.add(form, BorderLayout.CENTER);
-
 
         JPanel wrapper = new JPanel(new BorderLayout(10, 10));
         wrapper.setOpaque(false);
@@ -642,12 +585,7 @@ public class StoreFrame extends JFrame {
 
         search.addActionListener(e -> {
             try {
-                String input = idField.getText();
-                if (input.trim().isEmpty()) {
-                    resultArea.setText("Please enter a Store ID.");
-                    return;
-                }
-                int id = Integer.parseInt(input);
+                int id = parseStoreId(idField);
                 Store store = storeService.getStoreById(id);
                 if (store != null) {
                     resultArea.setText(store.toString());
@@ -660,7 +598,6 @@ public class StoreFrame extends JFrame {
                 resultArea.setText("An error occurred: " + ex.getMessage());
             }
         });
-
         contentPanel.revalidate();
         contentPanel.repaint();
     }
@@ -700,7 +637,7 @@ public class StoreFrame extends JFrame {
 
         TitledBorder titled = BorderFactory.createTitledBorder(
             BorderFactory.createLineBorder(Color.GRAY, 1),
-            "", // no text
+            "",
             TitledBorder.LEFT,
             TitledBorder.TOP
         );
@@ -720,7 +657,6 @@ public class StoreFrame extends JFrame {
         overallPanel.add(tableDisplayPanel, BorderLayout.CENTER); // Table panel below the title
 
         contentPanel.add(overallPanel, BorderLayout.CENTER);
-
 
         refreshStoreTable(); // Populates table on display
 
@@ -767,7 +703,7 @@ public class StoreFrame extends JFrame {
         form.add(idField);
         form.add(showJsonBtn);
 
-        // === DISPLAY AREA ===
+        // Display Area
         JTextArea jsonDisplayArea = new JTextArea(10, 50);
         jsonDisplayArea.setEditable(false);
         jsonDisplayArea.setFont(new Font("Monospaced", Font.PLAIN, 20));
@@ -777,7 +713,7 @@ public class StoreFrame extends JFrame {
         jsonDisplayArea.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
         jsonDisplayArea.setMargin(new Insets(10, 10, 10, 10));
 
-        // === WRAPPER TO STACK INPUT + DISPLAY ===
+        // Wrapper to stack input and desplay area
         JPanel stackedPanel = new JPanel();
         stackedPanel.setLayout(new BoxLayout(stackedPanel, BoxLayout.Y_AXIS));
         stackedPanel.setOpaque(false);
@@ -786,24 +722,18 @@ public class StoreFrame extends JFrame {
         stackedPanel.add(Box.createRigidArea(new Dimension(0, 20)));
         stackedPanel.add(jsonDisplayArea);
 
-        // === CENTER WRAPPER FOR GRID ALIGNMENT ===
+        // Center wrapper for grid alignment
         JPanel centerWrapper = new JPanel(new GridBagLayout());
         centerWrapper.setOpaque(false);
         centerWrapper.add(stackedPanel);
 
-        // === ADD TO CONTENT PANEL ===
+        // Adds centerWrapper to content panel
         contentPanel.add(centerWrapper, BorderLayout.CENTER);
 
-        // === BUTTON LOGIC ===
+        // Button Logic
         showJsonBtn.addActionListener(e -> {
             try {
-                String input = idField.getText().trim();
-                if (input.isEmpty()) {
-                    jsonDisplayArea.setText("Please enter a Store ID to view JSON.");
-                    return;
-                }
-
-                int id = Integer.parseInt(input);
+                int id = parseStoreId(idField);
                 String json = storeService.getStoreAsJson(id);
                 if (json != null && !json.contains("Store not found")) {
                     jsonDisplayArea.setText(json);
@@ -819,4 +749,20 @@ public class StoreFrame extends JFrame {
 
         contentPanel.revalidate();
         contentPanel.repaint();
-}}
+    }
+
+    // Helper method for checking if store ID is a number or empty. 
+    private Integer parseStoreId(JTextField field) {
+        try {
+            String text = field.getText().trim();
+            if (text.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Please enter a Store ID.", "Validation Error: ", JOptionPane.ERROR_MESSAGE);
+                return null;
+            }
+            return Integer.parseInt(text);
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
+}

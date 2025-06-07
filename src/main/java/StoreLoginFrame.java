@@ -1,5 +1,3 @@
-
-
 /** Inheritance from abstract LoginBaseFrame class */
 
 public class StoreLoginFrame extends LoginBaseFrame {

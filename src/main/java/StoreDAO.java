@@ -1,4 +1,6 @@
-/* Handles the direct interaction with the database for the Store objects. It abstracts away the JDBC (Java Database Connectivity) details from the rest of the application. It is responsible for performing CRUD operations on the Store table in the database. */
+/** Handles the direct interaction with the database for the Store objects. 
+ * It abstracts away the JDBC (Java Database Connectivity) details from the rest of the application. 
+ * It is responsible for performing CRUD operations on the Store table in the database. */
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -9,8 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class StoreDAO {
-
-    // Create a new store
+    // Creates a new store
     public boolean createStore(Store store) {
         String sql = "INSERT INTO store (storeName, address, city, country, phone, active) VALUES (?, ?, ?, ?, ?, ?)";
 
@@ -30,7 +31,7 @@ public class StoreDAO {
             try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
                     int id = generatedKeys.getInt(1); // Retrieves the auto-generated primary key (storeId) from the DB after insertion.
-                    store.setStoreId(id); // Set the auto-generated ID back to the Store object using the public setter
+                    store.setStoreId(id); // Sets the auto-generated ID back to the Store object using the public setter
                 }
             }
 
@@ -40,7 +41,7 @@ public class StoreDAO {
             throw new RuntimeException("Failed to create store in DAO: " + e.getMessage(), e);
         }
     }
-    // Retrieve all stores and returns a list List<Store>
+    // Retrieves all stores and returns a list List<Store>
     public List<Store> getAllStores() {
         List<Store> stores = new ArrayList<>();
         String sql = "SELECT * FROM store";
@@ -81,7 +82,7 @@ public class StoreDAO {
         return null;
     }
 
-    // Update an existing store using the provided Store object's data
+    // Updates an existing store using the provided Store object's data
     public boolean updateStore(Store store) {
         String sql = "UPDATE store SET storeName = ?, address = ?, city =?, country = ?, phone = ?, active = ? WHERE storeId = ?";
 
@@ -104,7 +105,7 @@ public class StoreDAO {
         }
     }
 
-    // Updates the active status of a store usign storeId
+    // Updates the active status of a store using storeId
     public boolean setStoreActive(int storeId, boolean active) {
         String sql = "UPDATE store SET active = ? WHERE storeId = ?";
         try (Connection conn = DatabaseConnector.getConnection();
