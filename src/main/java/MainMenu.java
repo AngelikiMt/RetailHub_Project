@@ -1,11 +1,11 @@
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
-import java.awt.Cursor;
 import java.awt.Image;
 
 import javax.swing.BorderFactory;
@@ -106,7 +106,7 @@ public class MainMenu extends JFrame {
             path = "/transactionicon.png";
             transactionBtn.setIcon(getIcon(path));
            
-        JButton reportsBtn = new JButton("Reports");
+        JButton reportsBtn = new JButton("Reports (PIN)");
             path = "/reportsicon.png";
             reportsBtn.setIcon(getIcon(path));
 
@@ -145,7 +145,7 @@ public class MainMenu extends JFrame {
         storeBtn.addActionListener(e -> new StoreLoginFrame());
         stockBtn.addActionListener(e -> new StockFrame());
         transactionBtn.addActionListener(e -> new TransactionFrame());
-        reportsBtn.addActionListener(e -> new ReportsFrame());
+        reportsBtn.addActionListener(e -> new ReportsLoginFrame());
 
         //exitBtn.addActionListener(e -> {
         //     dispose();
