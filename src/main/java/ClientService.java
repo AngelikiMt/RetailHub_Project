@@ -5,8 +5,6 @@ import java.util.List;
 
 public class ClientService {
     private static final ClientDAO clientDAO = new ClientDAO();
-    //private static int count = 0;
-
     public static ClientDAO getClientDAO() { return clientDAO; }
 
     private static void validateName(String name, List<String> errors, String fieldName) {
@@ -66,7 +64,7 @@ public class ClientService {
         }
     }
 
-    // 1. Customer registration
+    // Customer registration
     public static Client createClient(String firstName, String lastName, LocalDate birthDate,
                                       String phoneNumber, String email, String gender, boolean activeStatus) {
 
@@ -94,12 +92,12 @@ public class ClientService {
         return newClient;
     }
 
-    // 2. Customer identification by email or phone
+    // Customer identification by email or phone
     public static boolean authenticateClient(Client client, String input) {
         return client.getEmail().equals(input) || client.getPhoneNumber().equals(input);
     }
 
-    // 2a. Get client ID by input
+    // Get client ID by input
     public static long authenticateClient1(String input) {
         Client client = clientDAO.getClientByEmailOrPhone(input);
         if (client != null) {
@@ -111,7 +109,7 @@ public class ClientService {
         return -1;
     }
 
-    // 2b. Get full client object by input
+    // Get full client object by input
     public static Client authenticateClient(String input) {
         Client client = clientDAO.getClientByEmailOrPhone(input);
         if (client != null) {
@@ -120,7 +118,7 @@ public class ClientService {
         throw new IllegalArgumentException("Invalid input. No client found.");
     }
 
-    // 3. Update client details
+    // Update client details
     public static Client updateClient(Client client, String newFirstName, String newLastName,
                                       String newEmail, String newPhoneNumber) {
 
@@ -155,18 +153,18 @@ public class ClientService {
         return client;
     }
 
-    // 4. Anonymize client (soft delete)
+    // Anonymize client (soft delete)
     public static void deleteClient(long clientId) {
         clientDAO.anonymizeClient(clientId);
     }
 
-    // 5. Remove clients inactive for over 5 years
+    // Remove clients inactive for over 5 years
     public static void isInactiveMoreThan5Years() {
         int removed = clientDAO.deleteClientsInactiveMoreThan5Years();
         System.out.println(removed + " clients have been removed.");
     }
 
-    // 6. Return client as JSON
+    // Return client as JSON
     public static String getClientAsJson(long clientId) {
         return clientDAO.getClientAsJson(clientId);
     }

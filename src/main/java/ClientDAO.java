@@ -1,3 +1,7 @@
+/** Handles the direct interaction with the database for the Client objects. 
+ * It abstracts away the JDBC (Java Database Connectivity) details from the rest of the application. 
+ * It is responsible for performing CRUD operations on the Client table in the database. */
+
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -179,7 +183,7 @@ public class ClientDAO {
         return 0;
     }
 
-       // Retrieves store data and formats it into a simple JSON string
+    // Retrieves store data and formats it into a simple JSON string
     public String getClientAsJson(long clientId) {
         StringBuilder json = new StringBuilder();
         

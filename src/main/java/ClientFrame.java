@@ -14,6 +14,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
+
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -36,6 +37,7 @@ import javax.swing.table.DefaultTableModel;
 public class ClientFrame extends JFrame {
     private final JPanel contentPanel;
     Font customFont = new Font("MinionPro", Font.PLAIN, 20);
+
     // Table model and table for "View All Clients" to be accessible for refresh
     private DefaultTableModel clientTableModel;
     private JTable clientTable;
@@ -149,8 +151,7 @@ public class ClientFrame extends JFrame {
         backButton.setContentAreaFilled(false);
         backButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
         backButton.addActionListener(e -> dispose());
-        // Adds to the right side of the top bar
-        topBar.add(Box.createHorizontalStrut(10));
+        topBar.add(Box.createHorizontalStrut(10)); // Adds to the right side of the top bar
 
         background.setLayout(new BorderLayout());
         background.add(topBar, BorderLayout.NORTH);
@@ -185,7 +186,7 @@ public class ClientFrame extends JFrame {
         // Set the border for this panel
         TitledBorder titled = BorderFactory.createTitledBorder(
             BorderFactory.createLineBorder(Color.GRAY, 2),
-            "", // No title text here, the icon will be visually above
+            "",
             TitledBorder.LEFT,
             TitledBorder.TOP,
             new Font("MinionPro", Font.BOLD, 20),
@@ -208,15 +209,13 @@ public class ClientFrame extends JFrame {
                 addIcon = new ImageIcon(scaledImage);
             } else {
                 System.err.println("Warning: Could not load add.png, or it's not a valid image.");
-                // Fallback to text if icon fails to load
-                iconLabel.setText("Add New Client");
+                iconLabel.setText("Add New Client"); // Fallback to text if icon fails to load
                 iconLabel.setFont(new Font("MinionPro", Font.BOLD, 22));
                 iconLabel.setForeground(Color.DARK_GRAY);
             }
         } catch (Exception e) {
             System.err.println("Error loading add.png: " + e.getMessage());
-            // Fallback to text if an exception occurs
-            iconLabel.setText("Add New Client");
+            iconLabel.setText("Add New Client"); // Fallback to text if an exception occurs
             iconLabel.setFont(new Font("MinionPro", Font.BOLD, 22));
             iconLabel.setForeground(Color.DARK_GRAY);
         }
@@ -789,35 +788,6 @@ public class ClientFrame extends JFrame {
     }
 
     private void menuGetJson() {
-        /*contentPanel.removeAll();
-        contentPanel.setLayout(new BorderLayout());
-
-        JPanel form = new JPanel(new BorderLayout());
-        form.setBorder(BorderFactory.createTitledBorder(
-            BorderFactory.createEmptyBorder(20, 20, 20, 20),
-            "",
-            TitledBorder.LEFT,
-            TitledBorder.TOP,
-            new Font("MinionPro", Font.BOLD, 20),
-            Color.DARK_GRAY
-        ));
-
-        JTextArea jsonArea = new JTextArea(20, 40);
-        jsonArea.setEditable(false);
-        jsonArea.setFont(new Font("Monospaced", Font.PLAIN, 14));
-
-        StringBuilder sb = new StringBuilder();
-        for (Client client : ClientService.getClientDAO().getAllClients()) {
-            sb.append(ClientService.getClientAsJson(client)).append("\n\n");
-        }
-        jsonArea.setText(sb.toString());
-
-        JScrollPane scroll = new JScrollPane(jsonArea);
-        form.add(scroll, BorderLayout.CENTER);
-
-        contentPanel.add(form, BorderLayout.CENTER);
-        contentPanel.revalidate();
-        contentPanel.repaint();*/
         contentPanel.removeAll();
         contentPanel.setLayout(new BorderLayout());
 
@@ -902,9 +872,9 @@ public class ClientFrame extends JFrame {
         contentPanel.repaint();
     }
 
-     // Updates the table with current client list
-     private void refreshTable() {
-        clientTableModel.setRowCount(0); // clears existing data
+    // Updates the table with current client list
+    private void refreshTable() {
+       clientTableModel.setRowCount(0); // clears existing data
 
         // Fetches all clients
         List <Client> clients = ClientService.getClientDAO().getAllClients();
