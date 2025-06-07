@@ -1,4 +1,6 @@
-//Acts as a service layer, providing business logic, validations for Store operations and sits between the UI (StoreFrame.java) and the Database layer (StoreDAO.java) */
+/** Acts as a service layer, providing business logic, 
+ * validations for Store operations and sits between the UI (StoreFrame.java) 
+ * and the Database layer (StoreDAO.java) */
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,17 +13,17 @@ public class StoreService {
         this.storeDAO1 = new StoreDAO();
     }
 
-    // Show all stores
+    // Shows all stores
     public static List<Store> getStores() {
         return storeDAO.getAllStores();
     }
 
-    // Show store info by Id
+    // Shows store info by Id
     public static Store getStoreById(int storeId) {
         return storeDAO.getStoreById(storeId);
     }
 
-    // Validate inputs
+    // Validating inputs
     // Checks if a string input is null or empty
     public static void validate(String varname, String x, List<String> errors) {
         if (x == null || x.trim().isEmpty()) {
