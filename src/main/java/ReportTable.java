@@ -85,7 +85,7 @@ public class ReportTable {
 
     private static DefaultTableModel buildGenericTable(JSONObject json) {
         List<String> columnsInOrder = new ArrayList<>();
-        Map<String, Object> row = new LinkedHashMap<>(); // κρατάει τη σειρά
+        Map<String, Object> row = new LinkedHashMap<>(); 
 
         JSONArray names = json.names();
         for (int i = 0; i < names.length(); i++) {
@@ -291,7 +291,7 @@ public class ReportTable {
                 data[i + 1][10] = "";
             }
         } else {
-            // Αν δεν υπάρχουν προϊόντα, βάζουμε μια κενή γραμμή
+            
             data[1][0] = "";
             data[1][1] = "";
             data[1][2] = "—";
@@ -354,12 +354,12 @@ public class ReportTable {
 
         Object[][] data = new Object[totalRows][columns.length];
 
-        // Πρώτη γραμμή με συνολικά στοιχεία
+       
         data[0][0] = json.opt("client_id");
         data[0][1] = json.opt("full_name");
         data[0][2] = json.opt("total_transactions");
         data[0][3] = json.opt("total_spent");
-        data[0][4] = "";  // stores_visited είναι λίστα, δεν βάζουμε εδώ
+        data[0][4] = "";  // stores_visited 
         data[0][5] = json.optBoolean("has_discount");
 
         // Λίστα καταστημάτων ανά γραμμή στη συνέχεια
@@ -373,7 +373,7 @@ public class ReportTable {
                 data[i + 1][5] = "";
             }
         } else {
-            // Αν δεν υπάρχουν καταστήματα, βάζουμε μια γραμμή με —
+            
             data[1][0] = "";
             data[1][1] = "";
             data[1][2] = "";
@@ -423,7 +423,7 @@ public class ReportTable {
         JSONArray monthlyStats = json.optJSONArray("monthly_stats");
         int monthlyRows = (monthlyStats != null) ? monthlyStats.length() : 0;
 
-        // Υπολογισμός συνολικών (αν δεν υπάρχουν, 0)
+        
         int totalUnits = 0;
         double totalRevenue = 0.0;
         if (monthlyStats != null) {
@@ -434,7 +434,7 @@ public class ReportTable {
             }
         }
 
-        // Εάν τα totals είναι όλα 0, δεν εμφανίζουμε τη συνολική γραμμή
+        
         boolean totalsAreZero = (totalUnits == 0) && (totalRevenue == 0.0);
 
         int totalRows = totalsAreZero ? monthlyRows : monthlyRows + 1;
@@ -456,7 +456,7 @@ public class ReportTable {
                 data[i + startIndex][2] = monthData.optDouble("revenue");
             }
         } else if (totalRows == 0) {
-            // Αν δεν υπάρχουν δεδομένα, ίσως βάλουμε μια κενή γραμμή
+           
             data = new Object[1][columns.length];
             data[0][0] = "—";
             data[0][1] = 0;
@@ -486,19 +486,11 @@ public class ReportTable {
             data[i][3] = row.optInt("total_stock", 0);
             data[i][4] = row.optInt("units_sold", 0);
             data[i][5] = row.optInt("remaining", 0);
-            data[i][6] = String.format("%.0f%%", row.optDouble("unsold_ratio", 0.0) * 100); // σε ποσοστό
+            data[i][6] = String.format("%.0f%%", row.optDouble("unsold_ratio", 0.0) * 100); 
         }
 
         return new DefaultTableModel(data, columns);
     }
-
-
-
-
-
-
-
-
 
 
 }

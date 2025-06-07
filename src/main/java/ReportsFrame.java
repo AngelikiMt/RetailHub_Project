@@ -25,7 +25,7 @@ public class ReportsFrame extends JFrame {
     private static final List<String> reportsWithoutTable = new ArrayList<>(List.of("profit_by_category_per_month","spending_by_age_and_category","unique_clients_per_month","predict_category_sales","predict_monthly_profits"));
     private Boolean chartAvailable = false;
     private JTextArea descriptionArea;
-    private JComponent reportContentComponent;  // JTable ή JTextArea
+    private JComponent reportContentComponent;  // JTable or JTextArea
 
     private static final Map<String, String> reportDescriptions = new HashMap<>() {{
         put("client_behavior", "Summarizes a client's purchase behavior — total spent, number of transactions, and store visits. Useful for targeting loyal or high-value customers.");
@@ -55,7 +55,7 @@ public class ReportsFrame extends JFrame {
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLayout(new BorderLayout(10, 10));
 
-       // --- Νέα Φόρμα Εισαγωγής ---
+       
         JPanel formPanel = new JPanel(new GridBagLayout());
         formPanel.setBorder(BorderFactory.createTitledBorder("Report Input"));
         GridBagConstraints gbc = new GridBagConstraints();
@@ -124,7 +124,7 @@ public class ReportsFrame extends JFrame {
         JTextField clientIdField = new JTextField(15);
         formPanel.add(clientIdField, gbc);
 
-        //--περιγραφη--
+        //--description--
         this.descriptionArea = new JTextArea(3, 30);
         this.descriptionArea.setWrapStyleWord(true);
         this.descriptionArea.setLineWrap(true);
@@ -144,7 +144,7 @@ public class ReportsFrame extends JFrame {
         JButton exportPdfBtn = new JButton("Export to PDF");
         formPanel.add(exportPdfBtn, gbc);
 
-        // --- Αρχική Απόκρυψη ---
+        
         productIdLabel.setVisible(false);
         productIdField.setVisible(false);
         storeIdLabel.setVisible(false);
@@ -152,7 +152,7 @@ public class ReportsFrame extends JFrame {
         clientIdLabel.setVisible(false);
         clientIdField.setVisible(false);
 
-        // --- Listener επιλογής ---
+        // --- Listener ---
         reportTypeCombo.addActionListener(e -> {
             String selected = ((ReportItem) reportTypeCombo.getSelectedItem()).getValue();
 
@@ -172,7 +172,7 @@ public class ReportsFrame extends JFrame {
             formPanel.repaint();
         });
 
-        // --- Προσθήκη φόρμας στο πάνω μέρος ---
+       
         add(formPanel, BorderLayout.NORTH);
 
         formPanel.add(productIdLabel);
@@ -187,7 +187,7 @@ public class ReportsFrame extends JFrame {
         formPanel.add(exportPdfBtn);
 
         add(formPanel, BorderLayout.NORTH);
-//======== πλαισιο κειμενου αναφορας -> πινακας  ==========================
+//======== Report output -> Table  ===========================================
         outputArea = new JTextArea();
         outputArea.setEditable(false);
         outputArea.setFont(new java.awt.Font("Arial", java.awt.Font.PLAIN, 14));
@@ -195,7 +195,7 @@ public class ReportsFrame extends JFrame {
         outputArea.setWrapStyleWord(true);
         JScrollPane textScrollPane = new JScrollPane(outputArea);
         textScrollPane.setBorder(BorderFactory.createTitledBorder("Report Output"));
-//=================== Πλαίσιο περιγραφής===================================
+//=================== Descriprion Area ===================================
         descriptionArea.setEditable(false);
         descriptionArea.setFont(new java.awt.Font("Arial", java.awt.Font.ITALIC, 13));
         descriptionArea.setLineWrap(true);
@@ -208,7 +208,7 @@ public class ReportsFrame extends JFrame {
         JPanel textPanel = new JPanel(new BorderLayout(20, 20));
         textPanel.add(textScrollPane, BorderLayout.CENTER);
         textPanel.add(descriptionScrollPane, BorderLayout.NORTH);
-// ================== πλαισιο γραφηματων αναφορας =====================
+// ================== Report Chart =======================================
         chartLabel = new JLabel();
         chartLabel.setHorizontalAlignment(JLabel.CENTER);
         chartLabel.setVerticalAlignment(JLabel.CENTER);
@@ -224,7 +224,6 @@ public class ReportsFrame extends JFrame {
 
         
 
-//=============== ενεργοποιηση λειτουργιας κουμπιου για εμφανιση καταλληλησ αναφορας ===================
         generateBtn.addActionListener(e -> {
             
             ReportItem selectedItem = (ReportItem) reportTypeCombo.getSelectedItem();
@@ -277,7 +276,6 @@ public class ReportsFrame extends JFrame {
                     case "predict_monthly_profits":
                     case "predict_category_sales":
                     case "gpt_insights":
-                        // No ID required
                         break;
 
                     default:
@@ -288,14 +286,14 @@ public class ReportsFrame extends JFrame {
                 JOptionPane.showMessageDialog(this, "Invalid input. IDs must be numeric.");
                 return;
             }
-            //ανανεωση παραθυρου
+            //Window refresh
             textPanel.add(textScrollPane, BorderLayout.CENTER);
             textPanel.add(descriptionScrollPane, BorderLayout.NORTH);
             splitPane.setLeftComponent(textPanel);
             splitPane.setRightComponent(imageScrollPane);
             splitPane.setDividerLocation(0.5);
 
-            //εμφανιζει το chart μονο σε αυτα που εχουν 
+            //Chart appears only for the relevant reports
             chartAvailable = !reportsWithoutChart.contains(reportType);
 
             textScrollPane.setViewportView(outputArea);
@@ -316,12 +314,12 @@ public class ReportsFrame extends JFrame {
                     }
                     else if(reportsWithoutTable.contains(reportType)) {
                         imageScrollPane.setViewportView(chartLabel);
-                        // Δημιουργία panel με περιγραφή πάνω και γράφημα κάτω
+                        
                         JPanel chartOnlyPanel = new JPanel(new BorderLayout(10, 10));
                         chartOnlyPanel.add(descriptionScrollPane, BorderLayout.NORTH);
                         chartOnlyPanel.add(imageScrollPane, BorderLayout.CENTER);
 
-                        // Τοποθέτηση στο splitPane (αριστερό) και άδειασμα δεξιού
+                      
                         splitPane.setLeftComponent(chartOnlyPanel);
                         splitPane.setRightComponent(null);  
                                         
@@ -343,7 +341,7 @@ public class ReportsFrame extends JFrame {
                                 splitPane.setRightComponent(chartLabel);
                             }
                         
-                        //  η εικόνα αποθηκεύεται εδώ
+                        
                         String chartPath = "python-reports/io/report_chart.png";
                         //wait for layout resizing
                         SwingUtilities.invokeLater(() -> {
@@ -358,7 +356,7 @@ public class ReportsFrame extends JFrame {
                 });
             }).start();
             
-            chartLabel.setIcon(null); // Καθαρισμός γραφήματος
+            chartLabel.setIcon(null); // clean chart area 
                   
         });
 
@@ -375,35 +373,34 @@ public class ReportsFrame extends JFrame {
         if (imgFile.exists()) {
             ImageIcon icon = new ImageIcon(imgFile.getAbsolutePath());
 
-            // Παίρνουμε το Image από το ImageIcon
+           
             Image img = icon.getImage();
 
-            // Παίρνουμε το μέγεθος του JLabel (chartLabel)
+           
             int labelWidth = chartLabel.getWidth();
             int labelHeight = chartLabel.getHeight();
 
-            // Αν το μέγεθος είναι 0 (πριν το layout), βάζουμε default
+           
             if (labelWidth <= 0 || labelHeight <= 0) {
                 labelWidth = 400;
                 labelHeight = 300;
             }
 
-            // Κάνουμε scale την εικόνα να ταιριάζει στο JLabel με ομαλή κλιμάκωση
+            
             Image scaledImage = img.getScaledInstance(labelWidth, labelHeight, Image.SCALE_SMOOTH);
 
-            // Δημιουργούμε νέο ImageIcon με το scaled image
             ImageIcon scaledIcon = new ImageIcon(scaledImage);
 
-            // Ορίζουμε το icon στο JLabel
+            
             chartLabel.setIcon(scaledIcon);
         } else {
             chartLabel.setIcon(null);
             JOptionPane.showMessageDialog(this, "Chart image not found:\n" + imgFile.getAbsolutePath());
         }
-        //imageScrollPane.setVisible(false);
+        
     }
 
-//================================== αποθηκευση pdf ===================================================
+//================================== export pdf ===================================================
     
     private void exportTextAsPDF(Boolean chartAvailable) {
         if (reportContentComponent == null && !chartAvailable) {
@@ -428,7 +425,7 @@ public class ReportsFrame extends JFrame {
                 PdfWriter.getInstance(document, new FileOutputStream(file));
                 document.open();
 
-                // --- Τίτλος ---
+                // --- Title ---
                 com.lowagie.text.Font titleFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 16);
                 ReportItem selectedItem = (ReportItem) ((JComboBox<?>) ((JPanel) getContentPane().getComponent(0)).getComponent(7)).getSelectedItem();
                 String reportTitle = selectedItem != null ? selectedItem.getLabel() : "RetailHub Report";
@@ -436,13 +433,13 @@ public class ReportsFrame extends JFrame {
                 title.setAlignment(Paragraph.ALIGN_CENTER);
                 document.add(title);
 
-                // --- Περιγραφή ---
+                // --- Description ---
                 com.lowagie.text.Font descFont = FontFactory.getFont(FontFactory.HELVETICA_OBLIQUE, 12);
                 String descriptionText = descriptionArea.getText();
                 Paragraph descParagraph = new Paragraph(descriptionText + "\n\n", descFont);
                 document.add(descParagraph);
 
-                // --- Περιεχόμενο Αναφοράς ---
+                // --- Report ---
                 if (reportContentComponent instanceof JTextArea textArea) {
                     com.lowagie.text.Font textFont = FontFactory.getFont(FontFactory.HELVETICA, 11);
                     Paragraph textParagraph = new Paragraph(textArea.getText() + "\n\n", textFont);
@@ -452,12 +449,12 @@ public class ReportsFrame extends JFrame {
                     PdfPTable pdfTable = new PdfPTable(table.getColumnCount());
                     pdfTable.setWidthPercentage(100);
 
-                    // Κεφαλίδες
+                    
                     for (int i = 0; i < table.getColumnCount(); i++) {
                         pdfTable.addCell(new PdfPCell(new Phrase(table.getColumnName(i))));
                     }
 
-                    // Δεδομένα
+                    
                     for (int row = 0; row < table.getRowCount(); row++) {
                         for (int col = 0; col < table.getColumnCount(); col++) {
                             Object value = table.getValueAt(row, col);
@@ -469,7 +466,7 @@ public class ReportsFrame extends JFrame {
                     document.add(new Paragraph("\n"));
                 }
 
-                // --- Εικόνα / Διάγραμμα ---
+                // --- Chart ---
                 String chartPath = "python-reports/io/report_chart.png";
                 File imageFile = new File(chartPath);
                 if (imageFile.exists() && chartAvailable) {

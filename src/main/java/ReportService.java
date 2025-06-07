@@ -17,11 +17,11 @@ public class ReportService {
         ObjectMapper mapper = new ObjectMapper();
 
         try {
-            // 1. Δημιουργία input.json
+            // 1. Create input.json
             File inputFile = new File("python-reports/io/input.json");
             mapper.writerWithDefaultPrettyPrinter().writeValue(inputFile, inputData);
 
-            // 2. Εκτέλεση Python script
+            // 2. Run Python script
             ProcessBuilder pb = new ProcessBuilder("python-reports\\venv\\Scripts\\python.exe", "report_router.py");
             pb.directory(new File("python-reports"));
             pb.redirectErrorStream(true);
@@ -40,7 +40,7 @@ public class ReportService {
                 output.append("\nError in the Python script (exit code: ").append(exitCode).append(")\n");
             }
 
-            // 3. Ανάγνωση αποτελέσματος από output.json
+            // 3. Read the output.json
            
             return new String(Files.readAllBytes(Paths.get("python-reports/io/output.json")));
 
