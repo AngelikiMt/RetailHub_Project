@@ -10,9 +10,6 @@ public class TransactionService {
     private final static ClientDAO clientDAO = new ClientDAO();
     private final static StoreDAO storeDAO = new StoreDAO();
 
-    // public static boolean isEligibleForDiscount(Client client) {
-    //     return client.getClientCurrentTotal() > 400;
-    // }
     public static double calculateDiscount(double clientCurrentTotal, double sumTotal) {
     if (clientCurrentTotal + sumTotal >= 400) {
         return sumTotal * 0.20;
@@ -61,7 +58,6 @@ public class TransactionService {
             sumTotal += product.getPrice() * quantity;
         }
 
-        //double discount = isEligibleForDiscount(client) ? sumTotal * 0.2 : 0;
         double discount = calculateDiscount(client.getClientCurrentTotal(), sumTotal);
         
         return new ShowTotalResult(clientId, sumTotal, discount);
@@ -83,15 +79,12 @@ public class TransactionService {
         double discount = totalResult.getDiscount();
         double finalTotal = sumTotal - discount;
         
-       // double finalTotal = totalResult.getSumTotal() - totalResult.getDiscount();
-
-
         // Update client info
         Client client = clientDAO.getClientById(clientId);
         double currentTotal = client.getClientCurrentTotal();
 
         if (currentTotal + sumTotal >= 400) {
-            currentTotal = (currentTotal + sumTotal) - 400; // αφαιρείς 400 και κρατάς το υπόλοιπο
+            currentTotal = (currentTotal + sumTotal) - 400; // substracts 400 and kepps the remainder
         } else {
             currentTotal += sumTotal;
         }
@@ -106,11 +99,11 @@ public class TransactionService {
         client.setLastPurchaseDate(LocalDate.now());
         clientDAO.updateClient(client);
 
-        // Create transaction
+        // Creates the transaction
         Transaction transaction = new Transaction(
                 clientId, storeId, finalTotal, totalResult.getDiscount(), paymentMethod);
         
-        // Create includes
+        // Creates the includes
         List<Includes> includesList = new ArrayList<>();
         for (int i = 0; i < productIds.size(); i++) {
             includesList.add(new Includes(transaction.getTransactionId(), productIds.get(i), quantities.get(i)));
@@ -129,7 +122,7 @@ public class TransactionService {
         return transactionDAO.getAllIncludes();
     }
 
-    // Get stock as JSON string
+    // Gets stock as JSON string
     public static String getTransactionAsJson(long transactionId) {
         return transactionDAO.getTransactionAsJson(transactionId);
     }

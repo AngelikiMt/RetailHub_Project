@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -65,8 +66,7 @@ public class TransactionFrame extends JFrame {
                 logoIcon = new ImageIcon(scaledImage);
         } else {
             System.err.println("Warning: Could not load logo.png, or it's not a valid image.");
-            // Fallback to text if image fails to load
-            logoLabel.setText("TransactionMenu");
+            logoLabel.setText("TransactionMenu"); // Fallback to text if image fails to load
             logoLabel.setFont(new Font("MinionPro", Font.BOLD, 25));
             logoLabel.setForeground(Color.BLACK);
         }
@@ -142,8 +142,8 @@ public class TransactionFrame extends JFrame {
         bottomPanel.add(backButton);
         background.add(bottomPanel, BorderLayout.SOUTH);
 
-        transactionService = new TransactionService(); // Initialize TransactionService
-        clientService = new ClientService(); // Initialize ClientService
+        transactionService = new TransactionService(); // Initializes TransactionService
+        clientService = new ClientService(); // Initializes ClientService
 
         menuCreateTransaction(); // Shows create form by default
         setVisible(true);
@@ -407,7 +407,7 @@ public class TransactionFrame extends JFrame {
 
         contentPanel.add(overallPanel, BorderLayout.CENTER);
 
-        refreshTransactionTable(); // Populate table on display
+        refreshTransactionTable(); // Populates table on display
 
         contentPanel.revalidate();
         contentPanel.repaint();
@@ -508,7 +508,7 @@ public class TransactionFrame extends JFrame {
         centerPanel.add(scrollPane);
         centerPanel.add(Box.createRigidArea(new Dimension(0, 20)));
 
-        // === CENTER WRAPPER FOR GRID ALIGNMENT ===
+        // Center wrapper for grid alignment
         JPanel centerWrapper = new JPanel(new GridBagLayout());
         centerWrapper.setOpaque(false);
         centerWrapper.add(centerPanel);
