@@ -7,7 +7,7 @@ def fetch_clients():
 
     try:
         with conn.cursor() as cursor:
-            cursor.execute("SELECT * FROM Client")  # Capital 'C'
+            cursor.execute("SELECT * FROM client")  # Capital 'C'
             rows = cursor.fetchall()
 
             print("Retrieved clients:")

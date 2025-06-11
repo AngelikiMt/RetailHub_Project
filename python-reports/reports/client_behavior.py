@@ -18,7 +18,7 @@ def get_client_behavior(client_id: int) -> dict:
       SUM(t.sumTotal)                      AS total_spent,
       MAX(t.discount)                      AS max_discount,
       GROUP_CONCAT(DISTINCT s.address SEPARATOR '|||') AS stores
-    FROM Client c
+    FROM client c
     JOIN transaction t ON t.clientId = c.clientId
     JOIN Store s       ON t.storeId  = s.storeId
     WHERE c.clientId = %s

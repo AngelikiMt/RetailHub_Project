@@ -17,7 +17,7 @@ def create_clients(n=N_CLIENTS):
     with conn.cursor() as cursor:
         for _ in range(n):
             cursor.execute("""
-                INSERT INTO Client (firstName, lastName, birthDate, phoneNumber, email, gender, activeStatus)
+                INSERT INTO client (firstName, lastName, birthDate, phoneNumber, email, gender, activeStatus)
                 VALUES (%s, %s, %s, %s, %s, %s, %s)
             """, (
                 fake.first_name(),
@@ -89,7 +89,7 @@ from datetime import datetime, timedelta
 def create_transactions(n=N_TRANSACTIONS):
     with conn.cursor() as cursor:
         # Fetch clients and stores
-        cursor.execute("SELECT clientId FROM Client WHERE activeStatus = 1")
+        cursor.execute("SELECT clientId FROM client WHERE activeStatus = 1")
         clients = [row['clientId'] for row in cursor.fetchall()]
 
         cursor.execute("SELECT storeId FROM Store")
@@ -181,7 +181,7 @@ def update_client_totals():
 
         for row in client_summaries:
                         cursor.execute("""
-                UPDATE Client
+                UPDATE client
                 SET clientSumTotal = %s,
                     clientCurrentTotal = %s,
                     lastPurchaseDate = %s
