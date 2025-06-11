@@ -8,24 +8,18 @@ import java.awt.Font;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Image;
-import java.awt.Insets;
 import java.awt.MediaTracker;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Optional;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
@@ -35,39 +29,30 @@ import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 
 public class StockFrame extends JFrame {
+
     private final JPanel contentPanel;
     Font customFont = new Font("MinionPro", Font.PLAIN, 20);
-    // Table model and table for "View All Clients" to be accessible for refresh
+
+    // Table model and table for "View Law Stock" to be accessible for refresh
     private DefaultTableModel model;
     private JTable table;
+
+
     private JTextField prodField, excludedStField;
     private JScrollPane searchTableScrollPane;
 
     public StockFrame() {
+
         setTitle("Stock Menu");
         setExtendedState(JFrame.MAXIMIZED_BOTH); // Fullscreen
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setResizable(true);
-        setMinimumSize(new Dimension(800, 600));
+        setMinimumSize(new Dimension(800, 600)); //Set the minimum size of screen
 
         JPanel background = new JPanel();
         background.setOpaque(false);
         this.add(background);
         getContentPane().setBackground(Color.WHITE);
-
-        // clientTableModel = new DefaultTableModel(new String[]{
-        //     "ID", "First Name", "Last Name", "Email", "Phone", "Gender",
-        //     "Birth Date", "Active", "Date Joined", "Last Purchase", "Sum"
-        // }, 0) {
-        //     @Override
-        //     public boolean isCellEditable(int row, int column) {
-        //         return false; // Makes table non-editable
-        //     }
-        // };
-        // clientTable = new JTable(clientTableModel);
-        // clientTable.setFont(new Font("MinionPro", Font.PLAIN, 15));
-        // clientTable.getTableHeader().setFont(new Font("MinionPro", Font.BOLD, 17));
-        // clientTable.setRowHeight(30);
 
         // Top navigation bar
         JPanel topBar = new JPanel();
@@ -88,8 +73,7 @@ public class StockFrame extends JFrame {
                 Image scaledImage = image.getScaledInstance(-1, 60, Image.SCALE_SMOOTH);
                 logoIcon = new ImageIcon(scaledImage);
         } else {
-            System.err.println("Warning: Could not load logo.png, or it's not a valid image.");
-            // Fallback to text if image fails to load
+            System.err.println("Warning: Could not load logo.png, or it's not a valid image."); // Fallback to text if image fails to load
             logoLabel.setText("ClientMenu");
             logoLabel.setFont(new Font("MinionPro", Font.BOLD, 25));
             logoLabel.setForeground(Color.BLACK);
@@ -108,8 +92,8 @@ public class StockFrame extends JFrame {
             JButton navButton = new JButton(item);
             navButton.setFont(navFont);
             navButton.setFocusPainted(false);
-            navButton.setForeground(new Color(0,0,205)); // Light blue background
-            navButton.setBackground(new Color(239, 247, 255)); // Blue text
+            navButton.setForeground(new Color(0,0,205)); 
+            navButton.setBackground(new Color(239, 247, 255)); 
             navButton.setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 15));
             navButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
             navButton.setOpaque(true);
@@ -118,7 +102,6 @@ public class StockFrame extends JFrame {
             navButton.setMaximumSize(new Dimension(250, 30));
             
             topBar.add(navButton);
-            // Adds spacing between buttons
             topBar.add(Box.createHorizontalStrut(5));
 
             // Adds action listeners based on button text
@@ -132,6 +115,7 @@ public class StockFrame extends JFrame {
             }
         }
 
+        //set the back-to-main menu button
         JButton backButton = new JButton();
         ImageIcon originalIcon = new ImageIcon(getClass().getResource("left-arrow.png"));
         ImageIcon scaledIcon = null;
@@ -153,7 +137,7 @@ public class StockFrame extends JFrame {
         backButton.setContentAreaFilled(false);
         backButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
         backButton.addActionListener(e -> dispose());
-        // Adds to the right side of the top bar
+       
         topBar.add(Box.createHorizontalStrut(10));
 
         background.setLayout(new BorderLayout());
@@ -170,11 +154,12 @@ public class StockFrame extends JFrame {
         bottomPanel.add(backButton);
         background.add(bottomPanel, BorderLayout.SOUTH);
 
-        menuSetStock(); // Shows create form by default
+        menuSetStock(); // Shows SetStock form by default
         setVisible(true); // Shows window
     }
 
-          protected void showError(String message) {
+        //reusable methods for showing error and success messages
+        protected void showError(String message) {
             JOptionPane.showMessageDialog(this, "Error: " + message, "Error", JOptionPane.ERROR_MESSAGE);
         }
 
@@ -183,6 +168,7 @@ public class StockFrame extends JFrame {
         }
     
     private void menuSetStock() {
+
         contentPanel.removeAll(); // Clears previous content
         contentPanel.setLayout(new BorderLayout());
 
@@ -290,7 +276,7 @@ public class StockFrame extends JFrame {
 
         // Submit button
         JButton submit = new JButton("Set Stock");
-        submit.setBackground(new Color(128, 0, 128)); // Purple background
+        submit.setBackground(new Color(128, 0, 128)); 
         submit.setForeground(Color.WHITE);
         submit.setFont(new Font("MinionPro", Font.BOLD, 20));
         submit.setPreferredSize(new Dimension(200, 40));
@@ -299,13 +285,13 @@ public class StockFrame extends JFrame {
         buttonPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
         buttonPanel.add(submit);
 
+        //setting of Panels
         fieldsAndButtonPanel.add(buttonPanel, BorderLayout.SOUTH);
         borderedContentPanel.add(fieldsAndButtonPanel, BorderLayout.CENTER);
-
         centerWrapper.add(borderedContentPanel);
         contentPanel.add(centerWrapper, BorderLayout.CENTER);
 
-        // Create client on submit
+        // Set stock on submit
         submit.addActionListener(e -> {
             try {
                 int storeId = Integer.parseInt(storeField.getText());
@@ -317,12 +303,7 @@ public class StockFrame extends JFrame {
                 productField.setText("");
                 storeField.setText("");
                 quantityField.setText("");
-            // } catch (NumberFormatException ex) {
-            //     showError("Invalid number format for ID or Quantity.");
-            // } catch (Exception ex) {
-            //     showError(ex.getMessage());
-            // }
-                //refreshTable(); // Update table
+
                 JOptionPane.showMessageDialog(contentPanel, "Stock" + productId +" added successfully to store" + storeId);
 
             } catch (Exception ex) {
@@ -336,9 +317,11 @@ public class StockFrame extends JFrame {
     }
 
     private void menuGetStock() {
+
         contentPanel.removeAll();
         contentPanel.setLayout(new BorderLayout());
 
+        //Create form Panel
         JPanel formPanel = new JPanel(new GridLayout(4, 2, 10, 10));
         formPanel.setOpaque(false);
         formPanel.setBorder(BorderFactory.createEmptyBorder(80, 100, 80, 100));
@@ -356,210 +339,186 @@ public class StockFrame extends JFrame {
         ));
         }
 
-    JButton search = new JButton("Search");
-    search.setBackground(new Color(128, 0, 128));
-    search.setForeground(Color.WHITE);
-    search.setFont(customFont);
+        JButton search = new JButton("Search");
+        search.setBackground(new Color(128, 0, 128));
+        search.setForeground(Color.WHITE);
+        search.setFont(customFont);
 
-    JLabel storeLabel = new JLabel("Store ID");
-    storeLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
-    formPanel.add(storeLabel); formPanel.add(storeIdField);
+        JLabel storeLabel = new JLabel("Store ID");
+        storeLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
+        formPanel.add(storeLabel); formPanel.add(storeIdField);
 
-    JLabel productLabel = new JLabel("Product ID");
-    productLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
-    formPanel.add(productLabel); formPanel.add(productIdField);
+        JLabel productLabel = new JLabel("Product ID");
+        productLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
+        formPanel.add(productLabel); formPanel.add(productIdField);
+        
+        formPanel.add(new JLabel()); formPanel.add(search);
+        
+        JLabel resultLabel = new JLabel("Quantity: ");
+        resultLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
+        formPanel.add(new JLabel()); formPanel.add(resultLabel);
     
-    formPanel.add(new JLabel()); formPanel.add(search);
-    
-    JLabel resultLabel = new JLabel("Quantity: ");
-    resultLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
-    formPanel.add(new JLabel()); formPanel.add(resultLabel);
-    
-    //formPanel.add(new JLabel()); // Empty cell
+        JLabel titleLabel = new JLabel("GET STOCK"); 
+        titleLabel.setFont(new Font("MinionPro", Font.ITALIC, 20));
+        titleLabel.setForeground(Color.BLUE);
 
+        JPanel titledPanel = new JPanel(new BorderLayout());
+        titledPanel.setOpaque(false);
+        titledPanel.setBorder(BorderFactory.createEmptyBorder(10, 30, 10, 30));
+        titledPanel.setBorder(BorderFactory.createLineBorder(Color.GRAY, 2));
+        
+        titledPanel.add(titleLabel, BorderLayout.NORTH);
+        titledPanel.add(formPanel, BorderLayout.CENTER);
 
-    JLabel titleLabel = new JLabel(""); 
-    titleLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
-    titleLabel.setForeground(Color.DARK_GRAY);
+        JPanel wrapper = new JPanel(new BorderLayout(10, 10));
+        wrapper.setOpaque(false);
+        wrapper.setBorder(BorderFactory.createEmptyBorder(80, 80, 80, 80));
+        wrapper.add(titledPanel, BorderLayout.NORTH);
 
-    TitledBorder titled = BorderFactory.createTitledBorder(
-            BorderFactory.createLineBorder(Color.GRAY, 1),
-            "",
-            TitledBorder.LEFT,
-            TitledBorder.TOP
-    );
+        JPanel centerWrapper = new JPanel(new GridBagLayout());
+        centerWrapper.setOpaque(false);
+        centerWrapper.add(wrapper);
 
-    JPanel titledPanel = new JPanel(new BorderLayout());
-    titledPanel.setOpaque(false);
-    //titledPanel.setPreferredSize(new Dimension(400,600));
-    titledPanel.setBorder(BorderFactory.createEmptyBorder(10, 30, 10, 30));
-    titledPanel.setBorder(BorderFactory.createLineBorder(Color.GRAY, 2));
-    
-    titledPanel.add(titleLabel, BorderLayout.NORTH);
-    titledPanel.add(formPanel, BorderLayout.CENTER);
+        contentPanel.add(centerWrapper, BorderLayout.CENTER);
 
-    JPanel wrapper = new JPanel(new BorderLayout(10, 10));
-    wrapper.setOpaque(false);
-    wrapper.setBorder(BorderFactory.createEmptyBorder(80, 80, 80, 80));
-    wrapper.add(titledPanel, BorderLayout.NORTH);
-    //wrapper.add(scroll, BorderLayout.CENTER);
+        // Action
+        search.addActionListener(e -> {
+            try {
+                    long productId = Long.parseLong(productIdField.getText());
+                    int storeId = Integer.parseInt(storeIdField.getText());
 
-    JPanel centerWrapper = new JPanel(new GridBagLayout());
-    centerWrapper.setOpaque(false);
-    centerWrapper.add(wrapper);
-
-    contentPanel.add(centerWrapper, BorderLayout.CENTER);
-
-    // Add fields to form
-
-    // Title with icon
-    // ImageIcon rawIcon = new ImageIcon(getClass().getResource("/refresh.png"));
-    // Image scaledImage = rawIcon.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
-    // ImageIcon icon = new ImageIcon(scaledImage);    
-    // JLabel titleLabel = new JLabel("", icon, JLabel.CENTER);
-    // titleLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
-    // titleLabel.setForeground(Color.DARK_GRAY);
-    // titleLabel.setBorder(BorderFactory.createEmptyBorder(10, 30, 40, 30));
-
-
-    // Action
-    search.addActionListener(e -> {
-        try {
-                long productId = Long.parseLong(productIdField.getText());
-                int storeId = Integer.parseInt(storeIdField.getText());
-
-                Stock stock = StockService.getStock(productId, storeId);
-                if (stock != null) {
-                    resultLabel.setText("Quantity: " + stock.getStockQuantity());
-                    showSuccess("Stock found.");
-                } else {
+                    Stock stock = StockService.getStock(productId, storeId);
+                    if (stock != null) {
+                        resultLabel.setText("Quantity: " + stock.getStockQuantity());
+                        showSuccess("Stock found.");
+                    } else {
+                        resultLabel.setText("Quantity: N/A");
+                        showError("Stock not found for Product ID " + productId + " in Store ID " + storeId + ".");
+                    }
+                } catch (NumberFormatException ex) {
+                    showError("Invalid number format for ID.");
                     resultLabel.setText("Quantity: N/A");
-                    showError("Stock not found for Product ID " + productId + " in Store ID " + storeId + ".");
+                } catch (Exception ex) {
+                    showError(ex.getMessage());
+                    resultLabel.setText("Quantity: N/A");
                 }
-            } catch (NumberFormatException ex) {
-                showError("Invalid number format for ID.");
-                resultLabel.setText("Quantity: N/A");
-            } catch (Exception ex) {
-                showError(ex.getMessage());
-                resultLabel.setText("Quantity: N/A");
-            }
-    });
-    contentPanel.revalidate();
-    contentPanel.repaint();
+        });
+        contentPanel.revalidate();
+        contentPanel.repaint();
     }
 
     private void menuAddStock() {
 
-    contentPanel.removeAll();
-    contentPanel.setLayout(new BorderLayout());
+        contentPanel.removeAll();
+        contentPanel.setLayout(new BorderLayout());
 
-    JPanel centerWrapper = new JPanel(new GridBagLayout());
-        centerWrapper.setOpaque(false); 
+        JPanel centerWrapper = new JPanel(new GridBagLayout());
+            centerWrapper.setOpaque(false); 
 
-        // This is the panel that will have the border and contain the icon and the form fields
-        JPanel borderedContentPanel = new JPanel(new BorderLayout());
-        borderedContentPanel.setOpaque(false);
+            // This is the panel that will have the border and contain the form fields
+            JPanel borderedContentPanel = new JPanel(new BorderLayout());
+            borderedContentPanel.setOpaque(false);
 
-        // Set the border for this panel
-        TitledBorder titled = BorderFactory.createTitledBorder(
-            BorderFactory.createLineBorder(Color.GRAY, 2),
-            "", // No title text here, the icon will be visually above
-            TitledBorder.LEFT,
-            TitledBorder.TOP,
-            new Font("MinionPro", Font.BOLD, 20),
-            Color.DARK_GRAY
-        );
-        borderedContentPanel.setBorder(BorderFactory.createCompoundBorder(
-            titled,
-            BorderFactory.createEmptyBorder(30, 30, 30, 30)
-        ));
+            // Set the border for this panel
+            TitledBorder titled = BorderFactory.createTitledBorder(
+                BorderFactory.createLineBorder(Color.GRAY, 2),
+                "", // No title text here, the icon will be visually above
+                TitledBorder.LEFT,
+                TitledBorder.TOP,
+                new Font("MinionPro", Font.BOLD, 20),
+                Color.DARK_GRAY
+            );
+            borderedContentPanel.setBorder(BorderFactory.createCompoundBorder(
+                titled,
+                BorderFactory.createEmptyBorder(30, 30, 30, 30)
+            ));
 
-     JPanel fieldsAndButtonPanel = new JPanel(new BorderLayout());
-        fieldsAndButtonPanel.setOpaque(false);
-        fieldsAndButtonPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0)); // Padding below icon
+        JPanel fieldsAndButtonPanel = new JPanel(new BorderLayout());
+            fieldsAndButtonPanel.setOpaque(false);
+            fieldsAndButtonPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0)); // Padding below icon
 
-        // Form layout
-        JPanel formFieldsPanel = new JPanel(new GridLayout(0, 2, 10, 10));
-        formFieldsPanel.setOpaque(false);
+            // Form layout
+            JPanel formFieldsPanel = new JPanel(new GridLayout(0, 2, 10, 10));
+            formFieldsPanel.setOpaque(false);
 
-        JTextField productField = new JTextField(15);
-        productField.setFont(customFont);
-        productField.setPreferredSize(new Dimension(200, 10));
-        productField.setBorder(BorderFactory.createCompoundBorder(
-            productField.getBorder(),
-            BorderFactory.createEmptyBorder(1, 5, 1, 5)
-        ));
+            JTextField productField = new JTextField(15);
+            productField.setFont(customFont);
+            productField.setPreferredSize(new Dimension(200, 10));
+            productField.setBorder(BorderFactory.createCompoundBorder(
+                productField.getBorder(),
+                BorderFactory.createEmptyBorder(1, 5, 1, 5)
+            ));
 
-        JTextField storeField = new JTextField(15);
-        storeField.setFont(customFont);
-        storeField.setPreferredSize(new Dimension(200, 10));
-        storeField.setBorder(BorderFactory.createCompoundBorder(
-            storeField.getBorder(),
-            BorderFactory.createEmptyBorder(1, 5, 1, 5)
-        ));
+            JTextField storeField = new JTextField(15);
+            storeField.setFont(customFont);
+            storeField.setPreferredSize(new Dimension(200, 10));
+            storeField.setBorder(BorderFactory.createCompoundBorder(
+                storeField.getBorder(),
+                BorderFactory.createEmptyBorder(1, 5, 1, 5)
+            ));
 
-        JTextField quantityField = new JTextField(15);
-        quantityField.setFont(customFont);
-        quantityField.setPreferredSize(new Dimension(200, 10));
-        quantityField.setBorder(BorderFactory.createCompoundBorder(
-            quantityField.getBorder(),
-            BorderFactory.createEmptyBorder(1, 5, 1, 5)
-        ));
+            JTextField quantityField = new JTextField(15);
+            quantityField.setFont(customFont);
+            quantityField.setPreferredSize(new Dimension(200, 10));
+            quantityField.setBorder(BorderFactory.createCompoundBorder(
+                quantityField.getBorder(),
+                BorderFactory.createEmptyBorder(1, 5, 1, 5)
+            ));
 
-        // Add fields to formFieldsPanel
-        JLabel label = new JLabel("Product ID:");
-        label.setFont(new Font("MinionPro", Font.BOLD, 20));
-        formFieldsPanel.add(label); formFieldsPanel.add(productField);
+            // Add fields to formFieldsPanel
+            JLabel label = new JLabel("Product ID:");
+            label.setFont(new Font("MinionPro", Font.BOLD, 20));
+            formFieldsPanel.add(label); formFieldsPanel.add(productField);
 
-        JLabel lLabel = new JLabel("Store ID");
-        lLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
-        formFieldsPanel.add(lLabel); formFieldsPanel.add(storeField);
+            JLabel lLabel = new JLabel("Store ID");
+            lLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
+            formFieldsPanel.add(lLabel); formFieldsPanel.add(storeField);
 
-        JLabel pLabel = new JLabel("Quantity to Add:");
-        pLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
-        formFieldsPanel.add(pLabel); formFieldsPanel.add(quantityField);
+            JLabel pLabel = new JLabel("Quantity to Add:");
+            pLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
+            formFieldsPanel.add(pLabel); formFieldsPanel.add(quantityField);
 
-        // Adds formFieldsPanel to the center of the fieldsAndButtonPanel
-        fieldsAndButtonPanel.add(formFieldsPanel, BorderLayout.CENTER);
+            // Adds formFieldsPanel to the center of the fieldsAndButtonPanel
+            fieldsAndButtonPanel.add(formFieldsPanel, BorderLayout.CENTER);
 
-        // Submit button
-        JButton add = new JButton("Add Stock");
-        add.setBackground(new Color(128, 0, 128)); // Purple background
-        add.setForeground(Color.WHITE);
-        add.setFont(new Font("MinionPro", Font.BOLD, 20));
-        add.setPreferredSize(new Dimension(200, 40));
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setOpaque(false);
-        buttonPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
-        buttonPanel.add(add);
+            // Add button
+            JButton add = new JButton("Add Stock");
+            add.setBackground(new Color(128, 0, 128)); // Purple background
+            add.setForeground(Color.WHITE);
+            add.setFont(new Font("MinionPro", Font.BOLD, 20));
+            add.setPreferredSize(new Dimension(200, 40));
+            JPanel buttonPanel = new JPanel();
+            buttonPanel.setOpaque(false);
+            buttonPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
+            buttonPanel.add(add);
 
-        fieldsAndButtonPanel.add(buttonPanel, BorderLayout.SOUTH);
-        borderedContentPanel.add(fieldsAndButtonPanel, BorderLayout.CENTER);
+            fieldsAndButtonPanel.add(buttonPanel, BorderLayout.SOUTH);
+            borderedContentPanel.add(fieldsAndButtonPanel, BorderLayout.CENTER);
 
-        centerWrapper.add(borderedContentPanel);
-        contentPanel.add(centerWrapper, BorderLayout.CENTER);
+            centerWrapper.add(borderedContentPanel);
+            contentPanel.add(centerWrapper, BorderLayout.CENTER);
 
 
-    add.addActionListener(e -> {
-        try {
-             long productId = Long.parseLong(productField.getText());
-                int storeId = Integer.parseInt(storeField.getText());
-                int quantity = Integer.parseInt(quantityField.getText());
+        add.addActionListener(e -> {
+            try {
+                long productId = Long.parseLong(productField.getText());
+                    int storeId = Integer.parseInt(storeField.getText());
+                    int quantity = Integer.parseInt(quantityField.getText());
 
-                StockService.updateStock(productId, storeId, quantity);
-                showSuccess("Stock updated successfully.");
-                productField.setText("");
-                storeField.setText("");
-                quantityField.setText("");
-            } catch (NumberFormatException ex) {
-                showError("Invalid number format for ID or Quantity.");
-            } catch (Exception ex) {
-                showError(ex.getMessage());  
-            }
-    });
+                    StockService.updateStock(productId, storeId, quantity);
+                    showSuccess("Stock updated successfully.");
+                    productField.setText("");
+                    storeField.setText("");
+                    quantityField.setText("");
+                } catch (NumberFormatException ex) {
+                    showError("Invalid number format for ID or Quantity.");
+                } catch (Exception ex) {
+                    showError(ex.getMessage());  
+                }
+        });
 
-    contentPanel.revalidate();
-    contentPanel.repaint();
+        contentPanel.revalidate();
+        contentPanel.repaint();
     }
 
     private void menuViewLowStock() {
@@ -618,19 +577,19 @@ public class StockFrame extends JFrame {
         contentPanel.revalidate();
         contentPanel.repaint();
     }
-     private void refreshLowStock() {
-            model.setRowCount(0); // Clearing existing data
-            List<Stock> lowStocks = StockService.getLowStockProducts();
-            if (lowStocks.isEmpty()) {
-                showError("No low stock products found.");
-            } else {
-                for (Stock stock : lowStocks) {
-                    model.addRow(new Object[]{
-                            stock.getProductId(), stock.getStoreId(), stock.getStockQuantity()
-                    });
-                }
+    private void refreshLowStock() {
+        model.setRowCount(0); // Clearing existing data
+        List<Stock> lowStocks = StockService.getLowStockProducts();
+        if (lowStocks.isEmpty()) {
+            showError("No low stock products found.");
+        } else {
+            for (Stock stock : lowStocks) {
+                model.addRow(new Object[]{
+                        stock.getProductId(), stock.getStoreId(), stock.getStockQuantity()
+                });
             }
         }
+    }
     
     private void menuSearchOtherStores() {
 
@@ -638,12 +597,13 @@ public class StockFrame extends JFrame {
         contentPanel.setLayout(new BorderLayout());
         contentPanel.setBackground(Color.WHITE);
  
+        //first panel
         JPanel mainContentPanel = new JPanel(new BorderLayout());
         mainContentPanel.setOpaque(false); // Keep it transparent
         
+        //form panel
         JPanel formPanel = new JPanel(new GridLayout(4, 2, 10, 10));
         formPanel.setOpaque(false);
-        //formPanel.setBorder(BorderFactory.createEmptyBorder(80, 100, 80, 100));
           
         prodField = new JTextField(10);
         excludedStField = new JTextField(10);
@@ -658,50 +618,49 @@ public class StockFrame extends JFrame {
         ));
         }
 
-    JButton search = new JButton("Search");
-    search.setBackground(new Color(128, 0, 128));
-    search.setForeground(Color.WHITE);
-    search.setFont(customFont);
+        JButton search = new JButton("Search");
+        search.setBackground(new Color(128, 0, 128));
+        search.setForeground(Color.WHITE);
+        search.setFont(customFont);
 
-    JLabel storeLabel = new JLabel("Excluded Store ID");
-    storeLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
-    formPanel.add(storeLabel); formPanel.add(excludedStField);
+        JLabel storeLabel = new JLabel("Excluded Store ID");
+        storeLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
+        formPanel.add(storeLabel); formPanel.add(excludedStField);
 
-    JLabel productLabel = new JLabel("Product ID");
-    productLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
-    formPanel.add(productLabel); formPanel.add(prodField);
-    
-   JButton searchOtherButton = new JButton("Search");
-    searchOtherButton.setBackground(new Color(128, 0, 128)); // Purple background
-    searchOtherButton.setForeground(Color.WHITE);
-    searchOtherButton.setFont(new Font("MinionPro", Font.BOLD, 20));
-    searchOtherButton.setPreferredSize(new Dimension(200, 40));
-    searchOtherButton.addActionListener(e -> { searchOtherStores();
-    
-    // Μόνο αν δεν έχει ήδη προστεθεί:
-    if (searchTableScrollPane.getParent() == null) {
-        mainContentPanel.add(searchTableScrollPane, BorderLayout.CENTER);
-        mainContentPanel.revalidate();
-        mainContentPanel.repaint();
-    }
-    
-    });
+        JLabel productLabel = new JLabel("Product ID");
+        productLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
+        formPanel.add(productLabel); formPanel.add(prodField);
+        
+        JButton searchOtherButton = new JButton("Search");
+        searchOtherButton.setBackground(new Color(128, 0, 128)); // Purple background
+        searchOtherButton.setForeground(Color.WHITE);
+        searchOtherButton.setFont(new Font("MinionPro", Font.BOLD, 20));
+        searchOtherButton.setPreferredSize(new Dimension(200, 40));
+        searchOtherButton.addActionListener(e -> { searchOtherStores(); //it calls the method
+        
+        //Only if it's not already added, add the scrollpanel centerized to the main one
+        if (searchTableScrollPane.getParent() == null) {
+            mainContentPanel.add(searchTableScrollPane, BorderLayout.CENTER);
+            mainContentPanel.revalidate();
+            mainContentPanel.repaint();
+        }
+        
+        });
 
-    JPanel buttonPanel = new JPanel();
-    buttonPanel.setOpaque(false);
-    buttonPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
-    buttonPanel.add(searchOtherButton);
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setOpaque(false);
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
+        buttonPanel.add(searchOtherButton);
 
-    formPanel.add(new JLabel()); formPanel.add(searchOtherButton);
-    
-    JPanel formWrapper = new JPanel();
-    formWrapper.setBorder(BorderFactory.createEmptyBorder(30, 0, 0, 0));
+        formPanel.add(new JLabel()); formPanel.add(searchOtherButton);
+        
+        JPanel formWrapper = new JPanel();
+        formWrapper.setBorder(BorderFactory.createEmptyBorder(30, 0, 0, 0));
+        formWrapper.setOpaque(false);
+        formWrapper.setLayout(new FlowLayout(FlowLayout.CENTER));
+        formWrapper.add(formPanel); //add form panel centerized to form wrapper panel 
 
-    formWrapper.setOpaque(false);
-    formWrapper.setLayout(new FlowLayout(FlowLayout.CENTER));
-    formWrapper.add(formPanel);
-
-  // Table to display results
+        // Table to display results
         model = new DefaultTableModel(new String[]{"Store ID", "Quantity"}, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -712,24 +671,21 @@ public class StockFrame extends JFrame {
         table.setFont(new Font("Arial", Font.PLAIN, 14));
         table.getTableHeader().setFont(new Font("Arial", Font.BOLD, 16));
         table.setRowHeight(25);
-        table.setBackground(Color.WHITE); // ή table.setOpaque(false);
+        table.setBackground(Color.WHITE); 
 
         searchTableScrollPane  = new JScrollPane(table);
         searchTableScrollPane .setBorder(BorderFactory.createEmptyBorder(0, 50, 50, 50));
         searchTableScrollPane .setOpaque(false);
-        searchTableScrollPane .getViewport().setOpaque(false);  // για διαφάνεια
+        searchTableScrollPane .getViewport().setOpaque(false);  
 
-        // Adds formPanel and scrollPane to the main content panel
+        // Adds formWrapperPanel to the main content panel
         mainContentPanel.add(formWrapper, BorderLayout.NORTH);
-        //mainContentPanel.add(scrollPane, BorderLayout.CENTER);
 
-        // Adds the mainContentPanel to the SearchOtherStoresPanel to the CENTER, as the superclass already added controlPanel to NORTH.
         contentPanel.add(mainContentPanel, BorderLayout.CENTER);
-
         contentPanel.revalidate();
         contentPanel.repaint();
     }
-
+        //the method which is called in the menuSearchOtherStores
         private void searchOtherStores() {
 
             model.setRowCount(0); // Clears previous results
@@ -753,28 +709,25 @@ public class StockFrame extends JFrame {
             }
         }
 
-
-
-     private void menuGetJson() {
+    private void menuGetJson() {
         
         contentPanel.removeAll();
         contentPanel.setLayout(new BorderLayout());
 
-         JPanel inputPanel = new JPanel(new GridLayout(1, 2, 10, 10));
-         inputPanel.setOpaque(false);
-         inputPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 10, 20));
+        JPanel inputPanel = new JPanel(new GridLayout(1, 2, 10, 10));
+        inputPanel.setOpaque(false);
+        inputPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 10, 20));
 
         JLabel Lprod = new JLabel("Enter product ID:");
         Lprod.setFont(new Font("MinionPro", Font.BOLD, 20));
 
         JTextField Fprod = new JTextField(10);
-       
             Fprod.setFont(customFont);
             Fprod.setPreferredSize(new Dimension(200, 30));
             Fprod.setBorder(BorderFactory.createCompoundBorder(
                 Fprod.getBorder(),
                 BorderFactory.createEmptyBorder(5, 10, 1, 10)
-        ));
+            ));
      
         inputPanel.add(Lprod);
         inputPanel.add(Fprod);
@@ -793,16 +746,13 @@ public class StockFrame extends JFrame {
         topSection.add(inputPanel, BorderLayout.NORTH);
         topSection.add(buttonHolder, BorderLayout.CENTER);
 
-//         // === DISPLAY PANEL ===
+        // === DISPLAY PANEL ===
         JTextArea jsonDisplayArea = new JTextArea(10, 50);
         jsonDisplayArea.setEditable(false);
         jsonDisplayArea.setFont(new Font("Monospaced", Font.PLAIN, 20));
-        // jsonDisplayArea.setLineWrap(true);
-        // jsonDisplayArea.setWrapStyleWord(true);
-         jsonDisplayArea.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
-         jsonDisplayArea.setBackground(Color.WHITE);
-        // jsonDisplayArea.setMargin(new Insets(10, 10, 10, 10));
-
+        jsonDisplayArea.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
+        jsonDisplayArea.setBackground(Color.WHITE);
+      
         JScrollPane scrollPane = new JScrollPane(jsonDisplayArea);
         scrollPane.setBorder(BorderFactory.createEmptyBorder(0, 50, 50, 50));
         scrollPane.setOpaque(false);
@@ -816,16 +766,16 @@ public class StockFrame extends JFrame {
         centerPanel.add(scrollPane);
         centerPanel.add(Box.createRigidArea(new Dimension(0, 20)));
 
-//         // === CENTER WRAPPER FOR GRID ALIGNMENT ===
+        // === CENTER WRAPPER FOR GRID ALIGNMENT ===
         JPanel centerWrapper = new JPanel(new GridBagLayout());
         centerWrapper.setOpaque(false);
         centerWrapper.add(centerPanel);
 
         contentPanel.add(centerWrapper, BorderLayout.CENTER);
 
-//         // === ACTION HANDLER ===
-         showJsonBtn.addActionListener(e -> {
-             try {
+        // === ACTION HANDLER ===
+        showJsonBtn.addActionListener(e -> {
+            try {
                 if (Fprod.getText().trim().isEmpty()) {
                     showError("Please enter a Product ID to view JSON.");
                     jsonDisplayArea.setText("");
@@ -850,29 +800,8 @@ public class StockFrame extends JFrame {
 
         contentPanel.revalidate();
         contentPanel.repaint();
-    }}
+    }
+}
 
-//      // Updates the table with current client list
-//      private void refreshTable() {
-//         clientTableModel.setRowCount(0); // clears existing data
 
-//         // Fetches all clients
-//         List <Client> clients = ClientService.getClientDAO().getAllClients();
-//         for (Client client : clients) {
-//             clientTableModel.addRow(new Object[]{
-//                 client.getClientId(),
-//                 client.getFirstName(),
-//                 client.getLastName(),
-//                 client.getEmail(),
-//                 client.getPhoneNumber(),
-//                 client.getGender(),
-//                 client.getBirthDate(),                    
-//                 client.isActiveStatus(),                    
-//                 client.getDateJoined(),                    
-//                 client.getLastPurchaseDate(),
-//                 client.getClientSumTotal()
-//             });
-//         }
-//     }
-// }
 

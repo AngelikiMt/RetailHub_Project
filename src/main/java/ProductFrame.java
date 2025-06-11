@@ -1,21 +1,14 @@
 import java.awt.BorderLayout;
-import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.MediaTracker;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.awt.Insets;
 import java.util.List;
 
@@ -34,24 +27,19 @@ import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
-import javax.swing.Timer;
-import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 
-import com.mysql.cj.xdevapi.Client;
-
 public class ProductFrame extends JFrame {
+
     private final JPanel contentPanel;
     Font customFont = new Font("MinionPro", Font.PLAIN, 20);
-    // Table model and table for "View All Clients" to be accessible for refresh
+    // Table model and table for "View All Products" to be accessible for refresh
     private DefaultTableModel productTableModel;
     private JTable productTable;
-    // private JTextField inputField;
-    // private JPanel wrapper;
-
- 
+    
     public ProductFrame() {
+
         super();
         setTitle("Products Menu");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // Closes the frame
@@ -131,7 +119,7 @@ public class ProductFrame extends JFrame {
             // Adds spacing between buttons
             topBar.add(Box.createHorizontalStrut(5));
 
-                        // Adds action listeners based on button text
+            // Adds action listeners based on button text
             switch (item) {
                 case "Create" -> navButton.addActionListener(e -> menuCreateProduct());
                 case "Update" -> navButton.addActionListener(e -> menuUpdateProduct());
@@ -141,7 +129,7 @@ public class ProductFrame extends JFrame {
                 case "Export JSON" -> navButton.addActionListener(e -> menuGetJson());
             }
         }
-         JButton backButton = new JButton();
+        JButton backButton = new JButton();
         ImageIcon originalIcon = new ImageIcon(getClass().getResource("left-arrow.png"));
         ImageIcon scaledIcon = null;
 
@@ -192,6 +180,7 @@ public class ProductFrame extends JFrame {
     }  
 
     private void menuCreateProduct() {
+
         contentPanel.removeAll(); // Clears previous content
         contentPanel.setLayout(new BorderLayout());
 
@@ -313,7 +302,7 @@ public class ProductFrame extends JFrame {
         // Adds formFieldsPanel to the center of the fieldsAndButtonPanel
         fieldsAndButtonPanel.add(formFieldsPanel, BorderLayout.CENTER);
 
-        // Submit button
+        // Create button
         JButton createBtn = new JButton("Create");
         createBtn.setBackground(new Color(128, 0, 128)); // Purple background
         createBtn.setForeground(Color.WHITE);
@@ -330,7 +319,6 @@ public class ProductFrame extends JFrame {
         centerWrapper.add(borderedContentPanel);
         contentPanel.add(centerWrapper, BorderLayout.CENTER);
 
-              // Create client on submit
         createBtn.addActionListener(e -> {
             try {
                     String pdesc = description.getText().trim();
@@ -342,16 +330,14 @@ public class ProductFrame extends JFrame {
                     showSuccess("Product created with ID: "+ p.getProductId());
             
                     refreshTable(); // Update table
-                    //JOptionPane.showMessageDialog(contentPanel, "Client created with ID: " + client.getClientId());
-
+        
                     // Clear fields after successful submission
                     description.setText("");
                     price.setText("");
                     cost.setText("");
-                    categoryBox.setSelectedIndex(0); // Reset gender to first option
+                    categoryBox.setSelectedIndex(0); // Reset category to first option
             } catch (Exception ex) {
                 showError(ex.getMessage());
-                //JOptionPane.showMessageDialog(contentPanel, ex.getMessage(), "Validation Error", JOptionPane.ERROR_MESSAGE);
                 ex.printStackTrace(); // Print stack trace for debugging
             }
         });
@@ -362,6 +348,7 @@ public class ProductFrame extends JFrame {
 
 
     private void menuUpdateProduct() {
+
         contentPanel.removeAll();
 
         String input = JOptionPane.showInputDialog(this, "Enter product ID:");
@@ -390,8 +377,8 @@ public class ProductFrame extends JFrame {
         JTextField newPrice = new JTextField(String.valueOf(product.getPrice()));
         JTextField newCost = new JTextField(String.valueOf(product.getCost()));
 
-        double newprice = Double.parseDouble(newPrice.getText().trim());
-        double newcost = Double.parseDouble(newCost.getText().trim());
+        //double newprice = Double.parseDouble(newPrice.getText().trim());
+        //double newcost = Double.parseDouble(newCost.getText().trim());
 
         JTextField[] fields = {newDesc, newCat, newPrice, newCost};
         for (JTextField field : fields) {
@@ -401,103 +388,107 @@ public class ProductFrame extends JFrame {
                 field.getBorder(),
                 BorderFactory.createEmptyBorder(0, 8, 0, 8)
         ));
+         }
+
+        // Add fields to form
+        JLabel dLabel = new JLabel("Description:");
+        dLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
+        form.add(dLabel); form.add(newDesc);
+
+        JLabel cLabel = new JLabel("Category:");
+        cLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
+        form.add(cLabel); form.add(newCat);
+
+        JLabel pLabel = new JLabel("Price:");
+        pLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
+        form.add(pLabel); form.add(newPrice);
+
+        JLabel coLabel = new JLabel("Cost:");
+        coLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
+        form.add(coLabel); form.add(newCost);
+
+        // Title with icon
+        ImageIcon rawIcon = new ImageIcon(getClass().getResource("/refresh.png"));
+        Image scaledImage = rawIcon.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
+        ImageIcon icon = new ImageIcon(scaledImage);    
+        JLabel titleLabel = new JLabel("", icon, JLabel.CENTER);
+        titleLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
+        titleLabel.setForeground(Color.DARK_GRAY);
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(10, 30, 40, 30));
+
+        // Custom titled border
+        TitledBorder titled = BorderFactory.createTitledBorder(
+            BorderFactory.createLineBorder(Color.GRAY, 1),
+            "",
+            TitledBorder.LEFT,
+            TitledBorder.TOP
+        );
+
+        // Wrap title in JPanel
+        JPanel titledPanel = new JPanel(new BorderLayout());
+        titledPanel.setOpaque(false);
+        titledPanel.setBorder(BorderFactory.createCompoundBorder(
+            titled,
+            BorderFactory.createEmptyBorder(5, 30, 30, 30)
+        ));
+        titledPanel.add(titleLabel, BorderLayout.NORTH);
+        titledPanel.add(form, BorderLayout.CENTER);
+
+        // Update button
+        JButton update = new JButton("Update");
+        update.setBackground(new Color(128, 0, 128)); // Purple
+        update.setForeground(Color.WHITE);
+        update.setFont(new Font("MinionPro", Font.BOLD, 20));
+        update.setPreferredSize(new Dimension(200, 40));
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setOpaque(false);
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
+        buttonPanel.add(update);
+
+        // Wrapper layout
+        JPanel wrapper = new JPanel(new BorderLayout(10, 10));
+        wrapper.setOpaque(false);
+        wrapper.setBorder(BorderFactory.createEmptyBorder(80, 80, 80, 80));
+        wrapper.add(titledPanel, BorderLayout.CENTER);
+        wrapper.add(buttonPanel, BorderLayout.SOUTH);
+        wrapper.setMaximumSize(new Dimension(1000, 700));
+
+        JPanel centerWrapper = new JPanel(new GridBagLayout());
+        centerWrapper.setOpaque(false);
+        centerWrapper.add(wrapper);
+
+        contentPanel.setLayout(new BorderLayout());
+        contentPanel.add(centerWrapper, BorderLayout.CENTER);
+
+        // Action
+        Product finalProduct = product;
+        update.addActionListener(e -> {
+            try {
+
+                double newprice = Double.parseDouble(newPrice.getText().trim().replace(",", "."));
+                double newcost = Double.parseDouble(newCost.getText().trim().replace(",", "."));
+
+                ProductService.updateProduct(
+                    finalProduct.getProductId(),
+                    newDesc.getText(),
+                    newCat.getText(),
+                    newprice,
+                    newcost
+                );
+                refreshTable();
+                JOptionPane.showMessageDialog(this, "Product updated.");
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, ex.getMessage(), "Update Failed", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+
+        contentPanel.revalidate();
+        contentPanel.repaint();
+
     }
 
-    // Add fields to form
-    JLabel dLabel = new JLabel("Description:");
-    dLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
-    form.add(dLabel); form.add(newDesc);
-
-    JLabel cLabel = new JLabel("Category:");
-    cLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
-    form.add(cLabel); form.add(newCat);
-
-    JLabel pLabel = new JLabel("Price:");
-    pLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
-    form.add(pLabel); form.add(newPrice);
-
-    JLabel coLabel = new JLabel("Cost:");
-    coLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
-    form.add(coLabel); form.add(newCost);
-
-    // Title with icon
-    ImageIcon rawIcon = new ImageIcon(getClass().getResource("/refresh.png"));
-    Image scaledImage = rawIcon.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
-    ImageIcon icon = new ImageIcon(scaledImage);    
-    JLabel titleLabel = new JLabel("", icon, JLabel.CENTER);
-    titleLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
-    titleLabel.setForeground(Color.DARK_GRAY);
-    titleLabel.setBorder(BorderFactory.createEmptyBorder(10, 30, 40, 30));
-
-    // Custom titled border
-    TitledBorder titled = BorderFactory.createTitledBorder(
-        BorderFactory.createLineBorder(Color.GRAY, 1),
-        "",
-        TitledBorder.LEFT,
-        TitledBorder.TOP
-    );
-
-    // Wrap title in JPanel
-    JPanel titledPanel = new JPanel(new BorderLayout());
-    titledPanel.setOpaque(false);
-    titledPanel.setBorder(BorderFactory.createCompoundBorder(
-        titled,
-        BorderFactory.createEmptyBorder(5, 30, 30, 30)
-    ));
-    titledPanel.add(titleLabel, BorderLayout.NORTH);
-    titledPanel.add(form, BorderLayout.CENTER);
-
-    // Submit button
-    JButton submit = new JButton("Update");
-    submit.setBackground(new Color(128, 0, 128)); // Purple
-    submit.setForeground(Color.WHITE);
-    submit.setFont(new Font("MinionPro", Font.BOLD, 20));
-    submit.setPreferredSize(new Dimension(200, 40));
-    JPanel buttonPanel = new JPanel();
-    buttonPanel.setOpaque(false);
-    buttonPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
-    buttonPanel.add(submit);
-
-    // Wrapper layout
-    JPanel wrapper = new JPanel(new BorderLayout(10, 10));
-    wrapper.setOpaque(false);
-    wrapper.setBorder(BorderFactory.createEmptyBorder(80, 80, 80, 80));
-    wrapper.add(titledPanel, BorderLayout.CENTER);
-    wrapper.add(buttonPanel, BorderLayout.SOUTH);
-    wrapper.setMaximumSize(new Dimension(1000, 700));
-
-    JPanel centerWrapper = new JPanel(new GridBagLayout());
-    centerWrapper.setOpaque(false);
-    centerWrapper.add(wrapper);
-
-    contentPanel.setLayout(new BorderLayout());
-    contentPanel.add(centerWrapper, BorderLayout.CENTER);
-
-     // Action
-    Product finalProduct = product;
-    submit.addActionListener(e -> {
-        try {
-
-            ProductService.updateProduct(
-                finalProduct.getProductId(),
-                newDesc.getText(),
-                newCat.getText(),
-                newprice,
-                newcost
-            );
-            refreshTable();
-            JOptionPane.showMessageDialog(this, "Product updated.");
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, ex.getMessage(), "Update Failed", JOptionPane.ERROR_MESSAGE);
-        }
-    });
-
-    contentPanel.revalidate();
-    contentPanel.repaint();
-
-    }
-
-private void menuDeleteProduct() {
+    private void menuDeleteProduct() {
+        
         contentPanel.removeAll();
         contentPanel.setLayout(new BorderLayout());
         contentPanel.setBackground(Color.WHITE);
@@ -560,7 +551,7 @@ private void menuDeleteProduct() {
         contentPanel.repaint();
     }
 
-private void menuActivateProduct() {
+    private void menuActivateProduct() {
 
         contentPanel.removeAll();
         contentPanel.setLayout(new BorderLayout());
@@ -620,23 +611,6 @@ private void menuActivateProduct() {
                 showSuccess("Product's status with ID " + id + " was setted successfully.");
             }});
 
-                // String input = inputField.getText();
-            // Product product = ProductService.getAllProducts().stream()
-            //     .filter(p -> Long.parseLong(input) == p.getProductId())
-            //     .findFirst()
-            //     .orElse(null);
-
-            // if (product == null) {
-            //     JOptionPane.showMessageDialog(this, "Product not found.");
-            //     return;
-            // }
-
-            // int confirm = JOptionPane.showConfirmDialog(this, "Activate/Deactivate product: " + product.getProductId() + "?", "Confirm", JOptionPane.YES_NO_OPTION);
-            // if (confirm == JOptionPane.YES_OPTION) {
-            //     ProductService.setProductActiveStatus(product.getProductId());
-            //     refreshTable();
-            //     JOptionPane.showMessageDialog(this, "Product status changed.");
-            // }
         contentPanel.add(form, BorderLayout.CENTER);
 
         contentPanel.revalidate();
@@ -645,6 +619,7 @@ private void menuActivateProduct() {
 
 
  private void menuViewAllProducts() {
+
         contentPanel.removeAll();
         contentPanel.setLayout(new BorderLayout());
 
@@ -758,7 +733,6 @@ private void menuActivateProduct() {
                 }
 
                 long id = Long.parseLong(input);
-                //ClientService clientService = new ClientService();
                 String json = ProductService.getProductAsJson(id);
 
                 if (json != null && !json.contains("Product not found")) {
@@ -792,11 +766,8 @@ private void menuActivateProduct() {
             });
         }
     }
-
-
-
 }
-    //form.add(search);
+
 
 
 

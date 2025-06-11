@@ -1,12 +1,9 @@
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Image;
 import java.awt.Insets;
 
 import javax.swing.BorderFactory;
@@ -29,26 +26,14 @@ public class LoginFrame extends JFrame {
     public LoginFrame() {
         setTitle("Login - Retail Hub");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        //setExtendedState(JFrame.MAXIMIZED_BOTH); // Fullscreen
                
         ImageIcon icon = new ImageIcon(getClass().getResource("loginicon_120.png"));
         JLabel logoLabel = new JLabel(icon);
         logoLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        
-        // // === Custom JPanel with background image ===
-        // JPanel backgroundPanel = new JPanel() {
-        //     Image background = new ImageIcon(getClass().getResource("loginicon.png")).getImage();
-        //     @Override
-        //     protected void paintComponent(Graphics g) {
-        //         super.paintComponent(g);
-        //         g.drawImage(background, 10, 10, getWidth(), getHeight(), this);
-        //     }
-        // };
-        // backgroundPanel.setLayout(new GridBagLayout()); // Centers the login panel
 
         // === Connection Panel ===
         JPanel loginPanel = new JPanel(new GridBagLayout());
-        loginPanel.setOpaque(false); // Show the background behind it
+        loginPanel.setOpaque(false); 
         
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
@@ -68,9 +53,8 @@ public class LoginFrame extends JFrame {
             passField.setEchoChar(showPass.isSelected() ? (char) 0 : '•');
         });
 
-        //ImageIcon login = new ImageIcon(getClass().getResource("login.png"));
         JButton loginBtn = new JButton("Login");
-        loginBtn.setBackground(new Color(128, 0, 128)); // Purple background
+        loginBtn.setBackground(new Color(128, 0, 128)); 
         loginBtn.setForeground(Color.WHITE);
         loginBtn.setFont(new Font("MinionPro", Font.PLAIN, 20));
         loginBtn.setPreferredSize(new Dimension(120, 30));
@@ -110,8 +94,6 @@ public class LoginFrame extends JFrame {
         JPanel mainPanel = new JPanel();
         mainPanel.setOpaque(false);
         mainPanel.setLayout(new GridBagLayout());
-       // loginFrame.setResizable(false);           // ❌ Disable resizing
-        //loginFrame.setMaximumSize(loginFrame.getSize()); // Optional: lock 
 
         // === Placing loginPanel in the center ===
         GridBagConstraints panelGbc = new GridBagConstraints();

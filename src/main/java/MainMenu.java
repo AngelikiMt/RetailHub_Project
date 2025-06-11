@@ -20,7 +20,7 @@ import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 
 public class MainMenu extends JFrame {
-    private static final String ADMIN_PIN = "12345";
+
     private String path;
 
     public static ImageIcon getIcon (String path){
@@ -50,39 +50,34 @@ public class MainMenu extends JFrame {
         welcomeLabel.setFont(new Font("Arial", Font.BOLD, 35));
         welcomeLabel.setForeground(new Color(0,0,205));
         welcomeLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        //welcomeLabel.setHorizontalAlignment(SwingConstants.LEFT);
-        //welcomeLabel.setVerticalAlignment(SwingConstants.NORTH);
-        //welcomeLabel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 10)); // padding
-
+       
         JTextArea textArea = new JTextArea("Welcome to RetailHub! Your modern destination for smart, high-quality shopping. Explore our products, manage your transactions, and track your store's progress—all in one place. Select an option to get started!");
         textArea.setFont(new Font("SansSerif", Font.ITALIC, 14));
-        textArea.setEditable(false); // αν δεν θες να γράφει ο χρήστης
+        textArea.setEditable(false); // for not letting user to write
         textArea.setFocusable(false);  
-        textArea.setOpaque(false); // αφαιρεί το φόντο αν θες να φαίνεται "σαν Label"
-        textArea.setBorder(null);     // αφαιρεί περίγραμμα
+        textArea.setOpaque(false); 
+        textArea.setBorder(null); 
         textArea.setLineWrap(true);
         textArea.setWrapStyleWord(true);
         textArea.setAlignmentX(Component.LEFT_ALIGNMENT);
-       // textArea.setAlignmentX(Component.BOTTOM_ALIGNMENT);
        
         textPanel.add(welcomeLabel);
         textPanel.add(Box.createVerticalStrut(10)); // spacing
         textPanel.add(textArea);
 
         // Right: Company logo or image
-        ImageIcon logoIcon = new ImageIcon(getClass().getResource("retaillogo.png")); // Replace with your image path
+        ImageIcon logoIcon = new ImageIcon(getClass().getResource("retaillogo.png")); 
         Image scaledImage = logoIcon.getImage().getScaledInstance(500, 400, Image.SCALE_SMOOTH);
         JLabel imageLabel = new JLabel(new ImageIcon(scaledImage));
         imageLabel.setHorizontalAlignment(SwingConstants.RIGHT);
         imageLabel.setVerticalAlignment(SwingConstants.TOP);
-        //imageLabel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 10)); // padding
 
         topPanel.add(textPanel, BorderLayout.CENTER);
         topPanel.add(imageLabel, BorderLayout.EAST);
         
         JPanel wrapper = new JPanel(new BorderLayout());
-        wrapper.setBorder(BorderFactory.createEmptyBorder(50, 50, 50, 50)); // Αυτό δημιουργεί το κενό
-        wrapper.setBackground(Color.WHITE); // Για να φαίνεται το περίγραμμα
+        wrapper.setBorder(BorderFactory.createEmptyBorder(50, 50, 50, 50)); 
+        wrapper.setBackground(Color.WHITE); 
         wrapper.add(topPanel, BorderLayout.CENTER);
 
         // === BUTTONS ===
@@ -110,8 +105,6 @@ public class MainMenu extends JFrame {
             path = "/reportsicon.png";
             reportsBtn.setIcon(getIcon(path));
 
-        //JButton exitBtn = new JButton("EXIT");
-
         Dimension buttonSize = new Dimension(200, 120);
 
         JButton[] buttons = {clientBtn, productBtn, storeBtn, stockBtn, transactionBtn, reportsBtn};
@@ -137,8 +130,6 @@ public class MainMenu extends JFrame {
         bottomPanel.setOpaque(false);
         bottomPanel.add(buttonGrid);
 
-        //backgroundPanel.add(bottomPanel, BorderLayout.SOUTH);
-
         // === ACTIONS ===
         clientBtn.addActionListener(e -> new ClientFrame());
         productBtn.addActionListener(e -> new ProductFrame());
@@ -147,15 +138,9 @@ public class MainMenu extends JFrame {
         transactionBtn.addActionListener(e -> new TransactionFrame());
         reportsBtn.addActionListener(e -> new ReportsLoginFrame());
 
-        //exitBtn.addActionListener(e -> {
-        //     dispose();
-        //     new LoginFrame();
-        // });
-
         this.getContentPane().add(bottomPanel,BorderLayout.SOUTH);
         this.getContentPane().add(wrapper,BorderLayout.NORTH);
         getContentPane().setBackground(Color.WHITE);    
-        //setContentPane(backgroundPanel);
         setVisible(true);
     }
 }
