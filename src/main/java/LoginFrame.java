@@ -20,8 +20,8 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
 public class LoginFrame extends JFrame {
-    private static final String USERNAME = "";
-    private static final String PASSWORD = "";
+    private static final String USERNAME = "retailHub";
+    private static final String PASSWORD = "safenow";
 
     public LoginFrame() {
         setTitle("Login - Retail Hub");

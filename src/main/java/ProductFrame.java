@@ -369,6 +369,11 @@ public class ProductFrame extends JFrame {
             return;
         }
 
+        if (product.getActive() == false) {
+            JOptionPane.showMessageDialog(this, "Product not active.");
+            return;
+        }
+
         JPanel form = new JPanel(new GridLayout(0, 2, 8, 8));
         form.setOpaque(false);
 
