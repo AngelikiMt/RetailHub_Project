@@ -351,23 +351,69 @@ public class ProductFrame extends JFrame {
 
         contentPanel.removeAll();
 
-        String input = JOptionPane.showInputDialog(this, "Enter product ID:");
-        Product product = null;
-        for (int i = 0; i < ProductService.getAllProducts().size(); i++) {
-            Product p = ProductService.getAllProducts().get(i);
-            if (input == null || input.trim().isEmpty()) {
-                JOptionPane.showMessageDialog(contentPanel, "Please enter a product ID");
-            }
-            if (Long.parseLong(input) == p.getProductId()) {
-                product = p;
-                break;
-            }
-        }
+        contentPanel.setLayout(new BorderLayout());
+        contentPanel.setBackground(Color.WHITE);
 
-        if (product == null) {
-            JOptionPane.showMessageDialog(this, "Product not found.");
-            return;
-        }
+        // JPanel form = new JPanel(new BorderLayout());
+        // form.setBorder(BorderFactory.createTitledBorder(
+        //     BorderFactory.createEmptyBorder(20, 20, 20, 20),
+        //     "",
+        //     TitledBorder.LEFT,
+        //     TitledBorder.TOP,
+        //     new Font("MinionPro", Font.BOLD, 20),
+        //     Color.DARK_GRAY
+        // ));
+        // form.setBackground(Color.WHITE);
+
+        JTextField inputField = new JTextField(20);
+        inputField.setFont(customFont);
+        inputField.setPreferredSize(new Dimension(200, 30));
+        inputField.setBorder(BorderFactory.createCompoundBorder(
+        inputField.getBorder(),
+        BorderFactory.createEmptyBorder(1, 10, 1, 10)));
+
+        JButton search = new JButton("Search");
+        search.setBackground(new Color(128, 0, 128));
+        search.setForeground(Color.WHITE);
+        search.setFont(new Font("MinionPro", Font.BOLD, 20));
+        search.setPreferredSize(new Dimension(200, 40));
+
+        JPanel topPanel = new JPanel(new FlowLayout());
+        JLabel enterTextLabel = new JLabel("Enter Product ID:");
+        enterTextLabel.setFont(new Font("MinionPro", Font.BOLD, 20));
+        topPanel.add(enterTextLabel);        
+        topPanel.add(inputField);
+        topPanel.add(search);
+        topPanel.setBackground(Color.WHITE);
+
+        //form.add(topPanel, BorderLayout.NORTH);
+
+        // String input = JOptionPane.showInputDialog(this, "Enter product ID:");
+        // Product product = null;
+        // for (int i = 0; i < ProductService.getAllProducts().size(); i++) {
+        //     Product p = ProductService.getAllProducts().get(i);
+        //     if (input == null || input.trim().isEmpty()) {
+        //         JOptionPane.showMessageDialog(contentPanel, "Please enter a product ID");
+        //     }
+        //     if (Long.parseLong(input) == p.getProductId()) {
+        //         product = p;
+        //         break;
+        //     }
+        // }
+
+        contentPanel.add(topPanel, BorderLayout.NORTH);
+
+        search.addActionListener(e -> {
+            String input = inputField.getText();
+            Product product = ProductService.getAllProducts().stream()
+                .filter(p -> Long.parseLong(input) == p.getProductId())
+                .findFirst()
+                .orElse(null);
+
+            if (product == null) {
+                JOptionPane.showMessageDialog(this, "Product not found.");
+                return;
+            }
 
         if (product.getActive() == false) {
             JOptionPane.showMessageDialog(this, "Product not active.");
@@ -454,6 +500,7 @@ public class ProductFrame extends JFrame {
         JPanel wrapper = new JPanel(new BorderLayout(10, 10));
         wrapper.setOpaque(false);
         wrapper.setBorder(BorderFactory.createEmptyBorder(80, 80, 80, 80));
+        //wrapper.add(topPanel, BorderLayout.NORTH);
         wrapper.add(titledPanel, BorderLayout.CENTER);
         wrapper.add(buttonPanel, BorderLayout.SOUTH);
         wrapper.setMaximumSize(new Dimension(1000, 700));
@@ -462,12 +509,13 @@ public class ProductFrame extends JFrame {
         centerWrapper.setOpaque(false);
         centerWrapper.add(wrapper);
 
-        contentPanel.setLayout(new BorderLayout());
         contentPanel.add(centerWrapper, BorderLayout.CENTER);
+        contentPanel.revalidate();
+        contentPanel.repaint();
 
         // Action
         Product finalProduct = product;
-        update.addActionListener(e -> {
+        update.addActionListener(e1 -> {
             try {
 
                 double newprice = Double.parseDouble(newPrice.getText().trim().replace(",", "."));
@@ -486,6 +534,7 @@ public class ProductFrame extends JFrame {
                 JOptionPane.showMessageDialog(this, ex.getMessage(), "Update Failed", JOptionPane.ERROR_MESSAGE);
             }
         });
+    });
 
         contentPanel.revalidate();
         contentPanel.repaint();
