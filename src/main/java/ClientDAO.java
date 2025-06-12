@@ -125,18 +125,38 @@ public class ClientDAO {
             stmt.setString(2, client.getLastName());
             stmt.setString(3, client.getPhoneNumber());
             stmt.setString(4, client.getEmail());
-            stmt.setDate(5, Date.valueOf(client.getBirthDate()));
-            stmt.setDouble(6, client.getClientSumTotal());
-            stmt.setDouble(7, client.getClientCurrentTotal());
-            stmt.setDate(8, Date.valueOf(client.getLastPurchaseDate()));
-            stmt.setLong(9, client.getClientId());
 
             LocalDate birthDate = client.getBirthDate();
-            if (birthDate != null) {
-                stmt.setDate(5, Date.valueOf(birthDate));
-            } else {
-                stmt.setNull(5, Types.DATE); // Set SQL NULL if birthDate is null
-            }
+                if (birthDate != null) {
+                    stmt.setDate(5, Date.valueOf(birthDate));
+                } else {
+                    // Fetches the current value from DB if birthDate is null
+                    Client existingClient = getClientById(client.getClientId());
+                    if (existingClient != null && existingClient.getBirthDate() != null) {
+                        stmt.setDate(5, Date.valueOf(existingClient.getBirthDate()));
+                    } else {
+                        stmt.setNull(5, Types.DATE);
+                    }
+                }
+
+            stmt.setDouble(6, client.getClientSumTotal());
+            stmt.setDouble(7, client.getClientCurrentTotal());
+
+            LocalDate lastPurchaseDate = client.getLastPurchaseDate();
+                if (lastPurchaseDate != null) {
+                    stmt.setDate(8, Date.valueOf(lastPurchaseDate));
+                } else {
+                    // Fetches the current value from DB if lastPurchaseDate is null
+                    Client existingClient = getClientById(client.getClientId());
+                    if (existingClient != null && existingClient.getLastPurchaseDate() != null) {
+                        stmt.setDate(8, Date.valueOf(existingClient.getLastPurchaseDate()));
+                    } else {
+                        stmt.setNull(8, Types.DATE);
+                    }
+                }
+
+            stmt.setLong(9, client.getClientId());
+
             return stmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
