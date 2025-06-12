@@ -16,7 +16,7 @@ def get_sales_by_product(product_id: int) -> dict:
     FROM includes i
     JOIN products    p ON i.productId     = p.productId
     JOIN transaction t ON i.transactionId = t.transactionId
-    JOIN Store       s ON t.storeId       = s.storeId
+    JOIN store       s ON t.storeId       = s.storeId
     WHERE p.productId = %s
     """
 

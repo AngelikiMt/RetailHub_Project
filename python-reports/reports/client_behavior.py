@@ -20,7 +20,7 @@ def get_client_behavior(client_id: int) -> dict:
       GROUP_CONCAT(DISTINCT s.address SEPARATOR '|||') AS stores
     FROM client c
     JOIN transaction t ON t.clientId = c.clientId
-    JOIN Store s       ON t.storeId  = s.storeId
+    JOIN store s       ON t.storeId  = s.storeId
     WHERE c.clientId = %s
     GROUP BY c.clientId
     """

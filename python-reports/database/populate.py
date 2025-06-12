@@ -35,7 +35,7 @@ def create_stores(n=N_STORES):
     with conn.cursor() as cursor:
         for _ in range(n):
             cursor.execute("""
-                INSERT INTO Store (phone, address, city, country, storeName)
+                INSERT INTO store (phone, address, city, country, storeName)
                 VALUES (%s, %s, %s, %s, %s)
             """, (
                 fake.unique.numerify(text="##########"),
@@ -57,14 +57,14 @@ def create_products(n=N_PRODUCTS):
                 fake.word(),
                 round(random.uniform(5, 200), 2),
                 round(random.uniform(2, 100), 2),
-                random.choice(['clothing', 'electronics', 'beauty', 'kitchen', 'kids'])
+                random.choice(['clothing', 'electronics', 'beauty'])
             ))
     conn.commit()
     print("Products inserted")
 
 def create_stock_entries(n=PRODUCTS_PER_STORE):
     with conn.cursor() as cursor:
-        cursor.execute("SELECT storeId FROM Store")
+        cursor.execute("SELECT storeId FROM store")
         store_ids = [row['storeId'] for row in cursor.fetchall()]
 
         cursor.execute("SELECT productId FROM products")
@@ -92,7 +92,7 @@ def create_transactions(n=N_TRANSACTIONS):
         cursor.execute("SELECT clientId FROM client WHERE activeStatus = 1")
         clients = [row['clientId'] for row in cursor.fetchall()]
 
-        cursor.execute("SELECT storeId FROM Store")
+        cursor.execute("SELECT storeId FROM store")
         stores = [row['storeId'] for row in cursor.fetchall()]
 
         # Fetch stock data

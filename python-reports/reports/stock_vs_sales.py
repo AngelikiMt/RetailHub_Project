@@ -18,7 +18,7 @@ def get_stock_vs_sales() -> dict:
       st.stockQuantity AS total_stock,
       COALESCE(SUM(i.soldQuantity), 0) AS units_sold
     FROM stock st
-    JOIN Store s    ON st.storeId = s.storeId
+    JOIN store s    ON st.storeId = s.storeId
     JOIN products p ON st.productId = p.productId
     LEFT JOIN includes i
       ON st.storeId = (

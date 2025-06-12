@@ -18,7 +18,7 @@ def get_profit_by_store(store_id: int) -> dict:
     FROM includes i
     JOIN products    p ON i.productId     = p.productId
     JOIN transaction t ON i.transactionId = t.transactionId
-    JOIN Store       s ON t.storeId       = s.storeId
+    JOIN store       s ON t.storeId       = s.storeId
     WHERE s.storeId = %s
     GROUP BY s.address, p.description
     ORDER BY revenue DESC

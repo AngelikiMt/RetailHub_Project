@@ -20,7 +20,7 @@ def get_store_ranking() -> dict:
     FROM transaction t
     JOIN includes i ON t.transactionId = i.transactionId
     JOIN products p ON i.productId = p.productId
-    JOIN Store s ON t.storeId = s.storeId
+    JOIN store s ON t.storeId = s.storeId
     WHERE s.active = 1
     GROUP BY s.storeId, s.address
     """
